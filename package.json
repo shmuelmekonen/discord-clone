@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "5": "^0.0.1",
     "@clerk/nextjs": "^6.36.5",
     "@prisma/client": "^5.22.0",
     "@radix-ui/react-dropdown-menu": "^2.1.16",
