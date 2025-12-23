@@ -56,7 +56,6 @@ export const InitialModel = () => {
 
     defaultValues: {
       name: "",
-
       imageUrl: "",
     },
   });
