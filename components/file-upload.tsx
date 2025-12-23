@@ -14,7 +14,7 @@ export const FileUpload = ({ onChange, value, endpoint }: any) => {
           fill
           src={value}
           alt="Upload"
-          className="rounded-full object-cover" // הוספתי object-cover למראה נקי
+          className="rounded-full object-cover"
         />
         <button
           onClick={() => onChange("")}
