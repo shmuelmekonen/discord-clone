@@ -32,15 +32,8 @@ import { FileUpload } from "@/components/file-upload";
 import { useRouter } from "next/navigation";
 import { useModal } from "@/hooks/use-modal-store";
 
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Server name is required.",
-  }),
-
-  imageUrl: z.string().min(1, {
-    message: "Server image is required.",
-  }),
-});
+import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
+import { createServer } from "@/actions/server-actions";
 
 export const CreateServerModal = () => {
   const { isOpen, onClose, type } = useModal();
@@ -49,7 +42,7 @@ export const CreateServerModal = () => {
   const router = useRouter();
 
   const form = useForm({
-    resolver: zodResolver(formSchema),
+    resolver: zodResolver(serverSchema),
 
     defaultValues: {
       name: "",
@@ -59,15 +52,19 @@ export const CreateServerModal = () => {
 
   const isLoading = form.formState.isSubmitting;
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: ServerSchemaType) => {
     try {
-      await axios.post("/api/servers", values);
+      const response = await createServer(values);
+
+      if (response?.error) {
+        console.error(response.error);
+        return;
+      }
 
       form.reset();
-      router.refresh();
       onClose();
     } catch (error) {
-      console.log(error);
+      console.log("Something went wrong:", error);
     }
   };
 
