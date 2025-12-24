@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { useForm } from "react-hook-form";
+import { useEffect, useState } from "react";
 
 import { toast } from "sonner";
 
@@ -29,17 +30,18 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { FileUpload } from "@/components/file-upload";
-import { useModal } from "@/hooks/use-modal-store";
-
 import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
 import { createServer } from "@/actions/server-actions";
-import { useState } from "react";
+import { useModal } from "@/hooks/use-modal-store";
 
-export const CreateServerModal = () => {
+export const InitialModal = () => {
   const [generalError, setGeneralError] = useState<string | null>(null);
+  const [isMounted, setIsMounted] = useState(false);
+  const { onClose } = useModal();
 
-  const { isOpen, onClose, type } = useModal();
-  const isModalOpen = isOpen && type === "createServer";
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const form = useForm({
     resolver: zodResolver(serverSchema),
@@ -69,13 +71,12 @@ export const CreateServerModal = () => {
     }
   };
 
-  const handleClose = () => {
-    form.reset();
-    onClose();
-  };
+  if (!isMounted) {
+    return null;
+  }
 
   return (
-    <Dialog open={isModalOpen} onOpenChange={handleClose}>
+    <Dialog open>
       <DialogContent className="bg-white text-black p-0 overflow-hidden ">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
@@ -133,7 +134,6 @@ export const CreateServerModal = () => {
                 )}
               />
             </div>
-
             {generalError && (
               <div className="p-3 rounded-md bg-red-50 border border-red-200 flex items-center gap-x-2 text-sm text-red-600">
                 <p className="w-full text-center font-medium">{generalError}</p>

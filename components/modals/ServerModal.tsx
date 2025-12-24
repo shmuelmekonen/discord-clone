@@ -1,11 +1,9 @@
 "use client";
 
-import axios from "axios";
-import * as z from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-
-import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { toast } from "sonner";
 
 import {
   Dialog,
@@ -15,7 +13,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
 import {
   Form,
   FormControl,
@@ -24,36 +21,33 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import { Input } from "@/components/ui/input";
-
 import { Button } from "@/components/ui/button";
-
 import { FileUpload } from "@/components/file-upload";
+
+import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
+import { createServer } from "@/actions/server-actions";
+import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 
-const formSchema = z.object({
-  name: z.string().min(1, {
-    message: "Server name is required.",
-  }),
+interface ServerModalProps {
+  isInitial?: boolean;
+}
 
-  imageUrl: z.string().min(1, {
-    message: "Server image is required.",
-  }),
-});
-
-export const InitialModel = () => {
+export const ServerModal = ({ isInitial = false }: ServerModalProps) => {
   const [isMounted, setIsMounted] = useState(false);
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
-  const router = useRouter();
+  const { isOpen, onClose, type } = useModal();
+
+  const isModalOpen = isInitial ? true : isOpen && type === "createServer";
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  const form = useForm({
-    resolver: zodResolver(formSchema),
-
+  const form = useForm<ServerSchemaType>({
+    resolver: zodResolver(serverSchema),
     defaultValues: {
       name: "",
       imageUrl: "",
@@ -61,30 +55,49 @@ export const InitialModel = () => {
   });
 
   const isLoading = form.formState.isSubmitting;
+  const router = useRouter();
 
-  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+  const onSubmit = async (values: ServerSchemaType) => {
     try {
-      await axios.post("/api/servers", values);
+      setGeneralError(null);
+      const response = await createServer(values);
+
+      if (response?.error) {
+        setGeneralError(response.error);
+        return;
+      }
+
+      toast.success("Server created successfully!");
       form.reset();
-      router.refresh();
-      window.location.reload();
+
+      if (response.data?.id) {
+        router.push(`/servers/${response.data.id}`);
+      }
+
+      if (!isInitial) {
+        onClose();
+      }
     } catch (error) {
-      console.log(error);
+      setGeneralError("An unexpected error occurred.");
     }
   };
 
-  if (!isMounted) {
-    return null;
-  }
+  const handleClose = () => {
+    if (isInitial) return;
+    form.reset();
+    onClose();
+  };
+
+  // מניעת שגיאות Hydration
+  if (!isMounted) return null;
 
   return (
-    <Dialog open>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden ">
+    <Dialog open={isModalOpen} onOpenChange={handleClose}>
+      <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
             Create your server
           </DialogTitle>
-
           <DialogDescription className="text-center text-zinc-500">
             Give your server a personality with a name and an image. You can
             always change it later.
@@ -118,10 +131,9 @@ export const InitialModel = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
+                    <FormLabel className="uppercase text-xs font-bold text-zinc-500">
                       Server Name
                     </FormLabel>
-
                     <FormControl>
                       <Input
                         disabled={isLoading}
@@ -130,12 +142,17 @@ export const InitialModel = () => {
                         {...field}
                       />
                     </FormControl>
-
                     <FormMessage />
                   </FormItem>
                 )}
               />
             </div>
+
+            {generalError && (
+              <div className="mx-6 p-3 rounded-md bg-red-50 border border-red-200 text-sm text-red-600 text-center">
+                {generalError}
+              </div>
+            )}
 
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button variant="primary" disabled={isLoading}>

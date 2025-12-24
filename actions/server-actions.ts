@@ -1,8 +1,8 @@
 "use server";
-// 039534234
+
 import { db } from "@/lib/db";
 import { currentProfile } from "@/lib/current-profile";
-import { MemberRole } from "@/lib/generated/prisma";
+import { MemberRole } from "@prisma/client";
 import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
 
 import { v4 as uuidv4 } from "uuid";

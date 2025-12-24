@@ -8,8 +8,11 @@ import { ourFileRouter } from "@/app/api/uploadthing/core";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { ModalProvider } from "@/components/providers/modal-provider";
 
-import "./globals.css";
 import { cn } from "@/lib/utils";
+
+import { Toaster } from "sonner";
+
+import "./globals.css";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -45,6 +48,7 @@ export default function RootLayout({
           >
             <ModalProvider />
             {children}
+            <Toaster richColors position="bottom-right" />
           </ThemeProvider>
         </body>
       </html>

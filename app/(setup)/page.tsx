@@ -1,4 +1,5 @@
-import { InitialModel } from "@/components/modals/initial-model";
+// import { InitialModel } from "@/components/modals/initial-modal";
+import { ServerModal } from "@/components/modals/ServerModal";
 import { db } from "@/lib/db";
 import { initialProfile } from "@/lib/initial-profile";
 import { redirect } from "next/navigation";
@@ -19,7 +20,7 @@ const SetupPage = async () => {
 
   return (
     <div>
-      <InitialModel />
+      <ServerModal isInitial />
     </div>
   );
 };
