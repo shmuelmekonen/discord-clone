@@ -4,8 +4,9 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
 import { extractRouterConfig } from "uploadthing/server";
 
-import { ourFileRouter } from "@/app/api/uploadthing/core"; // וודא שהנתיב נכון
+import { ourFileRouter } from "@/app/api/uploadthing/core";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { ModalProvider } from "@/components/providers/modal-provider";
 
 import "./globals.css";
 import { cn } from "@/lib/utils";
@@ -42,6 +43,7 @@ export default function RootLayout({
             enableSystem={false}
             storageKey="discord-theme"
           >
+            <ModalProvider />
             {children}
           </ThemeProvider>
         </body>
