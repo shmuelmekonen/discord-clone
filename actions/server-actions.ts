@@ -107,3 +107,5 @@ export const renewInviteUrl = async (serverId: string) => {
     throw new Error("Internal Error");
   }
 };
+
+export const joinServerWithInviteUrl = async (inviteCode: string) => {};
