@@ -14,7 +14,7 @@ export const createServer = async (values: ServerSchemaType) => {
     const validatedData = serverSchema.parse(values);
 
     const profile = await currentProfile();
-    if (!profile) throw new Error("Unauhorized");
+    if (!profile) return { data: null, error: "Unauthorized" };
 
     const server = await db.server.create({
       data: {
@@ -42,76 +42,37 @@ export const createServer = async (values: ServerSchemaType) => {
     });
 
     revalidatePath("/");
-    return { data: server };
+    return { data: server, error: null };
   } catch (error) {
     console.error("[CREATE_SERVER_ACTION]", error);
-    return { error: "Failed to create server" };
-  }
-};
-
-export const createInviteUrl = async (values: ServerSchemaType) => {
-  try {
-    const validatedData = serverSchema.parse(values);
-
-    const profile = await currentProfile();
-    if (!profile) throw new Error("Unauhorized");
-
-    const server = await db.server.create({
-      data: {
-        profileId: profile.id,
-        name: validatedData.name,
-        imageUrl: validatedData.imageUrl,
-        inviteCode: uuidv4(),
-        channels: {
-          create: [
-            {
-              name: "general",
-              profileId: profile.id,
-            },
-          ],
-        },
-        members: {
-          create: [
-            {
-              profileId: profile.id,
-              role: MemberRole.ADMIN,
-            },
-          ],
-        },
-      },
-    });
-
-    revalidatePath("/");
-    return { data: server };
-  } catch (error) {
-    console.error("[CREATE_SERVER_ACTION]", error);
-    return { error: "Failed to create server" };
+    return { data: null, error: "Failed to create server" };
   }
 };
 
 export const renewInviteUrl = async (serverId: string) => {
   try {
     const profile = await currentProfile();
-    if (!profile) throw new Error("Unauhorized");
+    if (!profile) return { data: null, error: "Unauthorized" };
 
-    const newServer = await db.server.update({
+    const updatedServer = await db.server.update({
       where: { id: serverId, profileId: profile.id },
       data: { inviteCode: uuidv4() },
     });
 
-    revalidatePath(`/servers/${newServer.id}`);
+    revalidatePath(`/servers/${updatedServer.id}`);
 
-    return { data: newServer };
+    return { data: updatedServer, error: null };
   } catch (error) {
     console.error("[RENEW_INVITE_CODE_ERROR]", error);
-    throw new Error("Internal Error");
+    return { data: null, error: "Failed to renew invite link" };
   }
 };
 
 export const joinServerWithInviteUrl = async (inviteCode: string) => {
   try {
     const profile = await currentProfile();
-    if (!profile) return { error: "Unauthorized" };
+    if (!profile)
+      return { data: null, error: "Unauthorized", joinedNew: false };
 
     const existingServer = await db.server.findFirst({
       where: {
@@ -120,7 +81,8 @@ export const joinServerWithInviteUrl = async (inviteCode: string) => {
       },
     });
 
-    if (existingServer) return { server: existingServer, error: null };
+    if (existingServer)
+      return { data: existingServer, error: null, joinedNew: false };
 
     const updatedServer = await db.server.update({
       where: { inviteCode: inviteCode },
@@ -135,11 +97,13 @@ export const joinServerWithInviteUrl = async (inviteCode: string) => {
       },
     });
 
-    if (!updatedServer) return { server: null, error: "Something went wrong" };
+    if (!updatedServer) return { data: null, error: "Something went wrong" };
+    revalidatePath(`/servers/${updatedServer.id}`);
+    revalidatePath("/");
 
-    return { server: updatedServer, error: null };
+    return { data: updatedServer, error: null, joinedNew: true };
   } catch (error) {
     console.error("[JOIN_SERVER_WITH_INVITE_CODE_ERROR]", error);
-    throw new Error("Internal Error");
+    return { data: null, error: "Failed to join server", joinedNew: false };
   }
 };
