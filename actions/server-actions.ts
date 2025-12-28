@@ -107,3 +107,31 @@ export const joinServerWithInviteUrl = async (inviteCode: string) => {
     return { data: null, error: "Failed to join server", joinedNew: false };
   }
 };
+
+export const editServer = async (
+  serverId: string,
+  values: ServerSchemaType
+) => {
+  try {
+    const validatedData = serverSchema.parse(values);
+
+    const profile = await currentProfile();
+    if (!profile) return { data: null, error: "Unauthorized" };
+
+    const editedServer = await db.server.update({
+      where: {
+        id: serverId,
+        profileId: profile.id,
+      },
+      data: { name: validatedData.name, imageUrl: validatedData.imageUrl },
+    });
+
+    revalidatePath(`/servers/${editedServer.id}`);
+    revalidatePath("/");
+
+    return { data: editedServer, error: null };
+  } catch (error) {
+    console.error("[EDIT_SERVER_ERROR]", error);
+    return { data: null, error: "Failed to join server" };
+  }
+};

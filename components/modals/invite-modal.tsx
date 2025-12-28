@@ -18,14 +18,13 @@ import { Check, Copy, RefreshCw } from "lucide-react";
 import { useOrigin } from "@/hooks/use-origin";
 import { useState } from "react";
 import { renewInviteUrl } from "@/actions/server-actions";
+import { cn } from "@/lib/utils";
 
-interface ServerModalProps {
-  isInitial?: boolean;
-}
-
-export const InviteModal = ({ isInitial = false }: ServerModalProps) => {
+export const InviteModal = () => {
   const { onOpen, isOpen, onClose, type, data } = useModal();
   const origin = useOrigin();
+
+  const [generalError, setGeneralError] = useState<string | null>(null);
 
   const isModalOpen = isOpen && type === "invite";
   const { server } = data;
@@ -34,7 +33,6 @@ export const InviteModal = ({ isInitial = false }: ServerModalProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const inviteUrl = `${origin}/invite/${server?.inviteCode}`;
-
   const onCopy = () => {
     navigator.clipboard.writeText(inviteUrl);
     setCopied(true);
@@ -45,21 +43,24 @@ export const InviteModal = ({ isInitial = false }: ServerModalProps) => {
 
   const onNew = async () => {
     try {
-      if (!server?.id) {
+      setGeneralError(null);
+
+      if (!server) {
+        setGeneralError("An unexpected error occurred.");
         return;
       }
       setIsLoading(true);
       const { data: updatedServer, error } = await renewInviteUrl(server.id);
 
       if (error) {
-        toast.error(`${error}`);
+        setGeneralError(`${error}`);
         return;
       }
       if (updatedServer) {
         onOpen("invite", { server: updatedServer });
       }
     } catch (error) {
-      console.log(error);
+      setGeneralError("An unexpected error occurred.");
     } finally {
       setIsLoading(false);
     }
@@ -78,7 +79,7 @@ export const InviteModal = ({ isInitial = false }: ServerModalProps) => {
         </DialogHeader>
         <div className="p-6 ">
           <Label className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">
-            Sever Invite Link
+            Server Invite Link
           </Label>
           <div className="flex items-center mt-2 gap-x-2">
             <Input
@@ -86,6 +87,7 @@ export const InviteModal = ({ isInitial = false }: ServerModalProps) => {
               disabled={isLoading}
               className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
               value={inviteUrl}
+              placeholder="Generating link..."
             />
             <Button disabled={isLoading} onClick={onCopy} size="icon">
               {copied ? (
@@ -103,8 +105,15 @@ export const InviteModal = ({ isInitial = false }: ServerModalProps) => {
             className="text-xs text-zinc-500 mt-4"
           >
             Generate a new link
-            <RefreshCw className="w-4 h-4 ml-2" />
+            <RefreshCw
+              className={cn("w-4 h-4 ml-2", isLoading && "animate-spin")}
+            />
           </Button>
+          {generalError && (
+            <div className="mx-6 p-3 rounded-md bg-red-50 border border-red-200 text-sm text-red-600 text-center">
+              {generalError}
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>

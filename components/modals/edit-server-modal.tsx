@@ -1,9 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 
 import {
   Dialog,
@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
 import {
   Form,
   FormControl,
@@ -21,20 +22,16 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
 
 import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
-import { createServer } from "@/actions/server-actions";
+import { editServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
-import { useRouter } from "next/navigation";
 
-interface ServerModalProps {
-  isInitial?: boolean;
-}
-
-export const EditServerModal = ({ isInitial = false }: ServerModalProps) => {
+export const EditServerModal = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
 
@@ -43,6 +40,8 @@ export const EditServerModal = ({ isInitial = false }: ServerModalProps) => {
   const isModalOpen = isOpen && type === "editServer";
 
   const { server } = data;
+  const serverId = server?.id;
+
   useEffect(() => {
     setIsMounted(true);
   }, []);
@@ -50,17 +49,19 @@ export const EditServerModal = ({ isInitial = false }: ServerModalProps) => {
   const form = useForm<ServerSchemaType>({
     resolver: zodResolver(serverSchema),
     defaultValues: {
-      name: "",
-      imageUrl: "",
+      name: server?.name,
+      imageUrl: server?.imageUrl,
     },
   });
 
   useEffect(() => {
-    if (server) {
-      form.setValue("name", server.name);
-      form.setValue("imageUrl", server?.imageUrl);
+    if (isModalOpen && server) {
+      form.reset({
+        name: server.name,
+        imageUrl: server.imageUrl,
+      });
     }
-  }, [server, form]);
+  }, [server, form, isModalOpen]);
 
   const isLoading = form.formState.isSubmitting;
   const router = useRouter();
@@ -68,18 +69,21 @@ export const EditServerModal = ({ isInitial = false }: ServerModalProps) => {
   const onSubmit = async (values: ServerSchemaType) => {
     try {
       setGeneralError(null);
-      const { data: server, error } = await createServer(values);
+      if (!serverId) {
+        setGeneralError("An unexpected error occurred.");
+        return;
+      }
+      const { data: editedServer, error } = await editServer(serverId, values);
 
       if (error) {
         setGeneralError(error);
         return;
       }
 
-      if (server) {
-        toast.success("Server created successfully!");
-        form.reset();
+      if (editedServer) {
         onClose();
-        router.push(`/servers/${server.id}`);
+        router.push(`/servers/${editedServer.id}`);
+        router.refresh();
       }
     } catch (error) {
       setGeneralError("An unexpected error occurred.");
@@ -87,12 +91,12 @@ export const EditServerModal = ({ isInitial = false }: ServerModalProps) => {
   };
 
   const handleClose = () => {
-    if (isInitial) return;
-    form.reset();
+    if (server) {
+      form.reset();
+    }
     onClose();
   };
 
-  // מניעת שגיאות Hydration
   if (!isMounted) return null;
 
   return (
@@ -100,7 +104,7 @@ export const EditServerModal = ({ isInitial = false }: ServerModalProps) => {
       <DialogContent className="bg-white text-black p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
-            Create your server
+            Edit your server
           </DialogTitle>
           <DialogDescription className="text-center text-zinc-500">
             Give your server a personality with a name and an image. You can
