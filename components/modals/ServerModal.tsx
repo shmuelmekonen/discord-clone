@@ -60,22 +60,18 @@ export const ServerModal = ({ isInitial = false }: ServerModalProps) => {
   const onSubmit = async (values: ServerSchemaType) => {
     try {
       setGeneralError(null);
-      const response = await createServer(values);
+      let { data: server, error } = await createServer(values);
 
-      if (response?.error) {
-        setGeneralError(response.error);
+      if (error) {
+        setGeneralError(error);
         return;
       }
 
-      toast.success("Server created successfully!");
-      form.reset();
-
-      if (response.data?.id) {
-        router.push(`/servers/${response.data.id}`);
-      }
-
-      if (!isInitial) {
+      if (server) {
+        toast.success("Server created successfully!");
+        form.reset();
         onClose();
+        router.push(`/servers/${server.id}`);
       }
     } catch (error) {
       setGeneralError("An unexpected error occurred.");

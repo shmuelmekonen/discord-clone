@@ -46,11 +46,18 @@ export const InviteModal = ({ isInitial = false }: ServerModalProps) => {
   const onNew = async () => {
     try {
       if (!server?.id) {
-        return; // או להציג שגיאה למשתמש
+        return;
       }
       setIsLoading(true);
-      const response = await renewInviteUrl(server.id);
-      onOpen("invite", { server: response.data });
+      const { data: updatedServer, error } = await renewInviteUrl(server.id);
+
+      if (error) {
+        toast.error(`${error}`);
+        return;
+      }
+      if (updatedServer) {
+        onOpen("invite", { server: updatedServer });
+      }
     } catch (error) {
       console.log(error);
     } finally {

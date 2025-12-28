@@ -26,7 +26,7 @@ const InviteCodePage = async ({ params }: InviteCodeProps) => {
     where: { serverId: server.id, profileId: profile.id },
   });
 
-  // if (isMember) return redirect(`/servers/${server.id}`);
+  if (isMember) return redirect(`/servers/${server.id}`);
 
   return (
     <div className="h-full w-full flex items-center justify-center bg-[#1E1F22]">
