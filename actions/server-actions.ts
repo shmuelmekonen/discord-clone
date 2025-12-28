@@ -103,9 +103,43 @@ export const renewInviteUrl = async (serverId: string) => {
 
     return { data: newServer };
   } catch (error) {
-    console.error("[UPDATE_INVITE_CODE_ERROR]", error);
+    console.error("[RENEW_INVITE_CODE_ERROR]", error);
     throw new Error("Internal Error");
   }
 };
 
-export const joinServerWithInviteUrl = async (inviteCode: string) => {};
+export const joinServerWithInviteUrl = async (inviteCode: string) => {
+  try {
+    const profile = await currentProfile();
+    if (!profile) return { error: "Unauthorized" };
+
+    const existingServer = await db.server.findFirst({
+      where: {
+        inviteCode,
+        members: { some: { profileId: profile.id } },
+      },
+    });
+
+    if (existingServer) return { server: existingServer, error: null };
+
+    const updatedServer = await db.server.update({
+      where: { inviteCode: inviteCode },
+      data: {
+        members: {
+          create: [
+            {
+              profileId: profile.id,
+            },
+          ],
+        },
+      },
+    });
+
+    if (!updatedServer) return { server: null, error: "Something went wrong" };
+
+    return { server: updatedServer, error: null };
+  } catch (error) {
+    console.error("[JOIN_SERVER_WITH_INVITE_CODE_ERROR]", error);
+    throw new Error("Internal Error");
+  }
+};
