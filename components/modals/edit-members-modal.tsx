@@ -36,6 +36,9 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
+import { MemberRole } from "@prisma/client";
+
+import { kickMember, updateMemberRole } from "@/actions/server-actions";
 
 const roleIconMap = {
   GUEST: null,
@@ -49,9 +52,53 @@ export const EditMembersModal = () => {
 
   const [generalError, setGeneralError] = useState<string | null>(null);
 
-  const isModalOpen = isOpen && type === "editMembers";
+  const isModalOpen = isOpen && type === "manageMembers";
   const { server } = data as { server: ServerWithMembersWithProfiles };
 
+  const onRoleChanged = async (memberId: string, role: MemberRole) => {
+    try {
+      setGeneralError(null);
+      setLoadingId(memberId);
+      const { data, error } = await updateMemberRole(server.id, memberId, role);
+      if (error) {
+        setGeneralError(error);
+        return;
+      }
+      if (!data) {
+        setGeneralError("An unexpected error occurred.");
+        return;
+      }
+      console.log(data);
+
+      onOpen("manageMembers", { server: data });
+    } catch (error) {
+      setGeneralError("An unexpected error occurred.");
+    } finally {
+      setLoadingId("");
+    }
+  };
+  const onKick = async (memberId: string) => {
+    try {
+      setGeneralError(null);
+      setLoadingId(memberId);
+
+      const { data, error } = await kickMember(server.id, memberId);
+
+      if (error) {
+        setGeneralError(error);
+        return;
+      }
+      if (!data) {
+        setGeneralError("An unexpected error occurred.");
+        return;
+      }
+      onOpen("manageMembers", { server: data });
+    } catch (error) {
+      setGeneralError("An unexpected error occurred");
+    } finally {
+      setLoadingId("");
+    }
+  };
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white text-black overflow-hidden">
@@ -88,14 +135,22 @@ export const EditMembersModal = () => {
                             </DropdownMenuSubTrigger>
                             <DropdownMenuPortal>
                               <DropdownMenuSubContent>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    onRoleChanged(member.id, "GUEST")
+                                  }
+                                >
                                   <Shield className="h-4 w-4 mr-2" />
                                   Guest
                                   {member.role === "GUEST" && (
                                     <Check className="h-4 w-4 ml-auto" />
                                   )}
                                 </DropdownMenuItem>
-                                <DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() =>
+                                    onRoleChanged(member.id, "MODERATOR")
+                                  }
+                                >
                                   <ShieldCheck className="h-4 w-4 mr-2" />
                                   Moderator
                                   {member.role === "MODERATOR" && (
@@ -106,7 +161,7 @@ export const EditMembersModal = () => {
                             </DropdownMenuPortal>
                           </DropdownMenuSub>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onKick(member.id)}>
                             <Gavel className="h-4 w-4 mr-2" />
                             Kick
                           </DropdownMenuItem>
