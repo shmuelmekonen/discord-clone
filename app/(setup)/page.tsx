@@ -1,4 +1,3 @@
-// import { InitialModel } from "@/components/modals/initial-modal";
 import { CreateServerModal } from "@/components/modals/create-server-modal";
 import { db } from "@/lib/db";
 import { initialProfile } from "@/lib/initial-profile";
