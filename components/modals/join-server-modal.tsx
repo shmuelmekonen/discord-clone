@@ -1,16 +1,12 @@
 "use client";
 
-import { useState } from "react";
-
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-
-import { toast } from "sonner";
-import { UserPlus } from "lucide-react";
-
-import { Button } from "@/components/ui/button";
-
 import { joinServerWithInviteUrl } from "@/actions/server-actions";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { UserPlus } from "lucide-react";
+import { useState } from "react";
 
 interface JoinServerModalProps {
   serverName: string;
@@ -26,11 +22,9 @@ const JoinServerModal = ({
   const router = useRouter();
 
   const [isLoading, setIsLoading] = useState(false);
-  const [generalError, setGeneralError] = useState<string | null>(null);
 
   const onJoin = async () => {
     try {
-      setGeneralError(null);
       setIsLoading(true);
       const {
         data: server,
@@ -39,12 +33,14 @@ const JoinServerModal = ({
       } = await joinServerWithInviteUrl(inviteCode);
 
       if (error) {
-        setGeneralError(`${error}`);
+        toast.error(`${error}`);
         return;
       }
 
       if (server) {
-        if (joinedNew) toast.success(`Welcome to ${server.name}'s server!`);
+        if (joinedNew) {
+          toast.success(`Welcome to ${serverName}'s server!`);
+        }
         router.refresh();
         router.push(`/servers/${server.id}`);
       }
@@ -87,12 +83,6 @@ const JoinServerModal = ({
           Dismiss
         </Button>
       </div>
-
-      {generalError && (
-        <div className="m-3 p-2 rounded-md bg-red-50 border border-red-200 text-sm text-red-600 text-center">
-          {generalError}
-        </div>
-      )}
     </div>
   );
 };

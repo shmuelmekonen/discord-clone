@@ -46,7 +46,7 @@ const roleIconMap = {
   ADMIN: <ShieldAlert className="h-4 w-4 text-rose-500" />,
 };
 
-export const EditMembersModal = () => {
+export const ManageMembersModal = () => {
   const { onOpen, isOpen, onClose, type, data } = useModal();
   const [loadingId, setLoadingId] = useState("");
 
@@ -59,18 +59,24 @@ export const EditMembersModal = () => {
     try {
       setGeneralError(null);
       setLoadingId(memberId);
-      const { data, error } = await updateMemberRole(server.id, memberId, role);
+
+      const { data: updatedServer, error } = await updateMemberRole(
+        server.id,
+        memberId,
+        role
+      );
+
       if (error) {
         setGeneralError(error);
         return;
       }
-      if (!data) {
+
+      if (!updatedServer) {
         setGeneralError("An unexpected error occurred.");
         return;
       }
-      console.log(data);
 
-      onOpen("manageMembers", { server: data });
+      onOpen("manageMembers", { server: updatedServer });
     } catch (error) {
       setGeneralError("An unexpected error occurred.");
     } finally {
@@ -176,6 +182,11 @@ export const EditMembersModal = () => {
             </div>
           ))}
         </ScrollArea>
+        {generalError && (
+          <div className="mx-6 p-3 rounded-md bg-red-50 border border-red-200 text-sm text-red-600 text-center">
+            {generalError}
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -11,16 +11,22 @@ import { revalidatePath } from "next/cache";
 
 export const createServer = async (values: ServerSchemaType) => {
   try {
-    const validatedData = serverSchema.parse(values);
-
     const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
+    if (!profile)
+      return { data: null, error: "Unauthorized", fieldErrors: null };
+
+    const validatedData = serverSchema.safeParse(values);
+    if (!validatedData.success) {
+      return { data: null, error: "Invalid data provided" };
+    }
+
+    const { name, imageUrl } = validatedData.data;
 
     const server = await db.server.create({
       data: {
         profileId: profile.id,
-        name: validatedData.name,
-        imageUrl: validatedData.imageUrl,
+        name,
+        imageUrl,
         inviteCode: uuidv4(),
         channels: {
           create: [
@@ -113,17 +119,22 @@ export const editServer = async (
   values: ServerSchemaType
 ) => {
   try {
-    const validatedData = serverSchema.parse(values);
-
     const profile = await currentProfile();
     if (!profile) return { data: null, error: "Unauthorized" };
+
+    const validatedData = serverSchema.safeParse(values);
+    if (!validatedData.success) {
+      return { data: null, error: "Invalid data provided" };
+    }
+
+    const { name, imageUrl } = validatedData.data;
 
     const editedServer = await db.server.update({
       where: {
         id: serverId,
         profileId: profile.id,
       },
-      data: { name: validatedData.name, imageUrl: validatedData.imageUrl },
+      data: { name, imageUrl },
     });
 
     revalidatePath(`/servers/${editedServer.id}`);
@@ -132,7 +143,7 @@ export const editServer = async (
     return { data: editedServer, error: null };
   } catch (error) {
     console.error("[EDIT_SERVER_ERROR]", error);
-    return { data: null, error: "Failed to join server" };
+    return { data: null, error: "Failed to edit server" };
   }
 };
 
