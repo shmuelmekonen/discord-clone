@@ -1,11 +1,8 @@
 "use client";
 
-import { toast } from "sonner";
-
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -73,9 +70,6 @@ export const InviteModal = () => {
           <DialogTitle className="text-2xl text-center font-bold">
             Invite Friends
           </DialogTitle>
-          {/* <DialogDescription className="text-center text-zinc-500">
-            Invite your friends to let them enjoy the server
-          </DialogDescription> */}
         </DialogHeader>
         <div className="p-6 ">
           <Label className="uppercase text-xs font-bold text-zinc-500 dark:text-secondary/70">

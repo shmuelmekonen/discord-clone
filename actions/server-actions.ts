@@ -278,3 +278,38 @@ export const createChannel = async (
     return { data: null, error: "Failed to create channel" };
   }
 };
+
+export const leaveServer = async (serverId: string) => {
+  try {
+    const profile = await currentProfile();
+    if (!profile) return { data: null, error: "Unauthorized" };
+
+    if (!serverId) return { data: null, error: "Server Id missing" };
+
+    const updatedServer = await db.server.update({
+      where: {
+        id: serverId,
+        profileId: {
+          not: profile.id,
+        },
+        members: {
+          some: { profileId: profile.id },
+        },
+      },
+      data: {
+        members: {
+          deleteMany: {
+            profileId: profile.id,
+          },
+        },
+      },
+    });
+    if (!updatedServer)
+      return { data: null, error: "An unexpected error occurred." };
+    revalidatePath("/");
+    return { data: updatedServer, error: null };
+  } catch (error) {
+    console.error("[LEAVE_SERVER_ERROR]", error);
+    return { data: null, error: "Failed to leave server" };
+  }
+};

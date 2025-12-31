@@ -80,7 +80,8 @@ export const CreateChennelModal = () => {
       }
 
       if (!updatedServer) {
-        return setGeneralError("An unexpected error occurred.");
+        setGeneralError("An unexpected error occurred.");
+        return;
       }
 
       toast.success("Channel created successfully!");
