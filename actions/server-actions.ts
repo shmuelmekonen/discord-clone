@@ -313,3 +313,24 @@ export const leaveServer = async (serverId: string) => {
     return { data: null, error: "Failed to leave server" };
   }
 };
+
+export const deleteServer = async (serverId: string) => {
+  try {
+    const profile = await currentProfile();
+    if (!profile) return { data: null, error: "Unauthorized" };
+
+    if (!serverId) return { data: null, error: "Server id missing" };
+
+    const server = await db.server.delete({
+      where: { id: serverId, profileId: profile.id },
+    });
+
+    if (!server) return { data: null, error: "An unexpected error occurred." };
+
+    revalidatePath("/");
+    return { data: true, error: null };
+  } catch (error) {
+    console.error("[DELETE_SERVER_ERROR]", error);
+    return { data: null, error: "Failed to delete server" };
+  }
+};
