@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { startTransition, useOptimistic, useState } from "react";
 import { ServerWithMembersWithProfiles } from "@/Types";
 import {
   Check,
@@ -36,9 +36,11 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MemberRole } from "@prisma/client";
+import { Member, MemberRole } from "@prisma/client";
 
 import { kickMember, updateMemberRole } from "@/actions/server-actions";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const roleIconMap = {
   GUEST: null,
@@ -46,64 +48,98 @@ const roleIconMap = {
   ADMIN: <ShieldAlert className="h-4 w-4 text-rose-500" />,
 };
 
+type MemberWithProfile = Member & {
+  profile: {
+    name: string;
+    imageUrl: string;
+    email: string;
+  };
+};
+
+export type OptimisticAction =
+  | { type: "KICK"; id: string }
+  | { type: "MODIFY_ROLE"; id: string; role: MemberRole };
+
+export const memberReducer = (
+  state: MemberWithProfile[], // עדכון הטיפוס כאן
+  action: OptimisticAction
+): MemberWithProfile[] => {
+  // וגם כאן
+  switch (action.type) {
+    case "KICK":
+      return state.filter((member) => member.id !== action.id);
+
+    case "MODIFY_ROLE":
+      return state.map((member) =>
+        member.id === action.id ? { ...member, role: action.role } : member
+      );
+
+    default:
+      return state;
+  }
+};
+
 export const ManageMembersModal = () => {
   const { onOpen, isOpen, onClose, type, data } = useModal();
+  const { server } = data as { server: ServerWithMembersWithProfiles };
+
+  const [optimisticMembers, updateMembers] = useOptimistic(
+    (server?.members as MemberWithProfile[]) || [],
+    memberReducer
+  );
+
   const [loadingId, setLoadingId] = useState("");
 
   const [generalError, setGeneralError] = useState<string | null>(null);
 
   const isModalOpen = isOpen && type === "manageMembers";
-  const { server } = data as { server: ServerWithMembersWithProfiles };
 
   const onRoleChanged = async (memberId: string, role: MemberRole) => {
-    try {
-      setGeneralError(null);
-      setLoadingId(memberId);
+    startTransition(async () => {
+      try {
+        updateMembers({ type: "MODIFY_ROLE", id: memberId, role });
 
-      const { data: updatedServer, error } = await updateMemberRole(
-        server.id,
-        memberId,
-        role
-      );
+        const { data: updatedServer, error } = await updateMemberRole(
+          server.id,
+          memberId,
+          role
+        );
 
-      if (error) {
-        setGeneralError(error);
-        return;
+        if (error) {
+          toast.error(error);
+          return;
+        }
+
+        if (updatedServer) {
+          onOpen("manageMembers", { server: updatedServer });
+        }
+      } catch (error) {
+        toast.error("Failed to update role");
       }
-
-      if (!updatedServer) {
-        setGeneralError("An unexpected error occurred.");
-        return;
-      }
-
-      onOpen("manageMembers", { server: updatedServer });
-    } catch (error) {
-      setGeneralError("An unexpected error occurred.");
-    } finally {
-      setLoadingId("");
-    }
+    });
   };
+
   const onKick = async (memberId: string) => {
-    try {
-      setGeneralError(null);
-      setLoadingId(memberId);
+    startTransition(async () => {
+      try {
+        updateMembers({ type: "KICK", id: memberId });
 
-      const { data, error } = await kickMember(server.id, memberId);
+        const { data: updatedServer, error } = await kickMember(
+          server.id,
+          memberId
+        );
 
-      if (error) {
-        setGeneralError(error);
-        return;
+        if (error) {
+          toast.error(error);
+          return;
+        }
+        if (updatedServer) {
+          onOpen("manageMembers", { server: updatedServer });
+        }
+      } catch (error) {
+        toast.error("Failed to kick member");
       }
-      if (!data) {
-        setGeneralError("An unexpected error occurred.");
-        return;
-      }
-      onOpen("manageMembers", { server: data });
-    } catch (error) {
-      setGeneralError("An unexpected error occurred");
-    } finally {
-      setLoadingId("");
-    }
+    });
   };
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
@@ -117,7 +153,7 @@ export const ManageMembersModal = () => {
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="mt-8 max-h-60 pr-6">
-          {server?.members?.map((member) => (
+          {optimisticMembers.map((member) => (
             <div key={member.id} className="flex items-center gap-x-2 mb-6">
               <UserAvatar src={member.profile.imageUrl} />
               <div className="flex flex-col gap-y-1">
@@ -145,6 +181,10 @@ export const ManageMembersModal = () => {
                                   onClick={() =>
                                     onRoleChanged(member.id, "GUEST")
                                   }
+                                  className={cn(
+                                    member.role === "GUEST" &&
+                                      "opacity-45 pointer-events-none"
+                                  )}
                                 >
                                   <Shield className="h-4 w-4 mr-2" />
                                   Guest
@@ -156,6 +196,10 @@ export const ManageMembersModal = () => {
                                   onClick={() =>
                                     onRoleChanged(member.id, "MODERATOR")
                                   }
+                                  className={cn(
+                                    member.role === "MODERATOR" &&
+                                      "opacity-45 pointer-events-none"
+                                  )}
                                 >
                                   <ShieldCheck className="h-4 w-4 mr-2" />
                                   Moderator
