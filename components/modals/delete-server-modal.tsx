@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { startTransition, useState } from "react";
 
 import {
   Dialog,
@@ -16,45 +16,43 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { deleteServer } from "@/actions/server-actions";
+import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 
 export const DeleteServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
-
-  const [generalError, setGeneralError] = useState<string | null>(null);
+  const { dispatchOptimistic } = useServerNavigationStore();
 
   const isModalOpen = isOpen && type === "deleteServer";
   const { server } = data;
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const router = useRouter();
 
   const onClick = async () => {
-    try {
-      setGeneralError(null);
-      setIsLoading(true);
-
-      const serverId = server?.id;
-      if (!serverId) {
-        setGeneralError("An unexpected error occurred.");
-        return;
-      }
-      const { data, error } = await deleteServer(serverId);
-
-      if (error) {
-        setGeneralError(error);
-        return;
-      }
-
-      onClose();
-      toast.success("Server deleted successfully");
-      router.refresh();
-      router.push("/");
-    } catch (error) {
-      setGeneralError("An unexpected error occurred.");
-    } finally {
-      setIsLoading(false);
+    const serverId = server?.id;
+    if (!serverId) {
+      return;
     }
+    startTransition(async () => {
+      try {
+        dispatchOptimistic({ type: "REMOVE", id: serverId });
+        onClose();
+
+        const { data, error } = await deleteServer(serverId);
+
+        if (error) {
+          toast.error(error);
+          return;
+        }
+
+        if (data?.nextServerId) {
+          router.push(`/servers/${data.nextServerId}`);
+        } else {
+          router.push("/");
+        }
+      } catch (error) {
+        toast.error("Failed to delete server");
+      }
+    });
   };
 
   return (
@@ -73,17 +71,13 @@ export const DeleteServerModal = () => {
             <span className="font-bold text-rose-500">deleted</span> ?
           </DialogDescription>
         </DialogHeader>
-        {generalError && (
-          <div className="mx-6 p-3 rounded-md bg-red-50 border border-red-200 text-sm text-red-600 text-center">
-            {generalError}
-          </div>
-        )}
+
         <DialogFooter className="bg-gray-100 px-6 py-4">
           <div className="flex items-center justify-between w-full">
-            <Button disabled={isLoading} onClick={onClose} variant="ghost">
+            <Button onClick={onClose} variant="ghost">
               Cancel
             </Button>
-            <Button disabled={isLoading} variant="primary" onClick={onClick}>
+            <Button variant="primary" onClick={onClick}>
               Confirm
             </Button>
           </div>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { startTransition, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -30,17 +30,19 @@ import { FileUpload } from "@/components/file-upload";
 import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
 import { editServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
+import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
+import { toast } from "sonner";
 
 export const EditServerModal = () => {
+  const { dispatchOptimistic } = useServerNavigationStore();
+
   const [isMounted, setIsMounted] = useState(false);
-  const [generalError, setGeneralError] = useState<string | null>(null);
 
   const { isOpen, onClose, type, data } = useModal();
 
   const isModalOpen = isOpen && type === "editServer";
 
   const { server } = data;
-  const serverId = server?.id;
 
   useEffect(() => {
     setIsMounted(true);
@@ -67,27 +69,34 @@ export const EditServerModal = () => {
   const router = useRouter();
 
   const onSubmit = async (values: ServerSchemaType) => {
-    try {
-      setGeneralError(null);
-      if (!serverId) {
-        setGeneralError("An unexpected error occurred.");
-        return;
-      }
-      const { data: editedServer, error } = await editServer(serverId, values);
+    const serverId = server?.id;
+    if (!serverId || !server) return;
 
-      if (error) {
-        setGeneralError(error);
-        return;
-      }
-
-      if (editedServer) {
+    startTransition(async () => {
+      try {
+        dispatchOptimistic({
+          type: "UPDATE",
+          server: { ...server, ...values },
+        });
         onClose();
-        router.push(`/servers/${editedServer.id}`);
-        router.refresh();
+
+        const { data: editedServer, error } = await editServer(
+          serverId,
+          values
+        );
+
+        if (error) {
+          toast.error(error);
+          return;
+        }
+
+        if (editedServer) {
+          router.push(`/servers/${editedServer.id}`);
+        }
+      } catch (err) {
+        toast.error("An unexpected error occurred.");
       }
-    } catch (error) {
-      setGeneralError("An unexpected error occurred.");
-    }
+    });
   };
 
   const handleClose = () => {
@@ -155,12 +164,6 @@ export const EditServerModal = () => {
                 )}
               />
             </div>
-
-            {generalError && (
-              <div className="mx-6 p-3 rounded-md bg-red-50 border border-red-200 text-sm text-red-600 text-center">
-                {generalError}
-              </div>
-            )}
 
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button variant="primary" disabled={isLoading}>

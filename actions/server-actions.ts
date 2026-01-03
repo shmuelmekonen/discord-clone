@@ -304,10 +304,17 @@ export const leaveServer = async (serverId: string) => {
         },
       },
     });
+
     if (!updatedServer)
       return { data: null, error: "An unexpected error occurred." };
+
+    const nextServer = await db.server.findFirst({
+      where: { members: { some: { profileId: profile.id } } },
+      orderBy: { createdAt: "asc" },
+    });
+
     revalidatePath("/");
-    return { data: updatedServer, error: null };
+    return { data: { nextServerId: nextServer?.id || null }, error: null };
   } catch (error) {
     console.error("[LEAVE_SERVER_ERROR]", error);
     return { data: null, error: "Failed to leave server" };
@@ -327,8 +334,13 @@ export const deleteServer = async (serverId: string) => {
 
     if (!server) return { data: null, error: "An unexpected error occurred." };
 
+    const nextServer = await db.server.findFirst({
+      where: { members: { some: { profileId: profile.id } } },
+      orderBy: { createdAt: "asc" },
+    });
+
     revalidatePath("/");
-    return { data: true, error: null };
+    return { data: { nextServerId: nextServer?.id || null }, error: null };
   } catch (error) {
     console.error("[DELETE_SERVER_ERROR]", error);
     return { data: null, error: "Failed to delete server" };
