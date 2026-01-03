@@ -10,7 +10,11 @@ import { CreateChennelModal } from "@/components/modals/create-channel-modal";
 import { LeaveServerModal } from "@/components/modals/leave-server-modal";
 import { DeleteServerModal } from "../modals/delete-server-modal";
 
-export const ModalProvider = () => {
+interface ModalProviderProps {
+  profileId?: string;
+}
+
+export const ModalProvider = ({ profileId }: ModalProviderProps) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -20,7 +24,7 @@ export const ModalProvider = () => {
 
   return (
     <>
-      <CreateServerModal />
+      <CreateServerModal profileId={profileId} />
       <InviteModal />
       <EditServerModal />
       <ManageMembersModal />

@@ -26,7 +26,7 @@ const SetupPage = async () => {
   // המודאל יופיע לצד ה-NavigationSidebar הריק
   return (
     <div className="h-full flex items-center justify-center">
-      <CreateServerModal isInitial />
+      <CreateServerModal isInitial profileId={profile.id} />
     </div>
   );
 };

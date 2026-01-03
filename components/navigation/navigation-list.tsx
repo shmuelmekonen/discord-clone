@@ -6,17 +6,13 @@ import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 import { serversReducer } from "@/lib/optimistic-reducer";
 import { NavigationItem } from "./navigation-item";
 import { ScrollArea } from "../ui/scroll-area";
+import { cn } from "@/lib/utils";
 
 export const NavigationList = ({ servers }: { servers: Server[] }) => {
   const { activeAction } = useServerNavigationStore();
 
-  // 1. הגדרת ההוק האופטימי עם ה-Reducer מה-LIB
-  const [optimisticServers, updateUI] = useOptimistic(
-    servers,
-    serversReducer // המוח שכתבנו בשלב 1
-  );
+  const [optimisticServers, updateUI] = useOptimistic(servers, serversReducer);
 
-  // 2. האזנה לסטור - כל פעם שיש פעולה חדשה, נעדכן את ה-UI
   useEffect(() => {
     if (activeAction) {
       updateUI(activeAction);
@@ -26,7 +22,15 @@ export const NavigationList = ({ servers }: { servers: Server[] }) => {
   return (
     <ScrollArea className="flex-1 w-full">
       {optimisticServers.map((server) => (
-        <div key={server.id} className="mb-4">
+        <div
+          key={server.id}
+          className={cn(
+            "mb-4 transition-all",
+            server.id.startsWith("temp-")
+              ? "opacity-40 blur-[0.5px] pointer-events-none"
+              : "opacity-100"
+          )}
+        >
           <NavigationItem
             id={server.id}
             imageUrl={server.imageUrl}
