@@ -1,10 +1,10 @@
 import { create } from "zustand";
-import { OptimisticAction } from "@/lib/optimistic-reducer";
+import { ServerOptimisticAction } from "@/lib/optimistic-reducer";
 
 interface NavigationStore {
-  activeAction: OptimisticAction | null;
+  activeAction: ServerOptimisticAction | null;
 
-  dispatchOptimistic: (action: OptimisticAction) => void;
+  dispatchOptimistic: (action: ServerOptimisticAction) => void;
 }
 
 export const useServerNavigationStore = create<NavigationStore>((set) => ({

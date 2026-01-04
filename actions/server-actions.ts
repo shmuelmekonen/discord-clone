@@ -109,7 +109,6 @@ export const joinServerWithInviteUrl = async (inviteCode: string) => {
     });
 
     if (!updatedServer) return { data: null, error: "Something went wrong" };
-    revalidatePath(`/servers/${updatedServer.id}`);
     revalidatePath("/");
 
     return { data: updatedServer, error: null, joinedNew: true };

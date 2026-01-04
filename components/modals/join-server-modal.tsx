@@ -6,56 +6,77 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { UserPlus } from "lucide-react";
-import { useState } from "react";
+import { useState, useTransition } from "react";
+import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
+import { Server } from "@prisma/client";
 
 interface JoinServerModalProps {
-  serverName: string;
-  serverImage: string;
+  server: {
+    id: string;
+    name: string;
+    imageUrl: string;
+    profileId: string;
+  };
   inviteCode: string;
+  profileId: string;
 }
 
 const JoinServerModal = ({
-  serverName,
-  serverImage,
+  server,
   inviteCode,
+  profileId,
 }: JoinServerModalProps) => {
   const router = useRouter();
-
-  const [isLoading, setIsLoading] = useState(false);
+  const { dispatchOptimistic } = useServerNavigationStore();
+  const [isPending, startTransition] = useTransition();
 
   const onJoin = async () => {
-    try {
-      setIsLoading(true);
-      const {
-        data: server,
-        error,
-        joinedNew,
-      } = await joinServerWithInviteUrl(inviteCode);
+    const tempId = `temp-${Date.now()}`;
 
-      if (error) {
-        toast.error(`${error}`);
-        return;
-      }
+    startTransition(async () => {
+      try {
+        dispatchOptimistic({
+          type: "CREATE",
+          server: {
+            ...server,
+            inviteCode,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        });
 
-      if (server) {
-        if (joinedNew) {
-          toast.success(`Welcome to ${serverName}'s server!`);
+        const {
+          data: newServer,
+          error,
+          joinedNew,
+        } = await joinServerWithInviteUrl(inviteCode);
+
+        if (error) {
+          toast.error(`${error}`);
+          return;
         }
-        router.refresh();
-        router.push(`/servers/${server.id}`);
+
+        if (newServer) {
+          if (joinedNew) {
+            toast.success(`Welcome to ${newServer.name}'s server!`);
+          }
+
+          router.push(`/servers/${newServer.id}`);
+        }
+      } catch (error) {
+        toast.error("Failed to join server");
+      } finally {
+        // setIsLoading(false);
       }
-    } catch (error) {
-      toast.error("Something went Wrong");
-    } finally {
-      setIsLoading(false);
-    }
+    });
   };
+
   return (
     <div className="bg-[#313338] p-10 rounded-lg shadow-2xl text-center w-[400px] border border-zinc-700">
       <div className="relative w-24 h-24 mx-auto mb-4">
         <Image
-          src={serverImage}
-          alt={serverName}
+          src={server.imageUrl}
+          alt={server.name}
           fill
           className="rounded-3xl object-cover"
         />
@@ -63,10 +84,10 @@ const JoinServerModal = ({
       <p className="text-zinc-400 text-sm font-semibold mb-1">
         You have been invited to
       </p>
-      <h1 className="text-white text-2xl font-bold mb-6">{serverName}</h1>
+      <h1 className="text-white text-2xl font-bold mb-6">{server.name}</h1>
       <div className="flex flex-col gap-y-3">
         <Button
-          disabled={isLoading}
+          disabled={isPending}
           onClick={onJoin}
           size="lg"
           className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold"
@@ -75,7 +96,7 @@ const JoinServerModal = ({
           <UserPlus className="w-5 h-5 mr-2" />
         </Button>
         <Button
-          disabled={isLoading}
+          disabled={isPending}
           onClick={() => router.push("/")}
           variant="ghost"
           className="text-zinc-400 hover:text-white"

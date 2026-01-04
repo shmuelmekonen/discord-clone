@@ -17,7 +17,7 @@ const InviteCodePage = async ({ params }: InviteCodeProps) => {
 
   const server = await db.server.findUnique({
     where: { inviteCode },
-    select: { name: true, imageUrl: true, id: true },
+    select: { id: true, name: true, imageUrl: true, profileId: true },
   });
 
   if (!server) return redirect("/");
@@ -31,9 +31,9 @@ const InviteCodePage = async ({ params }: InviteCodeProps) => {
   return (
     <div className="h-full w-full flex items-center justify-center bg-[#1E1F22]">
       <JoinServerModal
-        serverName={server.name}
-        serverImage={server.imageUrl}
+        server={server}
         inviteCode={inviteCode}
+        profileId={profile.id}
       />
     </div>
   );

@@ -41,41 +41,12 @@ import { Member, MemberRole } from "@prisma/client";
 import { kickMember, updateMemberRole } from "@/actions/server-actions";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { membersReducer, MemberWithProfile } from "@/lib/optimistic-reducer";
 
 const roleIconMap = {
   GUEST: null,
   MODERATOR: <ShieldCheck className="h-4 w-4 ml-2 text-indigo-500" />,
   ADMIN: <ShieldAlert className="h-4 w-4 text-rose-500" />,
-};
-
-type MemberWithProfile = Member & {
-  profile: {
-    name: string;
-    imageUrl: string;
-    email: string;
-  };
-};
-
-export type OptimisticAction =
-  | { type: "KICK"; id: string }
-  | { type: "MODIFY_ROLE"; id: string; role: MemberRole };
-
-export const memberReducer = (
-  state: MemberWithProfile[],
-  action: OptimisticAction
-): MemberWithProfile[] => {
-  switch (action.type) {
-    case "KICK":
-      return state.filter((member) => member.id !== action.id);
-
-    case "MODIFY_ROLE":
-      return state.map((member) =>
-        member.id === action.id ? { ...member, role: action.role } : member
-      );
-
-    default:
-      return state;
-  }
 };
 
 export const ManageMembersModal = () => {
@@ -84,7 +55,7 @@ export const ManageMembersModal = () => {
 
   const [optimisticMembers, updateMembers] = useOptimistic(
     (server?.members as MemberWithProfile[]) || [],
-    memberReducer
+    membersReducer
   );
 
   const [loadingId, setLoadingId] = useState("");
