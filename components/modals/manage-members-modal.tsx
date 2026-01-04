@@ -61,10 +61,9 @@ export type OptimisticAction =
   | { type: "MODIFY_ROLE"; id: string; role: MemberRole };
 
 export const memberReducer = (
-  state: MemberWithProfile[], // עדכון הטיפוס כאן
+  state: MemberWithProfile[],
   action: OptimisticAction
 ): MemberWithProfile[] => {
-  // וגם כאן
   switch (action.type) {
     case "KICK":
       return state.filter((member) => member.id !== action.id);
