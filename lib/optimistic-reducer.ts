@@ -5,6 +5,33 @@ export type ServerOptimisticAction =
   | { type: "UPDATE"; server: Server }
   | { type: "CREATE"; server: Server };
 
+export const serversReducer = (
+  state: Server[],
+  actions: Record<string, ServerOptimisticAction>
+): Server[] => {
+  let result = [...state];
+
+  Object.values(actions).forEach((action) => {
+    switch (action.type) {
+      case "REMOVE":
+        result = result.filter((s) => s.id !== action.id);
+        break;
+      case "UPDATE":
+        result = result.map((s) =>
+          s.id === action.server.id ? action.server : s
+        );
+        break;
+      case "CREATE":
+        if (!result.find((s) => s.id === action.server.id)) {
+          result = [...result, action.server];
+        }
+        break;
+    }
+  });
+
+  return result;
+};
+
 export type MemberWithProfile = Member & {
   profile: {
     name: string;
@@ -12,39 +39,28 @@ export type MemberWithProfile = Member & {
     email: string;
   };
 };
-
 export type MemberOptimisticAction =
   | { type: "KICK"; id: string }
   | { type: "MODIFY_ROLE"; id: string; role: MemberRole };
 
-export const serversReducer = (
-  state: Server[],
-  action: ServerOptimisticAction
-): Server[] => {
-  switch (action.type) {
-    case "REMOVE":
-      return state.filter((s) => s.id !== action.id);
-    case "UPDATE":
-      return state.map((s) => (s.id === action.server.id ? action.server : s));
-    case "CREATE":
-      return [...state, action.server];
-    default:
-      return state;
-  }
-};
-
 export const membersReducer = (
   state: MemberWithProfile[],
-  action: MemberOptimisticAction
+  actions: Record<string, MemberOptimisticAction>
 ): MemberWithProfile[] => {
-  switch (action.type) {
-    case "KICK":
-      return state.filter((member) => member.id !== action.id);
-    case "MODIFY_ROLE":
-      return state.map((member) =>
-        member.id === action.id ? { ...member, role: action.role } : member
-      );
-    default:
-      return state;
-  }
+  let result = [...state];
+
+  Object.values(actions).forEach((action) => {
+    switch (action.type) {
+      case "KICK":
+        result = result.filter((member) => member.id !== action.id);
+        break;
+      case "MODIFY_ROLE":
+        result = result.map((member) =>
+          member.id === action.id ? { ...member, role: action.role } : member
+        );
+        break;
+    }
+  });
+
+  return result;
 };

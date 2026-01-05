@@ -2,13 +2,21 @@ import { create } from "zustand";
 import { ServerOptimisticAction } from "@/lib/optimistic-reducer";
 
 interface NavigationStore {
-  activeAction: ServerOptimisticAction | null;
-  dispatchOptimistic: (action: ServerOptimisticAction) => void;
-  clearAction: () => void;
+  activeActions: Record<string, ServerOptimisticAction>;
+  dispatchOptimistic: (id: string, action: ServerOptimisticAction) => void;
+  clearAction: (id: string) => void;
 }
 
 export const useServerNavigationStore = create<NavigationStore>((set) => ({
-  activeAction: null,
-  dispatchOptimistic: (action) => set({ activeAction: action }),
-  clearAction: () => set({ activeAction: null }),
+  activeActions: {},
+  dispatchOptimistic: (id, action) =>
+    set((state) => ({
+      activeActions: { ...state.activeActions, [id]: action },
+    })),
+  clearAction: (id) =>
+    set((state) => {
+      const next = { ...state.activeActions };
+      delete next[id];
+      return { activeActions: next };
+    }),
 }));
