@@ -68,7 +68,7 @@ export const CreateServerModal = ({
 
     startTransition(async () => {
       try {
-        dispatchOptimistic({
+        dispatchOptimistic(tempId, {
           type: "CREATE",
           server: {
             id: tempId,
@@ -86,13 +86,11 @@ export const CreateServerModal = ({
         const { data: server, error } = await createServer(values);
 
         if (error) {
-          clearAction();
           toast.error(error);
           return;
         }
 
         if (!server?.id) {
-          clearAction();
           router.refresh();
           toast.info("Changes saved! We're updating your view...", {
             duration: 3000,
@@ -103,8 +101,9 @@ export const CreateServerModal = ({
         form.reset();
         router.push(`/servers/${server.id}`);
       } catch (error) {
-        clearAction();
         toast.error("Failed to create server");
+      } finally {
+        clearAction(tempId);
       }
     });
   };

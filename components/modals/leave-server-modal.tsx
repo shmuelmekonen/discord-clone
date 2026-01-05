@@ -35,20 +35,20 @@ export const LeaveServerModal = () => {
     }
     startTransition(async () => {
       try {
-        dispatchOptimistic({ type: "REMOVE", id: serverId });
+        dispatchOptimistic(serverId, { type: "REMOVE", id: serverId });
         onClose();
 
         const { data, error } = await leaveServer(serverId);
 
         if (error) {
-          clearAction();
           toast.error(error);
           return;
         }
         router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
       } catch (error) {
-        clearAction();
         toast.error("Failed to leave server");
+      } finally {
+        clearAction(serverId);
       }
     });
   };

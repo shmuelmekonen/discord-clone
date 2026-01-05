@@ -34,21 +34,21 @@ export const DeleteServerModal = () => {
     }
     startTransition(async () => {
       try {
-        dispatchOptimistic({ type: "REMOVE", id: serverId });
+        dispatchOptimistic(serverId, { type: "REMOVE", id: serverId });
         onClose();
 
         const { data, error } = await deleteServer(serverId);
 
         if (error) {
-          clearAction();
           toast.error(error);
           return;
         }
 
         router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
       } catch (error) {
-        clearAction();
         toast.error("Failed to delete server");
+      } finally {
+        clearAction(serverId);
       }
     });
   };

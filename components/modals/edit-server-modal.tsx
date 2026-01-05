@@ -74,7 +74,7 @@ export const EditServerModal = () => {
 
     startTransition(async () => {
       try {
-        dispatchOptimistic({
+        dispatchOptimistic(serverId, {
           type: "UPDATE",
           server: { ...server, ...values },
         });
@@ -86,13 +86,11 @@ export const EditServerModal = () => {
         );
 
         if (error) {
-          clearAction();
           toast.error(error);
           return;
         }
 
         if (!editedServer?.id) {
-          clearAction();
           router.refresh();
           toast.info("Changes saved! We're updating your view...", {
             duration: 3000,
@@ -101,8 +99,9 @@ export const EditServerModal = () => {
         }
         router.push(`/servers/${editedServer.id}`);
       } catch (err) {
-        clearAction();
         toast.error("An unexpected error occurred.");
+      } finally {
+        clearAction(serverId);
       }
     });
   };

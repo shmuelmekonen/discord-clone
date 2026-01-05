@@ -34,7 +34,7 @@ const JoinServerModal = ({
 
     startTransition(async () => {
       try {
-        dispatchOptimistic({
+        dispatchOptimistic(tempId, {
           type: "CREATE",
           server: {
             ...server,
@@ -52,13 +52,11 @@ const JoinServerModal = ({
         } = await joinServerWithInviteUrl(inviteCode);
 
         if (error) {
-          clearAction();
           toast.error(`${error}`);
           return;
         }
 
         if (!serverToJoin) {
-          clearAction();
           router.refresh();
           toast.info("Please wait while we're updating your view...", {
             duration: 3000,
@@ -71,8 +69,9 @@ const JoinServerModal = ({
         }
         router.push(`/servers/${serverToJoin.id}`);
       } catch (error) {
-        clearAction();
         toast.error("Failed to join server");
+      } finally {
+        clearAction(tempId);
       }
     });
   };
