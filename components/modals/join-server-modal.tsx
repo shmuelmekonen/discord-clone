@@ -8,7 +8,6 @@ import { Button } from "../ui/button";
 import { UserPlus } from "lucide-react";
 import { useState, useTransition } from "react";
 import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
-import { Server } from "@prisma/client";
 
 interface JoinServerModalProps {
   server: {

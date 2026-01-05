@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useOptimistic, useState } from "react";
+import { startTransition, useEffect, useOptimistic, useState } from "react";
 import { ServerWithMembersWithProfiles } from "@/Types";
 import {
   Check,
@@ -42,6 +42,7 @@ import { kickMember, updateMemberRole } from "@/actions/server-actions";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { membersReducer, MemberWithProfile } from "@/lib/optimistic-reducer";
+import { useMemberActionStore } from "@/hooks/use-member-action-store";
 
 const roleIconMap = {
   GUEST: null,
@@ -50,6 +51,8 @@ const roleIconMap = {
 };
 
 export const ManageMembersModal = () => {
+  const { activeMemberActions, dispatchMemberOptimistic, clearMemberAction } =
+    useMemberActionStore();
   const { onOpen, isOpen, onClose, type, data } = useModal();
   const { server } = data as { server: ServerWithMembersWithProfiles };
 
@@ -58,16 +61,22 @@ export const ManageMembersModal = () => {
     membersReducer
   );
 
-  const [loadingId, setLoadingId] = useState("");
-
-  const [generalError, setGeneralError] = useState<string | null>(null);
-
   const isModalOpen = isOpen && type === "manageMembers";
+
+  useEffect(() => {
+    startTransition(() => {
+      updateMembers(activeMemberActions);
+    });
+  }, [activeMemberActions, updateMembers]);
 
   const onRoleChanged = async (memberId: string, role: MemberRole) => {
     startTransition(async () => {
       try {
-        updateMembers({ type: "MODIFY_ROLE", id: memberId, role });
+        dispatchMemberOptimistic(memberId, {
+          type: "MODIFY_ROLE",
+          id: memberId,
+          role,
+        });
 
         const { data: updatedServer, error } = await updateMemberRole(
           server.id,
@@ -85,6 +94,8 @@ export const ManageMembersModal = () => {
         }
       } catch (error) {
         toast.error("Failed to update role");
+      } finally {
+        clearMemberAction(memberId);
       }
     });
   };
@@ -92,7 +103,7 @@ export const ManageMembersModal = () => {
   const onKick = async (memberId: string) => {
     startTransition(async () => {
       try {
-        updateMembers({ type: "KICK", id: memberId });
+        dispatchMemberOptimistic(memberId, { type: "KICK", id: memberId });
 
         const { data: updatedServer, error } = await kickMember(
           server.id,
@@ -109,7 +120,7 @@ export const ManageMembersModal = () => {
       } catch (error) {
         toast.error("Failed to kick member");
       } finally {
-        setLoadingId("");
+        clearMemberAction(memberId);
       }
     });
   };
@@ -124,27 +135,45 @@ export const ManageMembersModal = () => {
             {server?.members?.length} Members
           </DialogDescription>
         </DialogHeader>
+
         <ScrollArea className="mt-8 max-h-60 pr-6">
-          {optimisticMembers.map((member) => (
-            <div key={member.id} className="flex items-center gap-x-2 mb-6">
-              <UserAvatar src={member.profile.imageUrl} />
-              <div className="flex flex-col gap-y-1">
-                <div className="text-xs font-semibold flex items-center gap-x-1">
-                  {member.profile.name}
-                  {roleIconMap[member.role]}
+          {optimisticMembers.map((member) => {
+            const isPending = !!activeMemberActions[member.id];
+
+            return (
+              <div
+                key={member.id}
+                className={cn(
+                  "flex items-center gap-x-2 mb-6 transition",
+                  isPending && "opacity-50 pointer-events-none" // חסימת אינטראקציה בזמן טעינה
+                )}
+              >
+                <UserAvatar src={member.profile.imageUrl} />
+                <div className="flex flex-col gap-y-1">
+                  <div className="text-xs font-semibold flex items-center gap-x-1">
+                    {member.profile.name}
+                    {roleIconMap[member.role]}
+                  </div>
+                  <p className="text-xs text-zinc-500">
+                    {member.profile.email}
+                  </p>
                 </div>
-                <p className="text-xs text-zinc-500">{member.profile.email}</p>
-              </div>
-              {server.profileId !== member.profileId &&
-                loadingId !== member.id && (
-                  <div className="ml-auto">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger>
-                        <MoreVertical className="h-4 w-4 text-zinc-500" />
+
+                {/* לוגיקת כפתורים מול לואדר */}
+                <div className="ml-auto flex items-center">
+                  {isPending ? (
+                    <Loader2 className="animate-spin text-zinc-500 w-4 h-4" />
+                  ) : (
+                    // הצגת דרופדאון רק אם זה לא האדמין ולא בטעינה
+                    server.profileId !== member.profileId && (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <MoreVertical className="h-4 w-4 text-zinc-500" />
+                        </DropdownMenuTrigger>
                         <DropdownMenuContent side="right">
                           <DropdownMenuSub>
                             <DropdownMenuSubTrigger className="flex items-center">
-                              <ShieldQuestion className="w-4 h-4 mr-2 " />
+                              <ShieldQuestion className="w-4 h-4 mr-2" />
                               <span>Role</span>
                             </DropdownMenuSubTrigger>
                             <DropdownMenuPortal>
@@ -153,10 +182,7 @@ export const ManageMembersModal = () => {
                                   onClick={() =>
                                     onRoleChanged(member.id, "GUEST")
                                   }
-                                  className={cn(
-                                    member.role === "GUEST" &&
-                                      "opacity-45 pointer-events-none"
-                                  )}
+                                  disabled={member.role === "GUEST"}
                                 >
                                   <Shield className="h-4 w-4 mr-2" />
                                   Guest
@@ -168,10 +194,7 @@ export const ManageMembersModal = () => {
                                   onClick={() =>
                                     onRoleChanged(member.id, "MODERATOR")
                                   }
-                                  className={cn(
-                                    member.role === "MODERATOR" &&
-                                      "opacity-45 pointer-events-none"
-                                  )}
+                                  disabled={member.role === "MODERATOR"}
                                 >
                                   <ShieldCheck className="h-4 w-4 mr-2" />
                                   Moderator
@@ -188,21 +211,14 @@ export const ManageMembersModal = () => {
                             Kick
                           </DropdownMenuItem>
                         </DropdownMenuContent>
-                      </DropdownMenuTrigger>
-                    </DropdownMenu>
-                  </div>
-                )}
-              {loadingId === member.id && (
-                <Loader2 className="animate-spin text-zinc-500 ml-auto w-4 h-4" />
-              )}
-            </div>
-          ))}
+                      </DropdownMenu>
+                    )
+                  )}
+                </div>
+              </div>
+            );
+          })}
         </ScrollArea>
-        {generalError && (
-          <div className="mx-6 p-3 rounded-md bg-red-50 border border-red-200 text-sm text-red-600 text-center">
-            {generalError}
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );
