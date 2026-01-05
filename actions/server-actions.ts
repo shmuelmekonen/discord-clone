@@ -92,8 +92,9 @@ export const joinServerWithInviteUrl = async (inviteCode: string) => {
       },
     });
 
-    if (existingServer)
+    if (existingServer) {
       return { data: existingServer, error: null, joinedNew: false };
+    }
 
     const updatedServer = await db.server.update({
       where: { inviteCode: inviteCode },
@@ -108,8 +109,8 @@ export const joinServerWithInviteUrl = async (inviteCode: string) => {
       },
     });
 
-    if (!updatedServer) return { data: null, error: "Something went wrong" };
     revalidatePath("/");
+    revalidatePath(`/servers/${updatedServer.id}`);
 
     return { data: updatedServer, error: null, joinedNew: true };
   } catch (error) {
@@ -304,9 +305,6 @@ export const leaveServer = async (serverId: string) => {
       },
     });
 
-    if (!updatedServer)
-      return { data: null, error: "An unexpected error occurred." };
-
     const nextServer = await db.server.findFirst({
       where: { members: { some: { profileId: profile.id } } },
       orderBy: { createdAt: "asc" },
@@ -331,7 +329,7 @@ export const deleteServer = async (serverId: string) => {
       where: { id: serverId, profileId: profile.id },
     });
 
-    if (!server) return { data: null, error: "An unexpected error occurred." };
+    // if (!server) return { data: null, error: "An unexpected error occurred." };
 
     const nextServer = await db.server.findFirst({
       where: { members: { some: { profileId: profile.id } } },
