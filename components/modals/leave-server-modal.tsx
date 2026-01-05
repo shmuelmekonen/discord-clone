@@ -20,7 +20,7 @@ import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 
 export const LeaveServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
-  const { dispatchOptimistic } = useServerNavigationStore();
+  const { dispatchOptimistic, clearAction } = useServerNavigationStore();
 
   const isModalOpen = isOpen && type === "leaveServer";
   const { server } = data;
@@ -41,17 +41,14 @@ export const LeaveServerModal = () => {
         const { data, error } = await leaveServer(serverId);
 
         if (error) {
+          clearAction();
           toast.error(error);
           return;
         }
-        if (data?.nextServerId) {
-          router.push(`/servers/${data.nextServerId}`);
-        } else {
-          router.push("/");
-        }
+        router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
       } catch (error) {
+        clearAction();
         toast.error("Failed to leave server");
-      } finally {
       }
     });
   };

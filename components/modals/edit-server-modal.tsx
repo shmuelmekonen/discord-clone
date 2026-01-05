@@ -34,7 +34,7 @@ import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 import { toast } from "sonner";
 
 export const EditServerModal = () => {
-  const { dispatchOptimistic } = useServerNavigationStore();
+  const { dispatchOptimistic, clearAction } = useServerNavigationStore();
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -86,14 +86,22 @@ export const EditServerModal = () => {
         );
 
         if (error) {
+          clearAction();
           toast.error(error);
           return;
         }
 
-        if (editedServer) {
-          router.push(`/servers/${editedServer.id}`);
+        if (!editedServer?.id) {
+          clearAction();
+          router.refresh();
+          toast.info("Changes saved! We're updating your view...", {
+            duration: 3000,
+          });
+          return;
         }
+        router.push(`/servers/${editedServer.id}`);
       } catch (err) {
+        clearAction();
         toast.error("An unexpected error occurred.");
       }
     });

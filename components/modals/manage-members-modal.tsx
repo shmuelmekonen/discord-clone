@@ -108,6 +108,8 @@ export const ManageMembersModal = () => {
         }
       } catch (error) {
         toast.error("Failed to kick member");
+      } finally {
+        setLoadingId("");
       }
     });
   };

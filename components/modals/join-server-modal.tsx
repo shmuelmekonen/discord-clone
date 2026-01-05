@@ -27,7 +27,7 @@ const JoinServerModal = ({
   profileId,
 }: JoinServerModalProps) => {
   const router = useRouter();
-  const { dispatchOptimistic } = useServerNavigationStore();
+  const { dispatchOptimistic, clearAction } = useServerNavigationStore();
   const [isPending, startTransition] = useTransition();
 
   const onJoin = async () => {
@@ -39,6 +39,7 @@ const JoinServerModal = ({
           type: "CREATE",
           server: {
             ...server,
+            id: tempId,
             inviteCode,
             createdAt: new Date(),
             updatedAt: new Date(),
@@ -46,27 +47,33 @@ const JoinServerModal = ({
         });
 
         const {
-          data: newServer,
+          data: serverToJoin,
           error,
           joinedNew,
         } = await joinServerWithInviteUrl(inviteCode);
 
         if (error) {
+          clearAction();
           toast.error(`${error}`);
           return;
         }
 
-        if (newServer) {
-          if (joinedNew) {
-            toast.success(`Welcome to ${newServer.name}'s server!`);
-          }
-
-          router.push(`/servers/${newServer.id}`);
+        if (!serverToJoin) {
+          clearAction();
+          router.refresh();
+          toast.info("Please wait while we're updating your view...", {
+            duration: 3000,
+          });
+          return;
         }
+
+        if (joinedNew) {
+          toast.success(`Welcome to ${serverToJoin.name}'s server!`);
+        }
+        router.push(`/servers/${serverToJoin.id}`);
       } catch (error) {
+        clearAction();
         toast.error("Failed to join server");
-      } finally {
-        // setIsLoading(false);
       }
     });
   };

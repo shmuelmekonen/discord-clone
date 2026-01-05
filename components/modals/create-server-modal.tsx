@@ -40,7 +40,7 @@ export const CreateServerModal = ({
   profileId,
   isInitial = false,
 }: ServerModalProps) => {
-  const { dispatchOptimistic } = useServerNavigationStore();
+  const { dispatchOptimistic, clearAction } = useServerNavigationStore();
 
   const [isMounted, setIsMounted] = useState(false);
 
@@ -86,15 +86,24 @@ export const CreateServerModal = ({
         const { data: server, error } = await createServer(values);
 
         if (error) {
+          clearAction();
           toast.error(error);
           return;
         }
 
-        if (server) {
-          form.reset();
-          router.push(`/servers/${server.id}`);
+        if (!server?.id) {
+          clearAction();
+          router.refresh();
+          toast.info("Changes saved! We're updating your view...", {
+            duration: 3000,
+          });
+          return;
         }
+
+        form.reset();
+        router.push(`/servers/${server.id}`);
       } catch (error) {
+        clearAction();
         toast.error("Failed to create server");
       }
     });
