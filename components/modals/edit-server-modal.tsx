@@ -32,6 +32,7 @@ import { editServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 import { toast } from "sonner";
+import { MODAL_TYPES } from "@/lib/constants";
 
 export const EditServerModal = () => {
   const { dispatchOptimistic, clearAction } = useServerNavigationStore();
@@ -40,7 +41,7 @@ export const EditServerModal = () => {
 
   const { isOpen, onClose, type, data } = useModal();
 
-  const isModalOpen = isOpen && type === "editServer";
+  const isModalOpen = isOpen && type === MODAL_TYPES.EDIT_SERVER;
 
   const { server } = data;
 
@@ -97,7 +98,8 @@ export const EditServerModal = () => {
           });
           return;
         }
-        router.push(`/servers/${editedServer.id}`);
+
+        // router.push(`/servers/${editedServer.id}`);
       } catch (err) {
         toast.error("An unexpected error occurred.");
       } finally {

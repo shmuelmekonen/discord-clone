@@ -20,6 +20,7 @@ import {
   UserPlus,
 } from "lucide-react";
 import { useModal } from "@/hooks/use-modal-store";
+import { MODAL_TYPES } from "@/lib/constants";
 
 interface ServerHeaderProps {
   server: ServerWithMembersWithProfiles;
@@ -43,7 +44,7 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
       <DropdownMenuContent className="w-56 text-xs font-medium text-black dark:text-neutral-400 space-y-[2px]">
         {isModerator && (
           <DropdownMenuItem
-            onClick={() => onOpen("invite", { server })}
+            onClick={() => onOpen(MODAL_TYPES.INVITE, { server })}
             className="text-indigo-600 dark:text-indigo-400 px-3 py-2 text-sm cursor-pointer"
           >
             Invite People
@@ -52,7 +53,7 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
         )}
         {isAdmin && (
           <DropdownMenuItem
-            onClick={() => onOpen("editServer", { server })}
+            onClick={() => onOpen(MODAL_TYPES.EDIT_SERVER, { server })}
             className="px-3 py-2 text-sm cursor-pointer"
           >
             Server Settings
@@ -62,7 +63,7 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
 
         {isAdmin && (
           <DropdownMenuItem
-            onClick={() => onOpen("manageMembers", { server })}
+            onClick={() => onOpen(MODAL_TYPES.MANAGE_MEMBERS, { server })}
             className="px-3 py-2 text-sm cursor-pointer"
           >
             Manage Members
@@ -72,7 +73,7 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
 
         {isModerator && (
           <DropdownMenuItem
-            onClick={() => onOpen("createChannel", { server })}
+            onClick={() => onOpen(MODAL_TYPES.CREATE_CHANNEL, { server })}
             className="px-3 py-2 text-sm cursor-pointer"
           >
             Create Channel
@@ -84,7 +85,7 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
 
         {isAdmin && (
           <DropdownMenuItem
-            onClick={() => onOpen("deleteServer", { server })}
+            onClick={() => onOpen(MODAL_TYPES.DELETE_SERVER, { server })}
             className="text-rose-500 px-3 py-2 text-sm cursor-pointer"
           >
             Delete Server
@@ -94,7 +95,7 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
 
         {!isAdmin && (
           <DropdownMenuItem
-            onClick={() => onOpen("leaveServer", { server })}
+            onClick={() => onOpen(MODAL_TYPES.LEAVE_SERVER, { server })}
             className="text-rose-500 px-3 py-2 text-sm cursor-pointer"
           >
             Leave Server

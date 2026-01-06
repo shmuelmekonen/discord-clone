@@ -43,6 +43,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { membersReducer, MemberWithProfile } from "@/lib/optimistic-reducer";
 import { useMemberActionStore } from "@/hooks/use-member-action-store";
+import { MODAL_TYPES } from "@/lib/constants";
 
 const roleIconMap = {
   GUEST: null,
@@ -61,7 +62,7 @@ export const ManageMembersModal = () => {
     membersReducer
   );
 
-  const isModalOpen = isOpen && type === "manageMembers";
+  const isModalOpen = isOpen && type === MODAL_TYPES.MANAGE_MEMBERS;
 
   useEffect(() => {
     startTransition(() => {
@@ -90,7 +91,7 @@ export const ManageMembersModal = () => {
         }
 
         if (updatedServer) {
-          onOpen("manageMembers", { server: updatedServer });
+          onOpen(MODAL_TYPES.MANAGE_MEMBERS, { server: updatedServer });
         }
       } catch (error) {
         toast.error("Failed to update role");
@@ -115,7 +116,7 @@ export const ManageMembersModal = () => {
           return;
         }
         if (updatedServer) {
-          onOpen("manageMembers", { server: updatedServer });
+          onOpen(MODAL_TYPES.MANAGE_MEMBERS, { server: updatedServer });
         }
       } catch (error) {
         toast.error("Failed to kick member");

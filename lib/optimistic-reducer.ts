@@ -1,9 +1,10 @@
 import { Member, MemberRole, Server } from "@prisma/client";
+import { OPTIMISTIC_ACTIONS } from "./constants";
 
 export type ServerOptimisticAction =
-  | { type: "REMOVE"; id: string }
-  | { type: "UPDATE"; server: Server }
-  | { type: "CREATE"; server: Server };
+  | { type: typeof OPTIMISTIC_ACTIONS.REMOVE; id: string }
+  | { type: typeof OPTIMISTIC_ACTIONS.UPDATE; server: Server }
+  | { type: typeof OPTIMISTIC_ACTIONS.CREATE; server: Server };
 
 export const serversReducer = (
   state: Server[],
@@ -13,15 +14,15 @@ export const serversReducer = (
 
   Object.values(actions).forEach((action) => {
     switch (action.type) {
-      case "REMOVE":
+      case OPTIMISTIC_ACTIONS.REMOVE:
         result = result.filter((s) => s.id !== action.id);
         break;
-      case "UPDATE":
+      case OPTIMISTIC_ACTIONS.UPDATE:
         result = result.map((s) =>
           s.id === action.server.id ? action.server : s
         );
         break;
-      case "CREATE":
+      case OPTIMISTIC_ACTIONS.CREATE:
         if (!result.find((s) => s.id === action.server.id)) {
           result = [...result, action.server];
         }

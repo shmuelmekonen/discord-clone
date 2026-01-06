@@ -1,9 +1,10 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { APP_ROUTES } from "./lib/constants";
 
 const isPublicRoute = createRouteMatcher([
-  "/",
-  "/sign-in(.*)",
-  "/sign-up(.*)",
+  APP_ROUTES.HOME,
+  `${APP_ROUTES.SIGN_IN}(.*)`,
+  `${APP_ROUTES.SIGN_UP}(.*)`,
   "/api/uploadthing",
 ]);
 

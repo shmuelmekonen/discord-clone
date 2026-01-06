@@ -13,6 +13,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 
 import { revalidatePath } from "next/cache";
+import { CHANNEL_NAMES } from "@/lib/constants";
 
 export const createServer = async (values: ServerSchemaType) => {
   try {
@@ -36,7 +37,7 @@ export const createServer = async (values: ServerSchemaType) => {
         channels: {
           create: [
             {
-              name: "general",
+              name: CHANNEL_NAMES.GENERAL,
               profileId: profile.id,
             },
           ],

@@ -16,6 +16,7 @@ import { useOrigin } from "@/hooks/use-origin";
 import { useState } from "react";
 import { renewInviteUrl } from "@/actions/server-actions";
 import { cn } from "@/lib/utils";
+import { MODAL_TYPES } from "@/lib/constants";
 
 export const InviteModal = () => {
   const { onOpen, isOpen, onClose, type, data } = useModal();
@@ -23,7 +24,7 @@ export const InviteModal = () => {
 
   const [generalError, setGeneralError] = useState<string | null>(null);
 
-  const isModalOpen = isOpen && type === "invite";
+  const isModalOpen = isOpen && type === MODAL_TYPES.INVITE;
   const { server } = data;
 
   const [copied, setCopied] = useState(false);
@@ -54,7 +55,7 @@ export const InviteModal = () => {
         return;
       }
       if (updatedServer) {
-        onOpen("invite", { server: updatedServer });
+        onOpen(MODAL_TYPES.INVITE, { server: updatedServer });
       }
     } catch (error) {
       setGeneralError("An unexpected error occurred.");

@@ -17,12 +17,13 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { leaveServer } from "@/actions/server-actions";
 import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
+import { MODAL_TYPES } from "@/lib/constants";
 
 export const LeaveServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
   const { dispatchOptimistic, clearAction } = useServerNavigationStore();
 
-  const isModalOpen = isOpen && type === "leaveServer";
+  const isModalOpen = isOpen && type === MODAL_TYPES.LEAVE_SERVER;
   const { server } = data;
 
   const router = useRouter();

@@ -17,12 +17,13 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { deleteServer } from "@/actions/server-actions";
 import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
+import { MODAL_TYPES } from "@/lib/constants";
 
 export const DeleteServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
   const { dispatchOptimistic, clearAction } = useServerNavigationStore();
 
-  const isModalOpen = isOpen && type === "deleteServer";
+  const isModalOpen = isOpen && type === MODAL_TYPES.DELETE_SERVER;
   const { server } = data;
 
   const router = useRouter();

@@ -37,6 +37,7 @@ import { createChannel, createServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { ChannelType } from "@prisma/client";
+import { MODAL_TYPES } from "@/lib/constants";
 
 export const CreateChennelModal = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -44,7 +45,7 @@ export const CreateChennelModal = () => {
 
   const { isOpen, onClose, type, data } = useModal();
   const { server } = data;
-  const isModalOpen = isOpen && type === "createChannel";
+  const isModalOpen = isOpen && type === MODAL_TYPES.CREATE_CHANNEL;
 
   useEffect(() => {
     setIsMounted(true);

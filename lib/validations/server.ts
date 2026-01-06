@@ -1,5 +1,6 @@
 import { ChannelType } from "@prisma/client";
 import * as z from "zod";
+import { CHANNEL_NAMES } from "../constants";
 
 export const serverSchema = z.object({
   name: z
@@ -28,8 +29,8 @@ export const channelSchema = z.object({
     .min(1, {
       message: "Channel name is required.",
     })
-    .refine((name) => name !== "general", {
-      message: "Channel name cannot be 'general'",
+    .refine((name) => name !== CHANNEL_NAMES.GENERAL, {
+      message: `Channel name cannot be '${CHANNEL_NAMES.GENERAL}'`,
     })
     .max(32, { message: "Server name must be 32 characters or less." }),
   type: z.enum(ChannelType),

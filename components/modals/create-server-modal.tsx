@@ -33,6 +33,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 import { Loader2 } from "lucide-react";
+import { MODAL_TYPES, OPTIMISTIC_ACTIONS } from "@/lib/constants";
 
 interface ServerModalProps {
   isInitial?: boolean;
@@ -49,7 +50,9 @@ export const CreateServerModal = ({
 
   const { isOpen, onClose, type } = useModal();
 
-  const isModalOpen = isInitial ? true : isOpen && type === "createServer";
+  const isModalOpen = isInitial
+    ? true
+    : isOpen && type === MODAL_TYPES.CREATE_SERVER;
 
   useEffect(() => {
     setIsMounted(true);
@@ -63,16 +66,18 @@ export const CreateServerModal = ({
     },
   });
 
-  const isLoading = form.formState.isSubmitting;
+  const isLoading = form.formState.isSubmitting || isPending;
   const router = useRouter();
 
   const onSubmit = async (values: ServerSchemaType) => {
+    if (isLoading) return;
+
     const tempId = `temp-${Date.now()}`;
 
     startTransition(async () => {
       try {
         dispatchOptimistic(tempId, {
-          type: "CREATE",
+          type: OPTIMISTIC_ACTIONS.CREATE,
           server: {
             id: tempId,
             name: values.name,
@@ -122,7 +127,19 @@ export const CreateServerModal = ({
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden">
+      <DialogContent
+        className="bg-white text-black p-0 overflow-hidden"
+        onEscapeKeyDown={(e) => {
+          if (isLoading) {
+            e.preventDefault();
+          }
+        }}
+        onPointerDownOutside={(e) => {
+          if (isLoading) {
+            e.preventDefault();
+          }
+        }}
+      >
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
             Create your server
@@ -179,11 +196,11 @@ export const CreateServerModal = ({
 
             <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button
-                disabled={isPending || isLoading}
+                disabled={isLoading}
                 className="w-full flex items-center justify-center"
                 variant="primary"
               >
-                {isPending || isLoading ? (
+                {isLoading ? (
                   <Loader2 className="animate-spin h-4 w-4 text-white" />
                 ) : (
                   "Create"
