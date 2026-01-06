@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -13,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+
 import {
   Form,
   FormControl,
@@ -21,6 +22,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { FileUpload } from "@/components/file-upload";
@@ -30,6 +32,7 @@ import { createServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
+import { Loader2 } from "lucide-react";
 
 interface ServerModalProps {
   isInitial?: boolean;
@@ -41,7 +44,7 @@ export const CreateServerModal = ({
   isInitial = false,
 }: ServerModalProps) => {
   const { dispatchOptimistic, clearAction } = useServerNavigationStore();
-
+  const [isPending, startTransition] = useTransition();
   const [isMounted, setIsMounted] = useState(false);
 
   const { isOpen, onClose, type } = useModal();
@@ -80,8 +83,6 @@ export const CreateServerModal = ({
             updatedAt: new Date(),
           },
         });
-        onClose();
-        form.reset();
 
         const { data: server, error } = await createServer(values);
 
@@ -91,6 +92,7 @@ export const CreateServerModal = ({
         }
 
         if (!server?.id) {
+          onClose();
           router.refresh();
           toast.info("Changes saved! We're updating your view...", {
             duration: 3000,
@@ -98,7 +100,9 @@ export const CreateServerModal = ({
           return;
         }
 
+        onClose();
         form.reset();
+
         router.push(`/servers/${server.id}`);
       } catch (error) {
         toast.error("Failed to create server");
@@ -114,7 +118,6 @@ export const CreateServerModal = ({
     onClose();
   };
 
-  // מניעת שגיאות Hydration
   if (!isMounted) return null;
 
   return (
@@ -175,8 +178,16 @@ export const CreateServerModal = ({
             </div>
 
             <DialogFooter className="bg-gray-100 px-6 py-4">
-              <Button variant="primary" disabled={isLoading}>
-                Create
+              <Button
+                disabled={isPending || isLoading}
+                className="w-full flex items-center justify-center"
+                variant="primary"
+              >
+                {isPending || isLoading ? (
+                  <Loader2 className="animate-spin h-4 w-4 text-white" />
+                ) : (
+                  "Create"
+                )}
               </Button>
             </DialogFooter>
           </form>
