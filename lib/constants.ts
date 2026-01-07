@@ -1,9 +1,7 @@
-// 1. שמות שמורים במערכת
 export const CHANNEL_NAMES = {
   GENERAL: "general",
 } as const;
 
-// 2. סוגי פעולות לאופטימיות (Reducer Actions)
 export const OPTIMISTIC_ACTIONS = {
   CREATE: "CREATE",
   UPDATE: "UPDATE",
@@ -12,7 +10,6 @@ export const OPTIMISTIC_ACTIONS = {
   MODIFY_ROLE: "MODIFY_ROLE",
 } as const;
 
-// 3. סוגי המודאלים (כדי למנוע שגיאות הקלדה ב-onOpen)
 export const MODAL_TYPES = {
   CREATE_SERVER: "createServer",
   INVITE: "invite",
@@ -24,14 +21,6 @@ export const MODAL_TYPES = {
   JOIN_SERVER: "joinServer",
 } as const;
 
-// // 4. מגבלות ולידציה (כך שאם תחליט לשנות מ-32 ל-50, תשנה במקום אחד)
-// export const VALIDATION_LIMITS = {
-//   NAME_MIN: 1,
-//   NAME_MAX: 32,
-//   IMAGE_MAX_SIZE: "4MB",
-// } as const;
-
-// 5. נתיבים קבועים (Routes)
 export const APP_ROUTES = {
   HOME: "/",
   SIGN_IN: "/sign-in",
@@ -39,3 +28,17 @@ export const APP_ROUTES = {
   INVITE: "/invite",
   SERVERS: "/servers",
 } as const;
+
+export const ACTION_ERRORS = {
+  UNAUTHORIZED: "UNAUTHORIZED",
+  NOT_FOUND: "NOT_FOUND",
+  VALIDATION_ERROR: "VALIDATION_ERROR",
+  DB_ERROR: "DB_ERROR",
+  INTERNAL_ERROR: "INTERNAL_ERROR",
+} as const;
+
+// export const VALIDATION_LIMITS = {
+//   NAME_MIN: 1,
+//   NAME_MAX: 32,
+//   IMAGE_MAX_SIZE: "4MB",
+// } as const;
