@@ -3,12 +3,7 @@
 import { db } from "@/lib/db";
 import { currentProfile } from "@/lib/current-profile";
 import { MemberRole } from "@prisma/client";
-import {
-  channelSchema,
-  ChannelSchemaType,
-  serverSchema,
-  ServerSchemaType,
-} from "@/lib/validations/server";
+import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
 
 import { v4 as uuidv4 } from "uuid";
 
@@ -150,133 +145,6 @@ export const editServer = async (
   } catch (error) {
     console.error("[EDIT_SERVER_ERROR]", error);
     return { data: null, error: "Failed to edit server" };
-  }
-};
-
-export const updateMemberRole = async (
-  serverId: string,
-  memberId: string,
-  role: MemberRole
-) => {
-  try {
-    const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
-
-    const server = await db.server.update({
-      where: {
-        id: serverId,
-        profileId: profile.id,
-      },
-      data: {
-        members: {
-          update: {
-            where: {
-              id: memberId,
-              profileId: {
-                not: profile.id,
-              },
-            },
-            data: { role },
-          },
-        },
-      },
-      include: {
-        members: {
-          include: { profile: true },
-          orderBy: { role: "asc" },
-        },
-      },
-    });
-
-    revalidatePath(`/servers/${serverId}`);
-    return { data: server, error: null };
-  } catch (error) {
-    console.error("[UPDATE_MEMBER_ROLE_ERROR]", error);
-    return { data: null, error: "Failed to update member role" };
-  }
-};
-
-export const kickMember = async (serverId: string, memberId: string) => {
-  try {
-    const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
-
-    const server = await db.server.update({
-      where: {
-        id: serverId,
-        profileId: profile.id,
-      },
-      data: {
-        members: {
-          deleteMany: {
-            id: memberId,
-            profileId: { not: profile.id },
-          },
-        },
-      },
-      include: {
-        members: {
-          include: { profile: true },
-          orderBy: { role: "asc" },
-        },
-      },
-    });
-    revalidatePath(`/servers/${serverId}`);
-    return { data: server, error: null };
-  } catch (error) {
-    console.error("[KICK_MEMBER_ERROR]", error);
-    return { data: null, error: "Failed to kick member" };
-  }
-};
-
-export const createChannel = async (
-  serverId: string,
-  values: ChannelSchemaType
-) => {
-  try {
-    const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
-
-    if (!serverId) return { data: null, error: "Server Id missing" };
-
-    const validatedData = channelSchema.safeParse(values);
-    if (!validatedData.success)
-      return { data: null, error: "Invalid data provided" };
-
-    const { name, type } = validatedData.data;
-
-    const updatedServer = await db.server.update({
-      where: {
-        id: serverId,
-        members: {
-          some: {
-            profileId: profile.id,
-            role: {
-              in: [MemberRole.ADMIN, MemberRole.MODERATOR],
-            },
-          },
-        },
-      },
-      data: {
-        channels: {
-          create: {
-            profileId: profile.id,
-            name,
-            type,
-          },
-        },
-      },
-    });
-
-    if (!updatedServer)
-      return { data: null, error: "An unexpected error occurred." };
-
-    revalidatePath(`/servers/${updatedServer.id}`);
-
-    return { data: updatedServer, error: null };
-  } catch (error) {
-    console.error("[CREATE_CHANNEL_ERROR]", error);
-    return { data: null, error: "Failed to create channel" };
   }
 };
 
