@@ -38,7 +38,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Member, MemberRole } from "@prisma/client";
 
-import { kickMember, updateMemberRole } from "@/actions/server-actions";
+import { kickMember, updateMemberRole } from "@/actions/member-actions";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { membersReducer, MemberWithProfile } from "@/lib/optimistic-reducer";
