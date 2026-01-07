@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useEffect, useOptimistic, useState } from "react";
-import { ServerWithMembersWithProfiles } from "@/Types";
+import { ServerWithMembersWithProfiles } from "@/types";
 import {
   Check,
   Gavel,
