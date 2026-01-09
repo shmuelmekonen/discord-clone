@@ -30,11 +30,19 @@ export const APP_ROUTES = {
 } as const;
 
 export const ACTION_ERRORS = {
+  INTERNAL_ERROR: "INTERNAL_ERROR",
   UNAUTHORIZED: "UNAUTHORIZED",
-  NOT_FOUND: "NOT_FOUND",
   VALIDATION_ERROR: "VALIDATION_ERROR",
   DB_ERROR: "DB_ERROR",
-  INTERNAL_ERROR: "INTERNAL_ERROR",
+  INVALID_PARAMETERS: "INVALID_PARAMETERS",
+  NOT_FOUND: "NOT_FOUND",
+} as const;
+
+export const USER_MESSAGES = {
+  GENERIC_ERROR: "Something went wrong. Please try again later.",
+  UNAUTHORIZED: "You must be logged in to perform this action.",
+  VALIDATION_ERROR: "Invalid data provided",
+  NOT_FOUND: "The requested resource was not found.",
 } as const;
 
 // export const VALIDATION_LIMITS = {

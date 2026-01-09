@@ -7,4 +7,5 @@ export type ActionResponse<T> = {
   data: T | null;
   error: string | null;
   code?: ActionErrorCode;
+  validationErrors?: Record<string, string[]>;
 };
