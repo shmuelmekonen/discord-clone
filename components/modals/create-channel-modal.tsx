@@ -33,7 +33,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { channelSchema, ChannelSchemaType } from "@/lib/validations/server";
-import { createChannel, createServer } from "@/actions/server-actions";
+import { createChannel } from "@/actions/channel-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { ChannelType } from "@prisma/client";
