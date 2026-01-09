@@ -33,7 +33,11 @@ import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 import { Loader2 } from "lucide-react";
-import { MODAL_TYPES, OPTIMISTIC_ACTIONS } from "@/lib/constants";
+import {
+  ACTION_ERRORS,
+  MODAL_TYPES,
+  OPTIMISTIC_ACTIONS,
+} from "@/lib/constants";
 
 interface ServerModalProps {
   isInitial?: boolean;
@@ -89,10 +93,22 @@ export const CreateServerModal = ({
           },
         });
 
-        const { data: server, error } = await createServer(values);
+        const {
+          data: server,
+          error,
+          code,
+          validationErrors,
+        } = await createServer(values);
 
         if (error) {
-          toast.error(error);
+          if (code === ACTION_ERRORS.VALIDATION_ERROR && validationErrors) {
+            Object.keys(validationErrors).forEach((key) => {
+              const fieldKey = key as keyof ServerSchemaType;
+              form.setError(fieldKey, { message: validationErrors[key]?.[0] });
+            });
+          } else {
+            toast.error(error);
+          }
           return;
         }
 

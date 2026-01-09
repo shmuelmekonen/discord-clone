@@ -32,7 +32,7 @@ import { editServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 import { toast } from "sonner";
-import { MODAL_TYPES } from "@/lib/constants";
+import { ACTION_ERRORS, MODAL_TYPES } from "@/lib/constants";
 
 export const EditServerModal = () => {
   const { dispatchOptimistic, clearAction } = useServerNavigationStore();
@@ -81,13 +81,22 @@ export const EditServerModal = () => {
         });
         onClose();
 
-        const { data: editedServer, error } = await editServer(
-          serverId,
-          values
-        );
+        const {
+          data: editedServer,
+          error,
+          code,
+          validationErrors,
+        } = await editServer(serverId, values);
 
         if (error) {
-          toast.error(error);
+          if (code === ACTION_ERRORS.VALIDATION_ERROR && validationErrors) {
+            Object.keys(validationErrors).forEach((key) => {
+              const fieldKey = key as keyof ServerSchemaType;
+              form.setError(fieldKey, { message: validationErrors[key]?.[0] });
+            });
+          } else {
+            toast.error(error);
+          }
           return;
         }
 
