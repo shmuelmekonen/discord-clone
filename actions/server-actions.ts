@@ -2,23 +2,35 @@
 
 import { db } from "@/lib/db";
 import { currentProfile } from "@/lib/current-profile";
-import { MemberRole } from "@prisma/client";
+import { MemberRole, Server } from "@prisma/client";
 import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
 
 import { v4 as uuidv4 } from "uuid";
 
 import { revalidatePath } from "next/cache";
-import { CHANNEL_NAMES } from "@/lib/constants";
+import { ACTION_ERRORS, CHANNEL_NAMES, USER_MESSAGES } from "@/lib/constants";
+import { ActionResponse } from "@/types";
 
-export const createServer = async (values: ServerSchemaType) => {
+export const createServer = async (
+  values: ServerSchemaType
+): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
     if (!profile)
-      return { data: null, error: "Unauthorized", fieldErrors: null };
+      return {
+        data: null,
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      };
 
     const validatedData = serverSchema.safeParse(values);
     if (!validatedData.success) {
-      return { data: null, error: "Invalid data provided" };
+      return {
+        data: null,
+        error: USER_MESSAGES.VALIDATION_ERROR,
+        code: ACTION_ERRORS.VALIDATION_ERROR,
+        validationErrors: validatedData.error.flatten().fieldErrors,
+      };
     }
 
     const { name, imageUrl } = validatedData.data;
@@ -52,14 +64,32 @@ export const createServer = async (values: ServerSchemaType) => {
     return { data: server, error: null };
   } catch (error) {
     console.error("[CREATE_SERVER_ACTION]", error);
-    return { data: null, error: "Failed to create server" };
+    return {
+      data: null,
+      error: USER_MESSAGES.GENERIC_ERROR,
+      code: ACTION_ERRORS.INTERNAL_ERROR,
+    };
   }
 };
 
-export const renewInviteUrl = async (serverId: string) => {
+export const renewInviteUrl = async (
+  serverId: string
+): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
+    if (!profile)
+      return {
+        data: null,
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      };
+
+    if (!serverId)
+      return {
+        data: null,
+        error: USER_MESSAGES.GENERIC_ERROR,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      };
 
     const updatedServer = await db.server.update({
       where: { id: serverId, profileId: profile.id },
@@ -71,16 +101,37 @@ export const renewInviteUrl = async (serverId: string) => {
     return { data: updatedServer, error: null };
   } catch (error) {
     console.error("[RENEW_INVITE_CODE_ERROR]", error);
-    return { data: null, error: "Failed to renew invite link" };
+
+    return {
+      data: null,
+      error: USER_MESSAGES.GENERIC_ERROR,
+      code: ACTION_ERRORS.INTERNAL_ERROR,
+    };
   }
 };
 
-export const joinServerWithInviteUrl = async (inviteCode: string) => {
+type JoinServerData = {
+  server: Server;
+  joinedNew: boolean;
+};
+
+export const joinServerWithInviteUrl = async (
+  inviteCode: string
+): Promise<ActionResponse<JoinServerData>> => {
   try {
     const profile = await currentProfile();
     if (!profile)
-      return { data: null, error: "Unauthorized", joinedNew: false };
-
+      return {
+        data: null,
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      };
+    if (!inviteCode)
+      return {
+        data: null,
+        error: USER_MESSAGES.GENERIC_ERROR,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      };
     const existingServer = await db.server.findFirst({
       where: {
         inviteCode,
@@ -89,7 +140,10 @@ export const joinServerWithInviteUrl = async (inviteCode: string) => {
     });
 
     if (existingServer) {
-      return { data: existingServer, error: null, joinedNew: false };
+      return {
+        data: { server: existingServer, joinedNew: false },
+        error: null,
+      };
     }
 
     const updatedServer = await db.server.update({
@@ -108,24 +162,48 @@ export const joinServerWithInviteUrl = async (inviteCode: string) => {
     revalidatePath("/");
     revalidatePath(`/servers/${updatedServer.id}`);
 
-    return { data: updatedServer, error: null, joinedNew: true };
+    return {
+      data: { server: updatedServer, joinedNew: true },
+      error: null,
+    };
   } catch (error) {
     console.error("[JOIN_SERVER_WITH_INVITE_CODE_ERROR]", error);
-    return { data: null, error: "Failed to join server", joinedNew: false };
+    return {
+      data: null,
+      error: USER_MESSAGES.GENERIC_ERROR,
+      code: ACTION_ERRORS.INTERNAL_ERROR,
+    };
   }
 };
 
 export const editServer = async (
   serverId: string,
   values: ServerSchemaType
-) => {
+): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
+    if (!profile)
+      return {
+        data: null,
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      };
+
+    if (!serverId)
+      return {
+        data: null,
+        error: USER_MESSAGES.GENERIC_ERROR,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      };
 
     const validatedData = serverSchema.safeParse(values);
     if (!validatedData.success) {
-      return { data: null, error: "Invalid data provided" };
+      return {
+        data: null,
+        error: USER_MESSAGES.VALIDATION_ERROR,
+        code: ACTION_ERRORS.VALIDATION_ERROR,
+        validationErrors: validatedData.error.flatten().fieldErrors,
+      };
     }
 
     const { name, imageUrl } = validatedData.data;
@@ -144,18 +222,38 @@ export const editServer = async (
     return { data: editedServer, error: null };
   } catch (error) {
     console.error("[EDIT_SERVER_ERROR]", error);
-    return { data: null, error: "Failed to edit server" };
+    return {
+      data: null,
+      error: USER_MESSAGES.GENERIC_ERROR,
+      code: ACTION_ERRORS.INTERNAL_ERROR,
+    };
   }
 };
 
-export const leaveServer = async (serverId: string) => {
+type LeaveOrDeleteServerResult = {
+  nextServerId: string | null;
+};
+
+export const leaveServer = async (
+  serverId: string
+): Promise<ActionResponse<LeaveOrDeleteServerResult>> => {
   try {
     const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
+    if (!profile)
+      return {
+        data: null,
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      };
 
-    if (!serverId) return { data: null, error: "Server Id missing" };
+    if (!serverId)
+      return {
+        data: null,
+        error: USER_MESSAGES.GENERIC_ERROR,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      };
 
-    const updatedServer = await db.server.update({
+    await db.server.update({
       where: {
         id: serverId,
         profileId: {
@@ -180,25 +278,42 @@ export const leaveServer = async (serverId: string) => {
     });
 
     revalidatePath("/");
-    return { data: { nextServerId: nextServer?.id || null }, error: null };
+    return {
+      data: { nextServerId: nextServer?.id || null },
+      error: null,
+    };
   } catch (error) {
     console.error("[LEAVE_SERVER_ERROR]", error);
-    return { data: null, error: "Failed to leave server" };
+    return {
+      data: null,
+      error: USER_MESSAGES.GENERIC_ERROR,
+      code: ACTION_ERRORS.INTERNAL_ERROR,
+    };
   }
 };
 
-export const deleteServer = async (serverId: string) => {
+export const deleteServer = async (
+  serverId: string
+): Promise<ActionResponse<LeaveOrDeleteServerResult>> => {
   try {
     const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
+    if (!profile)
+      return {
+        data: null,
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      };
 
-    if (!serverId) return { data: null, error: "Server id missing" };
+    if (!serverId)
+      return {
+        data: null,
+        error: USER_MESSAGES.GENERIC_ERROR,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      };
 
     const server = await db.server.delete({
       where: { id: serverId, profileId: profile.id },
     });
-
-    // if (!server) return { data: null, error: "An unexpected error occurred." };
 
     const nextServer = await db.server.findFirst({
       where: { members: { some: { profileId: profile.id } } },
@@ -209,6 +324,10 @@ export const deleteServer = async (serverId: string) => {
     return { data: { nextServerId: nextServer?.id || null }, error: null };
   } catch (error) {
     console.error("[DELETE_SERVER_ERROR]", error);
-    return { data: null, error: "Failed to delete server" };
+    return {
+      data: null,
+      error: USER_MESSAGES.GENERIC_ERROR,
+      code: ACTION_ERRORS.INTERNAL_ERROR,
+    };
   }
 };

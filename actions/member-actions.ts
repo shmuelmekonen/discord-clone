@@ -7,6 +7,7 @@ import { MemberRole } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 
 import { revalidatePath } from "next/cache";
+import { ACTION_ERRORS, USER_MESSAGES } from "@/lib/constants";
 
 export const updateMemberRole = async (
   serverId: string,
@@ -15,7 +16,7 @@ export const updateMemberRole = async (
 ) => {
   try {
     const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
+    if (!profile) return { data: null, error: USER_MESSAGES.UNAUTHORIZED };
 
     const server = await db.server.update({
       where: {
@@ -54,7 +55,7 @@ export const updateMemberRole = async (
 export const kickMember = async (serverId: string, memberId: string) => {
   try {
     const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
+    if (!profile) return { data: null, error: USER_MESSAGES.UNAUTHORIZED };
 
     const server = await db.server.update({
       where: {

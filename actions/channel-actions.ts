@@ -8,6 +8,7 @@ import { channelSchema, ChannelSchemaType } from "@/lib/validations/server";
 import { v4 as uuidv4 } from "uuid";
 
 import { revalidatePath } from "next/cache";
+import { ACTION_ERRORS, USER_MESSAGES } from "@/lib/constants";
 
 export const createChannel = async (
   serverId: string,
@@ -15,13 +16,13 @@ export const createChannel = async (
 ) => {
   try {
     const profile = await currentProfile();
-    if (!profile) return { data: null, error: "Unauthorized" };
+    if (!profile) return { data: null, error: USER_MESSAGES.UNAUTHORIZED };
 
     if (!serverId) return { data: null, error: "Server Id missing" };
 
     const validatedData = channelSchema.safeParse(values);
     if (!validatedData.success)
-      return { data: null, error: "Invalid data provided" };
+      return { data: null, error: ACTION_ERRORS.VALIDATION_ERROR };
 
     const { name, type } = validatedData.data;
 
