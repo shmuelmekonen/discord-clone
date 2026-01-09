@@ -2,21 +2,32 @@
 
 import { db } from "@/lib/db";
 import { currentProfile } from "@/lib/current-profile";
-import { MemberRole } from "@prisma/client";
-
-import { v4 as uuidv4 } from "uuid";
+import { Server, MemberRole } from "@prisma/client";
 
 import { revalidatePath } from "next/cache";
 import { ACTION_ERRORS, USER_MESSAGES } from "@/lib/constants";
+import { ActionResponse } from "@/types";
 
 export const updateMemberRole = async (
   serverId: string,
   memberId: string,
   role: MemberRole
-) => {
+): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
-    if (!profile) return { data: null, error: USER_MESSAGES.UNAUTHORIZED };
+    if (!profile)
+      return {
+        data: null,
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      };
+
+    if (!serverId || !memberId)
+      return {
+        data: null,
+        error: USER_MESSAGES.GENERIC_ERROR,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      };
 
     const server = await db.server.update({
       where: {
@@ -36,26 +47,45 @@ export const updateMemberRole = async (
           },
         },
       },
-      include: {
-        members: {
-          include: { profile: true },
-          orderBy: { role: "asc" },
-        },
-      },
+      // include: {
+      //   members: {
+      //     include: { profile: true },
+      //     orderBy: { role: "asc" },
+      //   },
+      // },
     });
 
     revalidatePath(`/servers/${serverId}`);
     return { data: server, error: null };
   } catch (error) {
     console.error("[UPDATE_MEMBER_ROLE_ERROR]", error);
-    return { data: null, error: "Failed to update member role" };
+    return {
+      data: null,
+      error: USER_MESSAGES.GENERIC_ERROR,
+      code: ACTION_ERRORS.INTERNAL_ERROR,
+    };
   }
 };
 
-export const kickMember = async (serverId: string, memberId: string) => {
+export const kickMember = async (
+  serverId: string,
+  memberId: string
+): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
-    if (!profile) return { data: null, error: USER_MESSAGES.UNAUTHORIZED };
+    if (!profile)
+      return {
+        data: null,
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      };
+
+    if (!serverId || !memberId)
+      return {
+        data: null,
+        error: USER_MESSAGES.GENERIC_ERROR,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      };
 
     const server = await db.server.update({
       where: {
@@ -70,17 +100,21 @@ export const kickMember = async (serverId: string, memberId: string) => {
           },
         },
       },
-      include: {
-        members: {
-          include: { profile: true },
-          orderBy: { role: "asc" },
-        },
-      },
+      // include: {
+      //   members: {
+      //     include: { profile: true },
+      //     orderBy: { role: "asc" },
+      //   },
+      // },
     });
     revalidatePath(`/servers/${serverId}`);
     return { data: server, error: null };
   } catch (error) {
     console.error("[KICK_MEMBER_ERROR]", error);
-    return { data: null, error: "Failed to kick member" };
+    return {
+      data: null,
+      error: USER_MESSAGES.GENERIC_ERROR,
+      code: ACTION_ERRORS.INTERNAL_ERROR,
+    };
   }
 };
