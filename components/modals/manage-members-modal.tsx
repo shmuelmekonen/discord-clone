@@ -44,6 +44,7 @@ import { toast } from "sonner";
 import { membersReducer, MemberWithProfile } from "@/lib/optimistic-reducer";
 import { useMemberActionStore } from "@/hooks/use-member-action-store";
 import { MODAL_TYPES } from "@/lib/constants";
+import { useRouter } from "next/navigation";
 
 const roleIconMap = {
   GUEST: null,
@@ -64,6 +65,8 @@ export const ManageMembersModal = () => {
 
   const isModalOpen = isOpen && type === MODAL_TYPES.MANAGE_MEMBERS;
 
+  const router = useRouter();
+
   useEffect(() => {
     startTransition(() => {
       updateMembers(activeMemberActions);
@@ -79,20 +82,30 @@ export const ManageMembersModal = () => {
           role,
         });
 
-        const { data: updatedServer, error } = await updateMemberRole(
-          server.id,
-          memberId,
-          role
-        );
+        const { error } = await updateMemberRole(server.id, memberId, role);
 
         if (error) {
           toast.error(error);
           return;
         }
 
-        if (updatedServer) {
-          onOpen(MODAL_TYPES.MANAGE_MEMBERS, { server: updatedServer });
+        const updatedMembers = server.members.map((member) => {
+          if (member.id === memberId) {
+            return { ...member, role };
+          }
+          return member;
+        });
+
+        if (updatedMembers) {
+          onOpen(MODAL_TYPES.MANAGE_MEMBERS, {
+            server: {
+              ...server,
+              members: updatedMembers,
+            } as ServerWithMembersWithProfiles,
+          });
         }
+
+        router.refresh();
       } catch (error) {
         toast.error("Failed to update role");
       } finally {
@@ -106,18 +119,24 @@ export const ManageMembersModal = () => {
       try {
         dispatchMemberOptimistic(memberId, { type: "KICK", id: memberId });
 
-        const { data: updatedServer, error } = await kickMember(
-          server.id,
-          memberId
-        );
+        const { error } = await kickMember(server.id, memberId);
 
         if (error) {
           toast.error(error);
           return;
         }
-        if (updatedServer) {
-          onOpen(MODAL_TYPES.MANAGE_MEMBERS, { server: updatedServer });
-        }
+        const updatedMembers = server.members.filter(
+          (member) => member.id !== memberId
+        );
+
+        onOpen(MODAL_TYPES.MANAGE_MEMBERS, {
+          server: {
+            ...server,
+            members: updatedMembers,
+          } as ServerWithMembersWithProfiles,
+        });
+
+        router.refresh();
       } catch (error) {
         toast.error("Failed to kick member");
       } finally {
@@ -125,6 +144,7 @@ export const ManageMembersModal = () => {
       }
     });
   };
+
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
       <DialogContent className="bg-white text-black overflow-hidden">

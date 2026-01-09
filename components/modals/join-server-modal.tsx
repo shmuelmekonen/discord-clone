@@ -45,24 +45,14 @@ const JoinServerModal = ({
           },
         });
 
-        const {
-          data: serverToJoin,
-          error,
-          joinedNew,
-        } = await joinServerWithInviteUrl(inviteCode);
+        const { data, error } = await joinServerWithInviteUrl(inviteCode);
 
-        if (error) {
-          toast.error(`${error}`);
+        if (error || !data) {
+          toast.error(error || "Failed to join");
           return;
         }
 
-        if (!serverToJoin) {
-          router.refresh();
-          toast.info("Please wait while we're updating your view...", {
-            duration: 3000,
-          });
-          return;
-        }
+        const { server: serverToJoin, joinedNew } = data;
 
         if (joinedNew) {
           toast.success(`Welcome to ${serverToJoin.name}'s server!`);
