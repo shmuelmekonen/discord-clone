@@ -27,7 +27,7 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const profile = await currentProfile();
+  // const profile = await currentProfile();
 
   return (
     <ClerkProvider>
@@ -48,7 +48,7 @@ export default async function RootLayout({
             enableSystem={false}
             storageKey="discord-theme"
           >
-            <ModalProvider profileId={profile?.id} />
+            <ModalProvider />
             {children}
             <Toaster richColors position="bottom-right" />
           </ThemeProvider>

@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
 import { initialProfile } from "@/lib/initial-profile";
 import { CreateServerModal } from "@/components/modals/create-server-modal";
+import { NavigationSidebar } from "@/components/navigation/navigation-sidebar";
 
 const SetupPage = async () => {
   const profile = await initialProfile();
@@ -22,11 +23,15 @@ const SetupPage = async () => {
   // אם נמצא שרת, נעבור אליו
   if (server) return redirect(`/servers/${server.id}`);
 
-  // אם אין שרת, נשאר בכתובת "/" ונציג את המודאל
-  // המודאל יופיע לצד ה-NavigationSidebar הריק
   return (
-    <div className="h-full flex items-center justify-center">
-      <CreateServerModal isInitial profileId={profile.id} />
+    <div className="h-full">
+      <div className="hidden md:flex h-full w-[72px] z-30 flex-col fixed inset-y-0">
+        <NavigationSidebar />
+      </div>
+
+      <main className="md:pl-[72px] h-full flex items-center justify-center">
+        <CreateServerModal isInitial />
+      </main>
     </div>
   );
 };
