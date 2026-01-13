@@ -15,7 +15,6 @@ const ServerIdLayout = async ({
 
   const { serverId } = await params;
 
-  // ולידציה שהשרת קיים והמשתמש חבר בו
   const server = await db.server.findUnique({
     where: {
       id: serverId,
