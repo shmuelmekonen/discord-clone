@@ -110,7 +110,7 @@ export const EditServerModal = () => {
 
         // router.push(`/servers/${editedServer.id}`);
       } catch (err) {
-        toast.error("An unexpected error occurred.");
+        toast.error("Failed to edit server");
       } finally {
         clearAction(serverId);
       }

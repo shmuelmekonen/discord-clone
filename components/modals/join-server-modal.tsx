@@ -58,7 +58,7 @@ const JoinServerModal = ({
           toast.success(`Welcome to ${serverToJoin.name}'s server!`);
         }
         router.push(`/servers/${serverToJoin.id}`);
-      } catch (error) {
+      } catch (err) {
         toast.error("Failed to join server");
       } finally {
         clearAction(tempId);

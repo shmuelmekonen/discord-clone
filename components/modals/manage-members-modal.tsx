@@ -106,7 +106,7 @@ export const ManageMembersModal = () => {
         }
 
         router.refresh();
-      } catch (error) {
+      } catch (err) {
         toast.error("Failed to update role");
       } finally {
         clearMemberAction(memberId);
@@ -137,7 +137,7 @@ export const ManageMembersModal = () => {
         });
 
         router.refresh();
-      } catch (error) {
+      } catch (err) {
         toast.error("Failed to kick member");
       } finally {
         clearMemberAction(memberId);

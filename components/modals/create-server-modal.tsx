@@ -125,7 +125,7 @@ export const CreateServerModal = ({
         form.reset();
 
         router.push(`/servers/${server.id}`);
-      } catch (error) {
+      } catch (err) {
         toast.error("Failed to create server");
       } finally {
         clearAction(tempId);

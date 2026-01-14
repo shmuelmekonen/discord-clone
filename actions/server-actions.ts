@@ -62,8 +62,8 @@ export const createServer = async (
 
     revalidatePath("/");
     return { data: server, error: null };
-  } catch (error) {
-    console.error("[CREATE_SERVER_ACTION]", error);
+  } catch (err) {
+    console.error("[CREATE_SERVER_ACTION]", err);
     return {
       data: null,
       error: USER_MESSAGES.GENERIC_ERROR,
@@ -99,8 +99,8 @@ export const renewInviteUrl = async (
     revalidatePath(`/servers/${updatedServer.id}`);
 
     return { data: updatedServer, error: null };
-  } catch (error) {
-    console.error("[RENEW_INVITE_CODE_ERROR]", error);
+  } catch (err) {
+    console.error("[RENEW_INVITE_CODE_ERROR]", err);
 
     return {
       data: null,
@@ -166,8 +166,8 @@ export const joinServerWithInviteUrl = async (
       data: { server: updatedServer, joinedNew: true },
       error: null,
     };
-  } catch (error) {
-    console.error("[JOIN_SERVER_WITH_INVITE_CODE_ERROR]", error);
+  } catch (err) {
+    console.error("[JOIN_SERVER_WITH_INVITE_CODE_ERROR]", err);
     return {
       data: null,
       error: USER_MESSAGES.GENERIC_ERROR,
@@ -220,8 +220,8 @@ export const editServer = async (
     revalidatePath("/");
 
     return { data: editedServer, error: null };
-  } catch (error) {
-    console.error("[EDIT_SERVER_ERROR]", error);
+  } catch (err) {
+    console.error("[EDIT_SERVER_ERROR]", err);
     return {
       data: null,
       error: USER_MESSAGES.GENERIC_ERROR,
@@ -282,8 +282,8 @@ export const leaveServer = async (
       data: { nextServerId: nextServer?.id || null },
       error: null,
     };
-  } catch (error) {
-    console.error("[LEAVE_SERVER_ERROR]", error);
+  } catch (err) {
+    console.error("[LEAVE_SERVER_ERROR]", err);
     return {
       data: null,
       error: USER_MESSAGES.GENERIC_ERROR,
@@ -322,8 +322,8 @@ export const deleteServer = async (
 
     revalidatePath("/");
     return { data: { nextServerId: nextServer?.id || null }, error: null };
-  } catch (error) {
-    console.error("[DELETE_SERVER_ERROR]", error);
+  } catch (err) {
+    console.error("[DELETE_SERVER_ERROR]", err);
     return {
       data: null,
       error: USER_MESSAGES.GENERIC_ERROR,

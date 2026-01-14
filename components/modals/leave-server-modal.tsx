@@ -46,7 +46,7 @@ export const LeaveServerModal = () => {
           return;
         }
         router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
-      } catch (error) {
+      } catch (err) {
         toast.error("Failed to leave server");
       } finally {
         clearAction(serverId);

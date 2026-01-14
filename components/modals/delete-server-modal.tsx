@@ -46,7 +46,7 @@ export const DeleteServerModal = () => {
         }
 
         router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
-      } catch (error) {
+      } catch (err) {
         toast.error("Failed to delete server");
       } finally {
         clearAction(serverId);

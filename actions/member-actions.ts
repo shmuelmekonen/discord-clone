@@ -57,8 +57,8 @@ export const updateMemberRole = async (
 
     revalidatePath(`/servers/${serverId}`);
     return { data: server, error: null };
-  } catch (error) {
-    console.error("[UPDATE_MEMBER_ROLE_ERROR]", error);
+  } catch (err) {
+    console.error("[UPDATE_MEMBER_ROLE_ERROR]", err);
     return {
       data: null,
       error: USER_MESSAGES.GENERIC_ERROR,
@@ -109,8 +109,8 @@ export const kickMember = async (
     });
     revalidatePath(`/servers/${serverId}`);
     return { data: server, error: null };
-  } catch (error) {
-    console.error("[KICK_MEMBER_ERROR]", error);
+  } catch (err) {
+    console.error("[KICK_MEMBER_ERROR]", err);
     return {
       data: null,
       error: USER_MESSAGES.GENERIC_ERROR,

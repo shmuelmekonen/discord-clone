@@ -65,8 +65,8 @@ export const createChannel = async (
     revalidatePath(`/servers/${updatedServer.id}`);
 
     return { data: updatedServer, error: null };
-  } catch (error) {
-    console.error("[CREATE_CHANNEL_ERROR]", error);
+  } catch (err) {
+    console.error("[CREATE_CHANNEL_ERROR]", err);
     return {
       data: null,
       error: USER_MESSAGES.GENERIC_ERROR,
