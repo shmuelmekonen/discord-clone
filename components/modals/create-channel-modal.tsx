@@ -39,7 +39,7 @@ import { useRouter } from "next/navigation";
 import { ChannelType } from "@prisma/client";
 import { MODAL_TYPES } from "@/lib/constants";
 
-export const CreateChennelModal = () => {
+export const CreateChannelModal = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
 
