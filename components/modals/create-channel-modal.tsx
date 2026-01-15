@@ -44,7 +44,7 @@ export const CreateChennelModal = () => {
   const [generalError, setGeneralError] = useState<string | null>(null);
 
   const { isOpen, onClose, type, data } = useModal();
-  const { server } = data;
+  const { server, channelType } = data;
   const isModalOpen = isOpen && type === MODAL_TYPES.CREATE_CHANNEL;
 
   useEffect(() => {
@@ -55,9 +55,17 @@ export const CreateChennelModal = () => {
     resolver: zodResolver(channelSchema),
     defaultValues: {
       name: "",
-      type: ChannelType.TEXT,
+      type: channelType || ChannelType.TEXT,
     },
   });
+
+  useEffect(() => {
+    if (channelType) {
+      form.setValue("type", channelType);
+    } else {
+      form.setValue("type", ChannelType.TEXT);
+    }
+  }, [channelType, form]);
 
   const isLoading = form.formState.isSubmitting;
   const router = useRouter();

@@ -1,11 +1,12 @@
 import { MODAL_TYPES } from "@/lib/constants";
-import { Server } from "@prisma/client";
+import { ChannelType, Server } from "@prisma/client";
 import { create } from "zustand";
 
 export type ModalType = (typeof MODAL_TYPES)[keyof typeof MODAL_TYPES];
 
 interface ModalData {
   server?: Server;
+  channelType?: ChannelType;
 }
 
 interface ModalStore {
