@@ -18,7 +18,8 @@ export const MODAL_TYPES = {
   CREATE_CHANNEL: "createChannel",
   LEAVE_SERVER: "leaveServer",
   DELETE_SERVER: "deleteServer",
-  JOIN_SERVER: "joinServer",
+  DELETE_CHANNEL: "deleteChannel",
+  // JOIN_SERVER: "joinServer",
 } as const;
 
 export const APP_ROUTES = {

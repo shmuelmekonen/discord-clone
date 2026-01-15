@@ -8,7 +8,8 @@ import { EditServerModal } from "@/components/modals/edit-server-modal";
 import { ManageMembersModal } from "@/components/modals/manage-members-modal";
 import { CreateChannelModal } from "@/components/modals/create-channel-modal";
 import { LeaveServerModal } from "@/components/modals/leave-server-modal";
-import { DeleteServerModal } from "../modals/delete-server-modal";
+import { DeleteServerModal } from "@/components/modals/delete-server-modal";
+import { DeleteChannelModal } from "@/components/modals/delete-channel-modal";
 
 interface ModalProviderProps {
   profileId?: string;
@@ -31,6 +32,7 @@ export const ModalProvider = ({ profileId }: ModalProviderProps) => {
       <CreateChannelModal />
       <LeaveServerModal />
       <DeleteServerModal />
+      <DeleteChannelModal />
     </>
   );
 };
