@@ -60,12 +60,13 @@ export const CreateChannelModal = () => {
   });
 
   useEffect(() => {
-    if (channelType) {
-      form.setValue("type", channelType);
-    } else {
-      form.setValue("type", ChannelType.TEXT);
+    if (isModalOpen) {
+      form.reset({
+        name: "",
+        type: channelType || ChannelType.TEXT,
+      });
     }
-  }, [channelType, form]);
+  }, [isModalOpen, channelType, form.reset]);
 
   const isLoading = form.formState.isSubmitting;
   const router = useRouter();
@@ -104,7 +105,7 @@ export const CreateChannelModal = () => {
   };
 
   const handleClose = () => {
-    form.reset();
+    // form.reset();
     onClose();
   };
 
