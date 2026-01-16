@@ -29,11 +29,11 @@ export const channelSchema = z.object({
     .min(1, {
       message: "Channel name is required.",
     })
-    .refine((name) => name !== CHANNEL_NAMES.GENERAL, {
+    .refine((name) => name.toLowerCase() !== CHANNEL_NAMES.GENERAL, {
       message: `Channel name cannot be '${CHANNEL_NAMES.GENERAL}'`,
     })
     .max(32, { message: "Server name must be 32 characters or less." }),
-  type: z.enum(ChannelType),
+  type: z.enum([ChannelType.TEXT, ChannelType.AUDIO, ChannelType.VIDEO]),
 });
 
 export type ChannelSchemaType = z.infer<typeof channelSchema>;
