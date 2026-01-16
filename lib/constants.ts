@@ -19,6 +19,7 @@ export const MODAL_TYPES = {
   LEAVE_SERVER: "leaveServer",
   DELETE_SERVER: "deleteServer",
   DELETE_CHANNEL: "deleteChannel",
+  EDIT_CHANNEL: "editChannel",
   // JOIN_SERVER: "joinServer",
 } as const;
 

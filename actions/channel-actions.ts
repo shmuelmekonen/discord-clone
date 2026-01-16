@@ -75,14 +75,14 @@ export const createChannel = async (
   }
 };
 
-type DeleteChannelResult = {
+type ChannelResult = {
   updatedServerId: string | null;
 };
 
 export const deleteChannel = async (
   channelId: string,
   serverId: string
-): Promise<ActionResponse<DeleteChannelResult>> => {
+): Promise<ActionResponse<ChannelResult>> => {
   try {
     const profile = await currentProfile();
     if (!profile)
@@ -92,7 +92,7 @@ export const deleteChannel = async (
         code: ACTION_ERRORS.UNAUTHORIZED,
       };
 
-    if (!channelId || !serverId)
+    if (!serverId || !channelId)
       return {
         data: null,
         error: USER_MESSAGES.GENERIC_ERROR,
@@ -128,6 +128,80 @@ export const deleteChannel = async (
     return { data: { updatedServerId: serverId }, error: null };
   } catch (err) {
     console.error("[DELETE_CHANNEL_ERROR]", err);
+    return {
+      data: null,
+      error: USER_MESSAGES.GENERIC_ERROR,
+      code: ACTION_ERRORS.INTERNAL_ERROR,
+    };
+  }
+};
+
+export const editChannel = async (
+  serverId: string,
+  channelId: string,
+  values: ChannelSchemaType
+): Promise<ActionResponse<ChannelResult>> => {
+  try {
+    const profile = await currentProfile();
+    if (!profile) {
+      return {
+        data: null,
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      };
+    }
+
+    if (!serverId || !channelId) {
+      return {
+        data: null,
+        error: USER_MESSAGES.GENERIC_ERROR,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      };
+    }
+
+    const validatedData = channelSchema.safeParse(values);
+    if (!validatedData.success)
+      return {
+        data: null,
+        error: USER_MESSAGES.VALIDATION_ERROR,
+        code: ACTION_ERRORS.VALIDATION_ERROR,
+      };
+
+    const { name, type } = validatedData.data;
+
+    const server = await db.server.update({
+      where: {
+        id: serverId,
+        members: {
+          some: {
+            profileId: profile.id,
+            role: {
+              in: [MemberRole.ADMIN, MemberRole.MODERATOR],
+            },
+          },
+        },
+      },
+      data: {
+        channels: {
+          update: {
+            where: {
+              id: channelId,
+              NOT: {
+                name: CHANNEL_NAMES.GENERAL,
+              },
+            },
+            data: {
+              name,
+              type,
+            },
+          },
+        },
+      },
+    });
+    revalidatePath(`/servers/${serverId}`);
+    return { data: { updatedServerId: serverId }, error: null };
+  } catch (err) {
+    console.error("[EDIT_CHANNEL_ERROR]", err);
     return {
       data: null,
       error: USER_MESSAGES.GENERIC_ERROR,
