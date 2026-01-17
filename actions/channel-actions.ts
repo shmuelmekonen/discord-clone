@@ -7,7 +7,7 @@ import { channelSchema, ChannelSchemaType } from "@/lib/validations/server";
 
 import { revalidatePath } from "next/cache";
 import { ACTION_ERRORS, CHANNEL_NAMES, USER_MESSAGES } from "@/lib/constants";
-import { ActionResponse } from "@/types";
+import { ActionResponse, ChannelResult } from "@/types";
 
 export const createChannel = async (
   serverId: string,
@@ -73,10 +73,6 @@ export const createChannel = async (
       code: ACTION_ERRORS.INTERNAL_ERROR,
     };
   }
-};
-
-type ChannelResult = {
-  updatedServerId: string | null;
 };
 
 export const deleteChannel = async (

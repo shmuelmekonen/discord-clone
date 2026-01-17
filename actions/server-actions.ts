@@ -9,7 +9,11 @@ import { v4 as uuidv4 } from "uuid";
 
 import { revalidatePath } from "next/cache";
 import { ACTION_ERRORS, CHANNEL_NAMES, USER_MESSAGES } from "@/lib/constants";
-import { ActionResponse } from "@/types";
+import {
+  ActionResponse,
+  JoinServerData,
+  LeaveOrDeleteServerResult,
+} from "@/types";
 
 export const createServer = async (
   values: ServerSchemaType
@@ -108,11 +112,6 @@ export const renewInviteUrl = async (
       code: ACTION_ERRORS.INTERNAL_ERROR,
     };
   }
-};
-
-type JoinServerData = {
-  server: Server;
-  joinedNew: boolean;
 };
 
 export const joinServerWithInviteUrl = async (
@@ -228,10 +227,6 @@ export const editServer = async (
       code: ACTION_ERRORS.INTERNAL_ERROR,
     };
   }
-};
-
-type LeaveOrDeleteServerResult = {
-  nextServerId: string | null;
 };
 
 export const leaveServer = async (
