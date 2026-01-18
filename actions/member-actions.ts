@@ -7,11 +7,12 @@ import { Server, MemberRole } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { ACTION_ERRORS, USER_MESSAGES } from "@/lib/constants";
 import { ActionResponse } from "@/types";
+import { handleServerActionError } from "@/lib/handle-server-action-error";
 
 export const updateMemberRole = async (
   serverId: string,
   memberId: string,
-  role: MemberRole
+  role: MemberRole,
 ): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
@@ -59,17 +60,13 @@ export const updateMemberRole = async (
     return { data: server, error: null };
   } catch (err) {
     console.error("[UPDATE_MEMBER_ROLE_ERROR]", err);
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err);
   }
 };
 
 export const kickMember = async (
   serverId: string,
-  memberId: string
+  memberId: string,
 ): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
@@ -111,10 +108,6 @@ export const kickMember = async (
     return { data: server, error: null };
   } catch (err) {
     console.error("[KICK_MEMBER_ERROR]", err);
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err);
   }
 };

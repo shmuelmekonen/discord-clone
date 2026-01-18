@@ -38,13 +38,18 @@ export const ACTION_ERRORS = {
   DB_ERROR: "DB_ERROR",
   INVALID_PARAMETERS: "INVALID_PARAMETERS",
   NOT_FOUND: "NOT_FOUND",
+  CONFLICT: "CONFLICT",
 } as const;
 
 export const USER_MESSAGES = {
   GENERIC_ERROR: "Something went wrong. Please try again later.",
   UNAUTHORIZED: "You must be logged in to perform this action.",
   VALIDATION_ERROR: "Invalid data provided",
-  NOT_FOUND: "The requested resource was not found.",
+  NOT_FOUND:
+    "The requested resource was not found or you don't have permission.",
+  CONFLICT: "This record already exists.",
+  INVITE_NOT_FOUND: "This invite code is invalid or has expired.",
+  ALREADY_MEMBER: "You are already a member of this server.",
 } as const;
 
 // export const VALIDATION_LIMITS = {

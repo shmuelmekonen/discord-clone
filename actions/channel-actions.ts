@@ -8,10 +8,11 @@ import { channelSchema, ChannelSchemaType } from "@/lib/validations/server";
 import { revalidatePath } from "next/cache";
 import { ACTION_ERRORS, CHANNEL_NAMES, USER_MESSAGES } from "@/lib/constants";
 import { ActionResponse, ChannelResult } from "@/types";
+import { handleServerActionError } from "@/lib/handle-server-action-error";
 
 export const createChannel = async (
   serverId: string,
-  values: ChannelSchemaType
+  values: ChannelSchemaType,
 ): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
@@ -67,17 +68,13 @@ export const createChannel = async (
     return { data: updatedServer, error: null };
   } catch (err) {
     console.error("[CREATE_CHANNEL_ERROR]", err);
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err);
   }
 };
 
 export const deleteChannel = async (
   channelId: string,
-  serverId: string
+  serverId: string,
 ): Promise<ActionResponse<ChannelResult>> => {
   try {
     const profile = await currentProfile();
@@ -124,18 +121,14 @@ export const deleteChannel = async (
     return { data: { updatedServerId: serverId }, error: null };
   } catch (err) {
     console.error("[DELETE_CHANNEL_ERROR]", err);
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err);
   }
 };
 
 export const editChannel = async (
   serverId: string,
   channelId: string,
-  values: ChannelSchemaType
+  values: ChannelSchemaType,
 ): Promise<ActionResponse<ChannelResult>> => {
   try {
     const profile = await currentProfile();
@@ -198,10 +191,6 @@ export const editChannel = async (
     return { data: { updatedServerId: serverId }, error: null };
   } catch (err) {
     console.error("[EDIT_CHANNEL_ERROR]", err);
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err);
   }
 };

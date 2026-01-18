@@ -14,9 +14,10 @@ import {
   JoinServerData,
   LeaveOrDeleteServerResult,
 } from "@/types";
+import { handleServerActionError } from "@/lib/handle-server-action-error";
 
 export const createServer = async (
-  values: ServerSchemaType
+  values: ServerSchemaType,
 ): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
@@ -68,16 +69,12 @@ export const createServer = async (
     return { data: server, error: null };
   } catch (err) {
     console.error("[CREATE_SERVER_ACTION]", err);
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err);
   }
 };
 
 export const renewInviteUrl = async (
-  serverId: string
+  serverId: string,
 ): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
@@ -105,17 +102,12 @@ export const renewInviteUrl = async (
     return { data: updatedServer, error: null };
   } catch (err) {
     console.error("[RENEW_INVITE_CODE_ERROR]", err);
-
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err);
   }
 };
 
 export const joinServerWithInviteUrl = async (
-  inviteCode: string
+  inviteCode: string,
 ): Promise<ActionResponse<JoinServerData>> => {
   try {
     const profile = await currentProfile();
@@ -167,17 +159,16 @@ export const joinServerWithInviteUrl = async (
     };
   } catch (err) {
     console.error("[JOIN_SERVER_WITH_INVITE_CODE_ERROR]", err);
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err, {
+      notFound: USER_MESSAGES.INVITE_NOT_FOUND,
+      conflict: USER_MESSAGES.ALREADY_MEMBER,
+    });
   }
 };
 
 export const editServer = async (
   serverId: string,
-  values: ServerSchemaType
+  values: ServerSchemaType,
 ): Promise<ActionResponse<Server>> => {
   try {
     const profile = await currentProfile();
@@ -221,16 +212,12 @@ export const editServer = async (
     return { data: editedServer, error: null };
   } catch (err) {
     console.error("[EDIT_SERVER_ERROR]", err);
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err);
   }
 };
 
 export const leaveServer = async (
-  serverId: string
+  serverId: string,
 ): Promise<ActionResponse<LeaveOrDeleteServerResult>> => {
   try {
     const profile = await currentProfile();
@@ -279,16 +266,12 @@ export const leaveServer = async (
     };
   } catch (err) {
     console.error("[LEAVE_SERVER_ERROR]", err);
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err);
   }
 };
 
 export const deleteServer = async (
-  serverId: string
+  serverId: string,
 ): Promise<ActionResponse<LeaveOrDeleteServerResult>> => {
   try {
     const profile = await currentProfile();
@@ -319,10 +302,6 @@ export const deleteServer = async (
     return { data: { nextServerId: nextServer?.id || null }, error: null };
   } catch (err) {
     console.error("[DELETE_SERVER_ERROR]", err);
-    return {
-      data: null,
-      error: USER_MESSAGES.GENERIC_ERROR,
-      code: ACTION_ERRORS.INTERNAL_ERROR,
-    };
+    return handleServerActionError(err);
   }
 };
