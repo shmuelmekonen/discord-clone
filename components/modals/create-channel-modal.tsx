@@ -37,7 +37,7 @@ import { createChannel } from "@/actions/channel-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { ChannelType } from "@prisma/client";
-import { MODAL_TYPES } from "@/lib/constants";
+import { ACTION_ERRORS, MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
 
 export const CreateChannelModal = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -76,21 +76,25 @@ export const CreateChannelModal = () => {
       setGeneralError(null);
       const serverId = server?.id;
       if (!serverId) {
-        setGeneralError("An unexpected error occurred.");
+        setGeneralError(USER_MESSAGES.GENERIC_ERROR);
         return;
       }
-      const { data: updatedServer, error } = await createChannel(
-        serverId,
-        values
-      );
+      const result = await createChannel(serverId, values);
+      const { data: updatedServer, error, code } = result;
 
+      if (code === ACTION_ERRORS.CONFLICT) {
+        form.setError("name", {
+          message: "Channel name already exists.",
+        });
+        return;
+      }
       if (error) {
         setGeneralError(error);
         return;
       }
 
       if (!updatedServer) {
-        setGeneralError("An unexpected error occurred.");
+        setGeneralError(USER_MESSAGES.GENERIC_ERROR);
         return;
       }
 
@@ -100,7 +104,7 @@ export const CreateChannelModal = () => {
       router.refresh();
       router.push(`/servers/${server.id}`);
     } catch (error) {
-      setGeneralError("An unexpected error occurred.");
+      setGeneralError(USER_MESSAGES.GENERIC_ERROR);
     }
   };
 
@@ -128,7 +132,7 @@ export const CreateChannelModal = () => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-zinc-500">
+                    <FormLabel className="uppercase font-bold text-zinc-500">
                       Channel Name
                     </FormLabel>
                     <FormControl>
@@ -148,7 +152,9 @@ export const CreateChannelModal = () => {
                 name="type"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Channel Type</FormLabel>
+                    <FormLabel className="uppercase font-bold text-zinc-500">
+                      Channel Type
+                    </FormLabel>
                     <Select
                       disabled={isLoading}
                       onValueChange={field.onChange}

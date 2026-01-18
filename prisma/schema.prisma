@@ -91,4 +91,5 @@ model Channel {
 
   @@index([profileId])
   @@index([serverId])
+  @@unique([serverId, name])
 }
