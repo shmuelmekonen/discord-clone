@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
@@ -31,13 +31,8 @@ import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
 import { createServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
-import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 import { Loader2 } from "lucide-react";
-import {
-  ACTION_ERRORS,
-  MODAL_TYPES,
-  OPTIMISTIC_ACTIONS,
-} from "@/lib/constants";
+import { MODAL_TYPES } from "@/lib/constants";
 
 interface ServerModalProps {
   isInitial?: boolean;
@@ -48,8 +43,6 @@ export const CreateServerModal = ({
   profileId,
   isInitial = false,
 }: ServerModalProps) => {
-  const { dispatchOptimistic, clearAction } = useServerNavigationStore();
-  const [isPending, startTransition] = useTransition();
   const [isMounted, setIsMounted] = useState(false);
 
   const { isOpen, onClose, type } = useModal();
@@ -70,67 +63,38 @@ export const CreateServerModal = ({
     },
   });
 
-  const isLoading = form.formState.isSubmitting || isPending;
+  const isLoading = form.formState.isSubmitting;
   const router = useRouter();
 
   const onSubmit = async (values: ServerSchemaType) => {
     if (isLoading) return;
 
-    const tempId = `temp-${Date.now()}`;
+    try {
+      const result = await createServer(values);
+      const { data: server, error, code, validationErrors } = result;
 
-    startTransition(async () => {
-      try {
-        dispatchOptimistic(tempId, {
-          type: OPTIMISTIC_ACTIONS.CREATE,
-          server: {
-            id: tempId,
-            name: values.name,
-            imageUrl: values.imageUrl,
-            profileId: profileId || "",
-            inviteCode: "",
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        });
-
-        const {
-          data: server,
-          error,
-          code,
-          validationErrors,
-        } = await createServer(values);
-
-        if (error) {
-          if (code === ACTION_ERRORS.VALIDATION_ERROR && validationErrors) {
-            Object.keys(validationErrors).forEach((key) => {
-              const fieldKey = key as keyof ServerSchemaType;
-              form.setError(fieldKey, { message: validationErrors[key]?.[0] });
-            });
-          } else {
-            toast.error(error);
-          }
-          return;
-        }
-
-        if (!server?.id) {
-          onClose();
-          router.refresh();
-          toast.info("Changes saved! We're updating your view...", {
-            duration: 3000,
-          });
-          return;
-        }
-
-        onClose();
-        form.reset();
-
-        router.push(`/servers/${server.id}`);
-      } catch (err) {
-        toast.error("Failed to create server");
-      } finally {
-        clearAction(tempId);
+      if (error) {
+        toast.error(error);
+        return;
       }
-    });
+
+      if (!server) {
+        onClose();
+        router.refresh();
+        toast.info("Changes saved! We're updating your view...", {
+          duration: 3000,
+        });
+        return;
+      }
+
+      onClose();
+      form.reset();
+      router.refresh();
+      router.push(`/servers/${server.id}`);
+      toast.success("Server created successfully!");
+    } catch (err) {
+      toast.error("Failed to create server");
+    }
   };
 
   const handleClose = () => {
