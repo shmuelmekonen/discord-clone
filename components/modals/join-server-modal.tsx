@@ -5,9 +5,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
-import { UserPlus } from "lucide-react";
+import { Loader2, UserPlus } from "lucide-react";
 import { useState, useTransition } from "react";
-import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 
 interface JoinServerModalProps {
   server: {
@@ -26,44 +25,32 @@ const JoinServerModal = ({
   profileId,
 }: JoinServerModalProps) => {
   const router = useRouter();
-  const { dispatchOptimistic, clearAction } = useServerNavigationStore();
-  const [isPending, startTransition] = useTransition();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onJoin = async () => {
-    const tempId = `temp-${Date.now()}`;
+    try {
+      setIsLoading(true);
 
-    startTransition(async () => {
-      try {
-        dispatchOptimistic(tempId, {
-          type: "CREATE",
-          server: {
-            ...server,
-            id: tempId,
-            inviteCode,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        });
+      const result = await joinServerWithInviteUrl(inviteCode);
+      const { data, error } = result;
 
-        const { data, error } = await joinServerWithInviteUrl(inviteCode);
-
-        if (error || !data) {
-          toast.error(error || "Failed to join");
-          return;
-        }
-
-        const { server: serverToJoin, joinedNew } = data;
-
-        if (joinedNew) {
-          toast.success(`Welcome to ${serverToJoin.name}'s server!`);
-        }
-        router.push(`/servers/${serverToJoin.id}`);
-      } catch (err) {
-        toast.error("Failed to join server");
-      } finally {
-        clearAction(tempId);
+      if (error || !data) {
+        toast.error(error || "Failed to join");
+        return;
       }
-    });
+
+      const { server: joinedServer, joinedNew } = data;
+
+      if (joinedNew) {
+        toast.success(`Welcome to ${joinedServer.name}'s server!`);
+      }
+      router.refresh();
+      router.push(`/servers/${joinedServer.id}`);
+    } catch (err) {
+      toast.error("Failed to join server");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -82,16 +69,22 @@ const JoinServerModal = ({
       <h1 className="text-white text-2xl font-bold mb-6">{server.name}</h1>
       <div className="flex flex-col gap-y-3">
         <Button
-          disabled={isPending}
+          disabled={isLoading}
           onClick={onJoin}
           size="lg"
           className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold"
         >
-          Join Server
-          <UserPlus className="w-5 h-5 mr-2" />
+          {isLoading ? (
+            <Loader2 className="animate-spin h-5 w-5" />
+          ) : (
+            <>
+              Join Server
+              <UserPlus className="w-5 h-5 mr-2" />
+            </>
+          )}
         </Button>
         <Button
-          disabled={isPending}
+          disabled={isLoading}
           onClick={() => router.push("/")}
           variant="ghost"
           className="text-zinc-400 hover:text-white"

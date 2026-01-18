@@ -30,19 +30,15 @@ import { FileUpload } from "@/components/file-upload";
 import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
 import { editServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
-import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 import { toast } from "sonner";
-import { ACTION_ERRORS, MODAL_TYPES } from "@/lib/constants";
+import { ACTION_ERRORS, MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
 
 export const EditServerModal = () => {
-  const { dispatchOptimistic, clearAction } = useServerNavigationStore();
-
   const [isMounted, setIsMounted] = useState(false);
-
   const { isOpen, onClose, type, data } = useModal();
+  const router = useRouter();
 
   const isModalOpen = isOpen && type === MODAL_TYPES.EDIT_SERVER;
-
   const { server } = data;
 
   useEffect(() => {
@@ -67,60 +63,37 @@ export const EditServerModal = () => {
   }, [server, form, isModalOpen]);
 
   const isLoading = form.formState.isSubmitting;
-  const router = useRouter();
 
   const onSubmit = async (values: ServerSchemaType) => {
-    const serverId = server?.id;
-    if (!serverId || !server) return;
+    if (!server) return;
 
-    startTransition(async () => {
-      try {
-        dispatchOptimistic(serverId, {
-          type: "UPDATE",
-          server: { ...server, ...values },
-        });
-        onClose();
+    try {
+      const serverId = server.id;
 
-        const {
-          data: editedServer,
-          error,
-          code,
-          validationErrors,
-        } = await editServer(serverId, values);
+      const result = await editServer(serverId, values);
+      const { data: editedServer, error, code, validationErrors } = result;
 
-        if (error) {
-          if (code === ACTION_ERRORS.VALIDATION_ERROR && validationErrors) {
-            Object.keys(validationErrors).forEach((key) => {
-              const fieldKey = key as keyof ServerSchemaType;
-              form.setError(fieldKey, { message: validationErrors[key]?.[0] });
-            });
-          } else {
-            toast.error(error);
-          }
-          return;
-        }
-
-        if (!editedServer?.id) {
-          router.refresh();
-          toast.info("Changes saved! We're updating your view...", {
-            duration: 3000,
-          });
-          return;
-        }
-
-        // router.push(`/servers/${editedServer.id}`);
-      } catch (err) {
-        toast.error("Failed to edit server");
-      } finally {
-        clearAction(serverId);
+      if (error) {
+        toast.error(error);
+        return;
       }
-    });
+
+      if (!editedServer) {
+        toast.error(USER_MESSAGES.GENERIC_ERROR);
+        return;
+      }
+
+      form.reset();
+      router.refresh();
+      onClose();
+      toast.success("Server updated successfully!");
+    } catch (err) {
+      toast.error("Failed to edit server");
+    }
   };
 
   const handleClose = () => {
-    if (server) {
-      form.reset();
-    }
+    form.reset();
     onClose();
   };
 

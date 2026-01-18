@@ -16,42 +16,41 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { leaveServer } from "@/actions/server-actions";
-import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 import { MODAL_TYPES } from "@/lib/constants";
+import { Loader2 } from "lucide-react";
 
 export const LeaveServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
-  const { dispatchOptimistic, clearAction } = useServerNavigationStore();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const isModalOpen = isOpen && type === MODAL_TYPES.LEAVE_SERVER;
   const { server } = data;
 
-  const router = useRouter();
-
   const onClick = async () => {
     const serverId = server?.id;
-    if (!serverId) {
-      toast.error("Failed to leave server");
-      return;
-    }
-    startTransition(async () => {
-      try {
-        dispatchOptimistic(serverId, { type: "REMOVE", id: serverId });
-        onClose();
+    if (!serverId) return;
 
-        const { data, error } = await leaveServer(serverId);
+    try {
+      setIsLoading(true);
 
-        if (error) {
-          toast.error(error);
-          return;
-        }
-        router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
-      } catch (err) {
-        toast.error("Failed to leave server");
-      } finally {
-        clearAction(serverId);
+      const result = await leaveServer(serverId);
+      const { data, error } = result;
+
+      if (error) {
+        toast.error(error);
+        return;
       }
-    });
+
+      onClose();
+      router.refresh();
+      router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
+      toast.success("You left the server");
+    } catch (err) {
+      toast.error("Failed to leave server");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -71,11 +70,15 @@ export const LeaveServerModal = () => {
         </DialogHeader>
         <DialogFooter className="bg-gray-100 px-6 py-4">
           <div className="flex items-center justify-between w-full">
-            <Button onClick={onClose} variant="ghost">
+            <Button disabled={isLoading} onClick={onClose} variant="ghost">
               Cancel
             </Button>
-            <Button variant="primary" onClick={onClick}>
-              Confirm
+            <Button disabled={isLoading} variant="primary" onClick={onClick}>
+              {isLoading ? (
+                <Loader2 className="animate-spin h-4 w-4" />
+              ) : (
+                "Confirm"
+              )}
             </Button>
           </div>
         </DialogFooter>

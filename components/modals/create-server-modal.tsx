@@ -87,9 +87,9 @@ export const CreateServerModal = ({
         return;
       }
 
-      onClose();
       form.reset();
       router.refresh();
+      onClose();
       router.push(`/servers/${server.id}`);
       toast.success("Server created successfully!");
     } catch (err) {

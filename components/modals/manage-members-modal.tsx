@@ -1,7 +1,9 @@
 "use client";
 
-import { startTransition, useEffect, useOptimistic, useState } from "react";
-import { ServerWithMembersWithProfiles } from "@/types";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { MemberRole } from "@prisma/client";
+import { toast } from "sonner";
 import {
   Check,
   Gavel,
@@ -20,11 +22,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-
 import { ScrollArea } from "@/components/ui/scroll-area";
 import UserAvatar from "@/components/user-avatar";
-
-import { useModal } from "@/hooks/use-modal-store";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -36,15 +35,11 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSubTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Member, MemberRole } from "@prisma/client";
 
+import { useModal } from "@/hooks/use-modal-store";
 import { kickMember, updateMemberRole } from "@/actions/member-actions";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { membersReducer, MemberWithProfile } from "@/lib/optimistic-reducer";
-import { useMemberActionStore } from "@/hooks/use-member-action-store";
-import { MODAL_TYPES } from "@/lib/constants";
-import { useRouter } from "next/navigation";
+import { ServerWithMembersWithProfiles } from "@/types";
+import { MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
 
 const roleIconMap = {
   GUEST: null,
@@ -53,96 +48,59 @@ const roleIconMap = {
 };
 
 export const ManageMembersModal = () => {
-  const { activeMemberActions, dispatchMemberOptimistic, clearMemberAction } =
-    useMemberActionStore();
+  const router = useRouter();
   const { onOpen, isOpen, onClose, type, data } = useModal();
-  const { server } = data as { server: ServerWithMembersWithProfiles };
-
-  const [optimisticMembers, updateMembers] = useOptimistic(
-    (server?.members as MemberWithProfile[]) || [],
-    membersReducer
-  );
+  const [loadingId, setLoadingId] = useState<string>("");
 
   const isModalOpen = isOpen && type === MODAL_TYPES.MANAGE_MEMBERS;
-
-  const router = useRouter();
-
-  useEffect(() => {
-    startTransition(() => {
-      updateMembers(activeMemberActions);
-    });
-  }, [activeMemberActions, updateMembers]);
-
-  const onRoleChanged = async (memberId: string, role: MemberRole) => {
-    startTransition(async () => {
-      try {
-        dispatchMemberOptimistic(memberId, {
-          type: "MODIFY_ROLE",
-          id: memberId,
-          role,
-        });
-
-        const { error } = await updateMemberRole(server.id, memberId, role);
-
-        if (error) {
-          toast.error(error);
-          return;
-        }
-
-        const updatedMembers = server.members.map((member) => {
-          if (member.id === memberId) {
-            return { ...member, role };
-          }
-          return member;
-        });
-
-        if (updatedMembers) {
-          onOpen(MODAL_TYPES.MANAGE_MEMBERS, {
-            server: {
-              ...server,
-              members: updatedMembers,
-            } as ServerWithMembersWithProfiles,
-          });
-        }
-
-        router.refresh();
-      } catch (err) {
-        toast.error("Failed to update role");
-      } finally {
-        clearMemberAction(memberId);
-      }
-    });
-  };
+  const { server } = data as { server: ServerWithMembersWithProfiles };
 
   const onKick = async (memberId: string) => {
-    startTransition(async () => {
-      try {
-        dispatchMemberOptimistic(memberId, { type: "KICK", id: memberId });
+    try {
+      setLoadingId(memberId);
+      const result = await kickMember(server.id, memberId);
 
-        const { error } = await kickMember(server.id, memberId);
-
-        if (error) {
-          toast.error(error);
-          return;
-        }
-        const updatedMembers = server.members.filter(
-          (member) => member.id !== memberId
-        );
-
-        onOpen(MODAL_TYPES.MANAGE_MEMBERS, {
-          server: {
-            ...server,
-            members: updatedMembers,
-          } as ServerWithMembersWithProfiles,
-        });
-
-        router.refresh();
-      } catch (err) {
-        toast.error("Failed to kick member");
-      } finally {
-        clearMemberAction(memberId);
+      if (result.error) {
+        toast.error(result.error);
+        return;
       }
-    });
+
+      router.refresh();
+      if (result.data) {
+        onOpen(MODAL_TYPES.MANAGE_MEMBERS, {
+          server: result.data as ServerWithMembersWithProfiles,
+        });
+      }
+      toast.success("Member kicked");
+    } catch (error) {
+      toast.error(USER_MESSAGES.GENERIC_ERROR);
+    } finally {
+      setLoadingId("");
+    }
+  };
+
+  const onRoleChange = async (memberId: string, role: MemberRole) => {
+    try {
+      setLoadingId(memberId);
+      const result = await updateMemberRole(server.id, memberId, role);
+
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      router.refresh();
+      if (result.data) {
+        onOpen(MODAL_TYPES.MANAGE_MEMBERS, {
+          server: result.data as ServerWithMembersWithProfiles,
+        });
+      }
+      toast.success("Role updated");
+    } catch (error) {
+      toast.error(USER_MESSAGES.GENERIC_ERROR);
+    } finally {
+      setLoadingId("");
+    }
   };
 
   return (
@@ -158,87 +116,68 @@ export const ManageMembersModal = () => {
         </DialogHeader>
 
         <ScrollArea className="mt-8 max-h-60 pr-6">
-          {optimisticMembers.map((member) => {
-            const isPending = !!activeMemberActions[member.id];
-
-            return (
-              <div
-                key={member.id}
-                className={cn(
-                  "flex items-center gap-x-2 mb-6 transition",
-                  isPending && "opacity-50 pointer-events-none" // חסימת אינטראקציה בזמן טעינה
-                )}
-              >
-                <UserAvatar src={member.profile.imageUrl} />
-                <div className="flex flex-col gap-y-1">
-                  <div className="text-xs font-semibold flex items-center gap-x-1">
-                    {member.profile.name}
-                    {roleIconMap[member.role]}
-                  </div>
-                  <p className="text-xs text-zinc-500">
-                    {member.profile.email}
-                  </p>
+          {server?.members?.map((member) => (
+            <div key={member.id} className="flex items-center gap-x-2 mb-6">
+              <UserAvatar src={member.profile.imageUrl} />
+              <div className="flex flex-col gap-y-1">
+                <div className="text-xs font-semibold flex items-center gap-x-1">
+                  {member.profile.name}
+                  {roleIconMap[member.role]}
                 </div>
-
-                {/* לוגיקת כפתורים מול לואדר */}
-                <div className="ml-auto flex items-center">
-                  {isPending ? (
-                    <Loader2 className="animate-spin text-zinc-500 w-4 h-4" />
-                  ) : (
-                    // הצגת דרופדאון רק אם זה לא האדמין ולא בטעינה
-                    server.profileId !== member.profileId && (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger>
-                          <MoreVertical className="h-4 w-4 text-zinc-500" />
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent side="right">
-                          <DropdownMenuSub>
-                            <DropdownMenuSubTrigger className="flex items-center">
-                              <ShieldQuestion className="w-4 h-4 mr-2" />
-                              <span>Role</span>
-                            </DropdownMenuSubTrigger>
-                            <DropdownMenuPortal>
-                              <DropdownMenuSubContent>
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    onRoleChanged(member.id, "GUEST")
-                                  }
-                                  disabled={member.role === "GUEST"}
-                                >
-                                  <Shield className="h-4 w-4 mr-2" />
-                                  Guest
-                                  {member.role === "GUEST" && (
-                                    <Check className="h-4 w-4 ml-auto" />
-                                  )}
-                                </DropdownMenuItem>
-                                <DropdownMenuItem
-                                  onClick={() =>
-                                    onRoleChanged(member.id, "MODERATOR")
-                                  }
-                                  disabled={member.role === "MODERATOR"}
-                                >
-                                  <ShieldCheck className="h-4 w-4 mr-2" />
-                                  Moderator
-                                  {member.role === "MODERATOR" && (
-                                    <Check className="h-4 w-4 ml-auto" />
-                                  )}
-                                </DropdownMenuItem>
-                              </DropdownMenuSubContent>
-                            </DropdownMenuPortal>
-                          </DropdownMenuSub>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem onClick={() => onKick(member.id)}>
-                            <Gavel className="h-4 w-4 mr-2" />
-                            Kick
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )
-                  )}
-                </div>
+                <p className="text-xs text-zinc-500">{member.profile.email}</p>
               </div>
-            );
-          })}
+              <div className="ml-auto">
+                {server.profileId !== member.profileId &&
+                  loadingId !== member.id && (
+                    <DropdownMenu>
+                      <DropdownMenuTrigger>
+                        <MoreVertical className="h-4 w-4 text-zinc-500" />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent side="left">
+                        <DropdownMenuSub>
+                          <DropdownMenuSubTrigger className="flex items-center">
+                            <ShieldQuestion className="w-4 h-4 mr-2" />
+                            <span>Role</span>
+                          </DropdownMenuSubTrigger>
+                          <DropdownMenuPortal>
+                            <DropdownMenuSubContent>
+                              <DropdownMenuItem
+                                onClick={() => onRoleChange(member.id, "GUEST")}
+                              >
+                                <Shield className="h-4 w-4 mr-2" />
+                                Guest
+                                {member.role === "GUEST" && (
+                                  <Check className="h-4 w-4 ml-auto" />
+                                )}
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                onClick={() =>
+                                  onRoleChange(member.id, "MODERATOR")
+                                }
+                              >
+                                <ShieldCheck className="h-4 w-4 mr-2" />
+                                Moderator
+                                {member.role === "MODERATOR" && (
+                                  <Check className="h-4 w-4 ml-auto" />
+                                )}
+                              </DropdownMenuItem>
+                            </DropdownMenuSubContent>
+                          </DropdownMenuPortal>
+                        </DropdownMenuSub>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={() => onKick(member.id)}>
+                          <Gavel className="h-4 w-4 mr-2" />
+                          Kick
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  )}
+                {loadingId === member.id && (
+                  <Loader2 className="animate-spin text-zinc-500 ml-auto w-4 h-4" />
+                )}
+              </div>
+            </div>
+          ))}
         </ScrollArea>
       </DialogContent>
     </Dialog>

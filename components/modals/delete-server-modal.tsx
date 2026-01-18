@@ -1,7 +1,5 @@
 "use client";
 
-import { startTransition, useState } from "react";
-
 import {
   Dialog,
   DialogContent,
@@ -16,42 +14,42 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { deleteServer } from "@/actions/server-actions";
-import { useServerNavigationStore } from "@/hooks/use-server-navigation-store";
 import { MODAL_TYPES } from "@/lib/constants";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 export const DeleteServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
-  const { dispatchOptimistic, clearAction } = useServerNavigationStore();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const isModalOpen = isOpen && type === MODAL_TYPES.DELETE_SERVER;
   const { server } = data;
 
-  const router = useRouter();
-
   const onClick = async () => {
     const serverId = server?.id;
-    if (!serverId) {
-      return;
-    }
-    startTransition(async () => {
-      try {
-        dispatchOptimistic(serverId, { type: "REMOVE", id: serverId });
-        onClose();
+    if (!serverId) return;
 
-        const { data, error } = await deleteServer(serverId);
+    try {
+      setIsLoading(true);
 
-        if (error) {
-          toast.error(error);
-          return;
-        }
+      const result = await deleteServer(serverId);
+      const { data, error } = result;
 
-        router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
-      } catch (err) {
-        toast.error("Failed to delete server");
-      } finally {
-        clearAction(serverId);
+      if (error) {
+        toast.error(error);
+        return;
       }
-    });
+
+      onClose();
+      router.refresh();
+      router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
+      toast.success("Server deleted successfully");
+    } catch (err) {
+      toast.error("Failed to delete server");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -73,11 +71,15 @@ export const DeleteServerModal = () => {
 
         <DialogFooter className="bg-gray-100 px-6 py-4">
           <div className="flex items-center justify-between w-full">
-            <Button onClick={onClose} variant="ghost">
+            <Button disabled={isLoading} onClick={onClose} variant="ghost">
               Cancel
             </Button>
-            <Button variant="primary" onClick={onClick}>
-              Confirm
+            <Button disabled={isLoading} variant="primary" onClick={onClick}>
+              {isLoading ? (
+                <Loader2 className="animate-spin h-4 w-4" />
+              ) : (
+                "Confirm"
+              )}
             </Button>
           </div>
         </DialogFooter>

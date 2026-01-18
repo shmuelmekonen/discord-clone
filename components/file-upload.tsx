@@ -3,6 +3,7 @@
 import { X } from "lucide-react";
 import Image from "next/image";
 import { UploadDropzone } from "@/lib/uploadthing";
+import { toast } from "sonner";
 
 export const FileUpload = ({ onChange, value, endpoint }: any) => {
   const fileType = value?.split(".").pop();
@@ -31,12 +32,11 @@ export const FileUpload = ({ onChange, value, endpoint }: any) => {
     <UploadDropzone
       endpoint={endpoint}
       onClientUploadComplete={(res) => {
-        // וודא שה-URL נשלח בצורה נקייה
-        console.log("Upload finished! URL:", res?.[0].url); // בדוק אם זה מודפס בדפדפן
+        console.log("Upload finished! URL:", res?.[0].url);
         onChange(res?.[0].url);
       }}
       onUploadError={(error: Error) => {
-        alert(`ERROR! ${error.message}`); // זה יקפיץ חלונית אם יש שגיאה סמויה
+        toast.error(`Upload failed: ${error.message}`);
         console.error(error);
       }}
       appearance={{

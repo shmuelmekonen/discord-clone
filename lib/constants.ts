@@ -2,14 +2,6 @@ export const CHANNEL_NAMES = {
   GENERAL: "general",
 } as const;
 
-export const OPTIMISTIC_ACTIONS = {
-  CREATE: "CREATE",
-  UPDATE: "UPDATE",
-  REMOVE: "REMOVE",
-  KICK: "KICK",
-  MODIFY_ROLE: "MODIFY_ROLE",
-} as const;
-
 export const MODAL_TYPES = {
   CREATE_SERVER: "createServer",
   INVITE: "invite",
