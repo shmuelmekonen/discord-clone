@@ -4,6 +4,8 @@ import JoinServerModal from "@/components/modals/join-server-modal";
 
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface InviteCodeProps {
   params: Promise<{ inviteCode: string }>;
@@ -20,8 +22,19 @@ const InviteCodePage = async ({ params }: InviteCodeProps) => {
     select: { id: true, name: true, imageUrl: true, profileId: true },
   });
 
-  if (!server) return redirect("/");
-
+  if (!server) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center bg-[#313338] gap-y-4">
+        <h1 className="text-2xl font-bold text-white">Invalid Invite</h1>
+        <p className="text-zinc-400">
+          The invite link is invalid or has expired.
+        </p>
+        <Button asChild variant="primary">
+          <Link href="/">Go to Home</Link>
+        </Button>
+      </div>
+    );
+  }
   const isMember = await db.member.findFirst({
     where: { serverId: server.id, profileId: profile.id },
   });
