@@ -1,36 +1,118 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Modern Discord Clone (Next.js 15 Architecture)
 
-## Getting Started
+![Status](https://img.shields.io/badge/Status-Active_Development-green)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-teal)
+![Tailwind](https://img.shields.io/badge/Tailwind-CSS-cyan)
 
-First, run the development server:
+> 🚧 **Project Status:** This project is currently under **active development**.
+> I am pushing code daily. Feel free to check the [Commit History](https://github.com/shmuelmekonen/discord-clone/commits/main) to see my latest work on Real-time architecture!
+
+A full-stack Discord clone application built with modern web technologies. This project focuses on **performance**, **type-safety**, and **scalable architecture**.
+
+It features real-time server management, granular role-based permissions, and a robust database schema.
+
+---
+
+## ⚡ Key Improvements & Refactoring
+
+While inspired by a popular tutorial, this project represents a **significant architectural upgrade** to modern standards (Next.js 15).
+Major improvements I implemented:
+
+- **Server Actions Architecture:** Completely replaced the original API Routes (`app/api/...`) with **Server Actions**, enabling direct backend calls without Axios or HTTP overhead.
+- **Type-Safe Data Mutation:** Implemented end-to-end type safety using Zod validation on both client forms and server actions, preventing runtime errors.
+- **Next.js 15 Compatibility:** Upgraded codebase to handle Next.js 15 breaking changes, such as `Promise`-based params in Layouts and Pages (`await params`).
+- **Structured Error Handling:** Designed a custom `ActionResponse` pattern to standardize error management across the app, replacing generic HTTP status codes.
+
+---
+
+## 🚀 Tech Stack & Features
+
+### Core
+
+- **Framework:** [Next.js 15](https://nextjs.org/) (App Router)
+- **Language:** [TypeScript](https://www.typescriptlang.org/) (Strict mode)
+- **Database:** [PostgreSQL](https://www.postgresql.org/) (via [Neon](https://neon.tech/) / Local)
+- **ORM:** [Prisma](https://www.prisma.io/)
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
+
+### Services
+
+- **Auth:** [Clerk](https://clerk.com/) (User management & Middleware)
+- **Uploads:** [UploadThing](https://uploadthing.com/) (Server icons & Attachments)
+
+---
+
+## 🗺️ Roadmap & Progress
+
+Current implementation status:
+
+- [x] **Authentication System** (Clerk Integration)
+- [x] **Server Management** (Create, Edit, Delete with Invite Codes)
+- [x] **Channel Management** (Text, Audio, Video channel types)
+- [x] **Role & Permissions** (Guest, Moderator, Admin roles)
+- [x] **Member Management** (Kick, Change Role)
+- [x] **Robust Error Handling** (Server Actions + Toast Notifications)
+- [ ] **Real-time Infrastructure** (Evaluating Socket.io / Pusher) 🚧 _In Progress_
+- [ ] **Voice & Video Architecture** (Evaluating LiveKit / WebRTC) 🔜 _Next Step_
+- [ ] **Direct Messages** (1:1 conversations)
+
+---
+
+## 🛠️ Local Development
+
+If you want to clone and run this project locally to test the features:
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/shmuelmekonen/discord-clone.git
+cd discord-clone
+```
+
+### 2. Install dependencies
+
+```bash
+npm install
+
+```
+
+### 3. Set up environment variables
+
+Create a `.env` file in the root directory with your keys (Clerk, UploadThing, Database).
+
+### 4. Setup Database
+
+```bash
+npx prisma generate
+npx prisma db push
+
+```
+
+### 5. Run the server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🎨 Architecture Highlights
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Server Actions:** Used for all data mutations to ensure type safety and server-side validation using **Zod**.
+- **Optimized Rendering:** Utilizing `router.refresh()` for server-state synchronization instead of complex client-side state management.
+- **Component Modularity:** All modals (Create Server, Edit Channel, etc.) are decoupled and managed via a global Modal Provider.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+### 🤝 Credits
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+This project was initially inspired by [Code with Antonio](https://www.youtube.com/watch?v=ZbX4Ok9YX94). I have heavily modified the codebase to align with Next.js 15 Best Practices, improved the error handling strategies, and refactored the state management approach.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+### Author
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Shmuel Mekonen** - _Full Stack Developer_
