@@ -1,3 +1,5 @@
+![Discord Clone Banner](banner.png)
+
 # Modern Discord Clone (Next.js 15 Architecture)
 
 ![Status](https://img.shields.io/badge/Status-Active_Development-green)
