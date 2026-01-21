@@ -28,6 +28,7 @@ const ServerMember = ({ member, server }: ServerMemberProps) => {
   const onClick = () => {
     route.push(`/servers/${server.id}/conversations/${member.id}`);
   };
+
   return (
     <button
       onClick={onClick}
