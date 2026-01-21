@@ -1,15 +1,14 @@
+import { UserButton } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
 
 import { currentProfile } from "@/lib/current-profile";
 import { db } from "@/lib/db";
 
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import { NavigationAction } from "@/components/navigation/navigation-action";
-import { NavigationItem } from "@/components/navigation/navigation-item";
 import { ModeToggle } from "@/components/mode-toggle";
-import { UserButton } from "@clerk/nextjs";
-import { NavigationList } from "./navigation-list";
+import { NavigationAction } from "@/components/navigation/navigation-action";
+import { NavigationList } from "@/components/navigation/navigation-list";
+import { NavigationFriendsAction } from "@/components/navigation/navigation-friends-action";
 
 export const NavigationSidebar = async () => {
   const profile = await currentProfile();
@@ -31,6 +30,8 @@ export const NavigationSidebar = async () => {
   return (
     <div className="space-y-4 flex flex-col items-center h-full text-primary w-full bg-[#E3E5E8] dark:bg-[#1E1F22] py-3">
       <NavigationAction />
+      <Separator className="h-0.5 bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
+      <NavigationFriendsAction />
       <Separator className="h-0.5 bg-zinc-300 dark:bg-zinc-700 rounded-md w-10 mx-auto" />
       <NavigationList servers={servers} />
       <div className="pb-3 mt-auto flex items-center flex-col gap-y-4">
