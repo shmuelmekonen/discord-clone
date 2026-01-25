@@ -14,6 +14,7 @@ import { Toaster } from "sonner";
 
 import "./globals.css";
 import { currentProfile } from "@/lib/current-profile";
+import { SocketProvider } from "@/components/providers/socket-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });
 
@@ -27,8 +28,6 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // const profile = await currentProfile();
-
   return (
     <ClerkProvider>
       <html lang="en" className="h-full" suppressHydrationWarning>
@@ -36,7 +35,7 @@ export default async function RootLayout({
           className={cn(
             font.className,
             "antialiased",
-            "bg-white dark:bg-[#313338]"
+            "bg-white dark:bg-[#313338]",
           )}
         >
           {/* שינוי: הזזת ה-Plugin לכאן (מעל ה-ThemeProvider) */}
@@ -48,9 +47,11 @@ export default async function RootLayout({
             enableSystem={false}
             storageKey="discord-theme"
           >
-            <ModalProvider />
-            {children}
-            <Toaster richColors position="bottom-right" />
+            <SocketProvider>
+              <ModalProvider />
+              {children}
+              <Toaster richColors position="bottom-right" />
+            </SocketProvider>
           </ThemeProvider>
         </body>
       </html>
