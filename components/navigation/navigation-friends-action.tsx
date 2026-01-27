@@ -1,7 +1,7 @@
 "use client";
 
 import { Users } from "lucide-react";
-import { ActionTooltip } from "@/components/action-tooltop";
+import { ActionTooltip } from "@/components/action-tooltip";
 import { cn } from "@/lib/utils";
 
 // TODO: Future Implementation

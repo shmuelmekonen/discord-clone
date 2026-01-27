@@ -8,6 +8,7 @@ import Image from "next/image";
 import { UploadDropzone } from "@/lib/uploadthing";
 
 import { toast } from "sonner";
+import { ALLOWED_IMAGE_TYPES } from "@/lib/constants";
 
 interface FileUploadProps {
   onChange: (url?: string) => void;
@@ -30,8 +31,7 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
   }, [value]);
 
   const isImage =
-    fileType &&
-    ["jpg", "jpeg", "png", "gif", "webp"].includes(fileType.toLowerCase());
+    fileType && ALLOWED_IMAGE_TYPES.includes(fileType.toLowerCase());
 
   const isPdfOrFile = value && !isImage;
 

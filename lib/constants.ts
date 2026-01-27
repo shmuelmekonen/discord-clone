@@ -15,6 +15,8 @@ export const MODAL_TYPES = {
   MESSAGEFILE: "messageFile",
 } as const;
 
+export const ALLOWED_IMAGE_TYPES = ["jpg", "jpeg", "png", "gif", "webp"];
+
 export const APP_ROUTES = {
   HOME: "/",
   SIGN_IN: "/sign-in",
