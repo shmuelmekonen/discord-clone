@@ -43,11 +43,7 @@ const InviteCodePage = async ({ params }: InviteCodeProps) => {
 
   return (
     <div className="h-full w-full flex items-center justify-center bg-[#1E1F22]">
-      <JoinServerModal
-        server={server}
-        inviteCode={inviteCode}
-        profileId={profile.id}
-      />
+      <JoinServerModal server={server} inviteCode={inviteCode} />
     </div>
   );
 };

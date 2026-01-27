@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils";
 import { Toaster } from "sonner";
 
 import "./globals.css";
-import { currentProfile } from "@/lib/current-profile";
 import { SocketProvider } from "@/components/providers/socket-provider";
 
 const font = Open_Sans({ subsets: ["latin"] });

@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useState } from "react";
+import { useState } from "react";
 
 import {
   Dialog,
@@ -51,6 +51,7 @@ export const DeleteChannelModal = () => {
       );
       toast.success("Channel deleted");
     } catch (err) {
+      console.log(err);
       toast.error("Failed to delete channel");
     } finally {
       setIsLoading(false);

@@ -48,6 +48,7 @@ export const CreateChannelModal = () => {
   const isModalOpen = isOpen && type === MODAL_TYPES.CREATE_CHANNEL;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -66,7 +67,7 @@ export const CreateChannelModal = () => {
         type: channelType || ChannelType.TEXT,
       });
     }
-  }, [isModalOpen, channelType, form.reset]);
+  }, [isModalOpen, channelType, form, form.reset]);
 
   const isLoading = form.formState.isSubmitting;
   const router = useRouter();
@@ -103,7 +104,9 @@ export const CreateChannelModal = () => {
       onClose();
       router.refresh();
       router.push(`/servers/${server.id}`);
-    } catch (error) {
+    } catch (err) {
+      console.log(err);
+
       setGeneralError(USER_MESSAGES.GENERIC_ERROR);
     }
   };

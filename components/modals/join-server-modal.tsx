@@ -6,24 +6,18 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Loader2, UserPlus } from "lucide-react";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 
 interface JoinServerModalProps {
   server: {
     id: string;
     name: string;
     imageUrl: string;
-    profileId: string;
   };
   inviteCode: string;
-  profileId: string;
 }
 
-const JoinServerModal = ({
-  server,
-  inviteCode,
-  profileId,
-}: JoinServerModalProps) => {
+const JoinServerModal = ({ server, inviteCode }: JoinServerModalProps) => {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -47,6 +41,7 @@ const JoinServerModal = ({
       router.refresh();
       router.push(`/servers/${joinedServer.id}`);
     } catch (err) {
+      console.log(err);
       toast.error("Failed to join server");
     } finally {
       setIsLoading(false);

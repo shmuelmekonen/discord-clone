@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { startTransition, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -31,7 +31,7 @@ import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
 import { editServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { toast } from "sonner";
-import { ACTION_ERRORS, MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
+import { MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
 
 export const EditServerModal = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -42,6 +42,7 @@ export const EditServerModal = () => {
   const { server } = data;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -71,7 +72,7 @@ export const EditServerModal = () => {
       const serverId = server.id;
 
       const result = await editServer(serverId, values);
-      const { data: editedServer, error, code, validationErrors } = result;
+      const { data: editedServer, error } = result;
 
       if (error) {
         toast.error(error);
@@ -88,6 +89,7 @@ export const EditServerModal = () => {
       onClose();
       toast.success("Server updated successfully!");
     } catch (err) {
+      console.log(err);
       toast.error("Failed to edit server");
     }
   };

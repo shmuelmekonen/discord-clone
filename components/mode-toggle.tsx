@@ -17,6 +17,7 @@ export function ModeToggle() {
   const { setTheme } = useTheme();
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 

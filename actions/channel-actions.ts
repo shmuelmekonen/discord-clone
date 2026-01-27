@@ -158,7 +158,7 @@ export const editChannel = async (
 
     const { name, type } = validatedData.data;
 
-    const server = await db.server.update({
+    await db.server.update({
       where: {
         id: serverId,
         members: {

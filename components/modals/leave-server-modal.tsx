@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useState } from "react";
+import { useState } from "react";
 
 import {
   Dialog,
@@ -47,6 +47,7 @@ export const LeaveServerModal = () => {
       router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
       toast.success("You left the server");
     } catch (err) {
+      console.log(err);
       toast.error("Failed to leave server");
     } finally {
       setIsLoading(false);

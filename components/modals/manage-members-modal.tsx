@@ -72,7 +72,8 @@ export const ManageMembersModal = () => {
         });
       }
       toast.success("Member kicked");
-    } catch (error) {
+    } catch (err) {
+      console.log(err);
       toast.error(USER_MESSAGES.GENERIC_ERROR);
     } finally {
       setLoadingId("");
@@ -96,7 +97,8 @@ export const ManageMembersModal = () => {
         });
       }
       toast.success("Role updated");
-    } catch (error) {
+    } catch (err) {
+      console.log(err);
       toast.error(USER_MESSAGES.GENERIC_ERROR);
     } finally {
       setLoadingId("");
