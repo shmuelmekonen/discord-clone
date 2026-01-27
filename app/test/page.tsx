@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { startTransition, useEffect, useOptimistic, useState } from "react";
+import { startTransition, useOptimistic } from "react";
 
 let initialServers = [
   { id: "1", name: "server 1" },
@@ -16,7 +16,7 @@ const Test = () => {
 
   const [optimisticServers, setOptimisticServers] = useOptimistic(
     initialServers,
-    (originalServers, id) => originalServers.filter((s) => s.id !== id)
+    (originalServers, id) => originalServers.filter((s) => s.id !== id),
   );
 
   const onClick = (id: string) => {

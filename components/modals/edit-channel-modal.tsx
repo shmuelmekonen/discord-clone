@@ -49,6 +49,7 @@ export const EditChannelModal = () => {
   const isGeneralChannel = channel?.name === CHANNEL_NAMES.GENERAL;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -67,7 +68,7 @@ export const EditChannelModal = () => {
         type: channel?.type || ChannelType.TEXT,
       });
     }
-  }, [isModalOpen, channel?.type, form.reset]);
+  }, [isModalOpen, channel?.type, channel?.name, form, form.reset]);
 
   const isLoading = form.formState.isSubmitting;
   const router = useRouter();
@@ -85,7 +86,7 @@ export const EditChannelModal = () => {
       const { data: result, error } = await editChannel(
         serverId,
         channelId,
-        values
+        values,
       );
 
       if (error) {
@@ -98,7 +99,8 @@ export const EditChannelModal = () => {
       onClose();
       router.refresh();
       router.push(`/servers/${result?.updatedServerId}`);
-    } catch (error) {
+    } catch (err) {
+      console.log(err);
       setGeneralError(USER_MESSAGES.GENERIC_ERROR);
     }
   };
@@ -119,7 +121,7 @@ export const EditChannelModal = () => {
           {isGeneralChannel && (
             <div className="flex justify-center w-full">
               <p className="text-xs text-rose-500 font-bold mt-2">
-                Note: The 'general' channel cannot be edited.
+                Note: The &apos;general&apos; channel cannot be edited.
               </p>
             </div>
           )}

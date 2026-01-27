@@ -28,11 +28,6 @@ import {
   MessageFileSchemaType,
 } from "@/lib/validations/chat";
 
-interface MessageFileModalProps {
-  isInitial?: boolean;
-  profileId?: string;
-}
-
 export const MessageFileModal = () => {
   const { isOpen, onClose, type, data } = useModal();
 

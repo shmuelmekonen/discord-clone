@@ -289,7 +289,7 @@ export const deleteServer = async (
         code: ACTION_ERRORS.INVALID_PARAMETERS,
       };
 
-    const server = await db.server.delete({
+    await db.server.delete({
       where: { id: serverId, profileId: profile.id },
     });
 

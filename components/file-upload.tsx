@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
 import { FileIcon, X } from "lucide-react";
 import Image from "next/image";
 
@@ -17,18 +15,7 @@ interface FileUploadProps {
 }
 
 export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
-  const [fileType, setFileType] = useState<string | undefined>("");
-
-  useEffect(() => {
-    if (value) {
-      const extension = value.split(".").pop();
-      if (extension && extension.length < 5) {
-        setFileType(extension);
-      }
-    } else {
-      setFileType("");
-    }
-  }, [value]);
+  const fileType = value?.split(".").pop();
 
   const isImage =
     fileType && ALLOWED_IMAGE_TYPES.includes(fileType.toLowerCase());
@@ -82,10 +69,6 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
     <UploadDropzone
       endpoint={endpoint}
       onClientUploadComplete={(res) => {
-        const originalName = res?.[0].name;
-        const type = originalName?.split(".").pop();
-
-        setFileType(type);
         onChange(res?.[0].url);
       }}
       onUploadError={(error: Error) => {

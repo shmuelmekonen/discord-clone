@@ -58,6 +58,7 @@ export const InviteModal = () => {
         onOpen(MODAL_TYPES.INVITE, { server: updatedServer });
       }
     } catch (err) {
+      console.log(err);
       setGeneralError("Failed to new generate link");
     } finally {
       setIsLoading(false);

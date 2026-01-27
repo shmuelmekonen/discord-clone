@@ -7,10 +7,10 @@ type ErrorOverrides = {
   conflict?: string;
 };
 
-export function handleServerActionError(
+export function handleServerActionError<T>(
   error: unknown,
   overrides?: ErrorOverrides,
-): ActionResponse<any> {
+): ActionResponse<T> {
   if (error instanceof Prisma.PrismaClientKnownRequestError) {
     // P2025: Record not found (or user lacks permissions due to 'where' clause constraints)
     if (error.code === "P2025") {

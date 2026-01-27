@@ -39,10 +39,7 @@ interface ServerModalProps {
   profileId?: string;
 }
 
-export const CreateServerModal = ({
-  profileId,
-  isInitial = false,
-}: ServerModalProps) => {
+export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {
   const [isMounted, setIsMounted] = useState(false);
 
   const { isOpen, onClose, type } = useModal();
@@ -52,6 +49,7 @@ export const CreateServerModal = ({
     : isOpen && type === MODAL_TYPES.CREATE_SERVER;
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMounted(true);
   }, []);
 
@@ -71,7 +69,7 @@ export const CreateServerModal = ({
 
     try {
       const result = await createServer(values);
-      const { data: server, error, code, validationErrors } = result;
+      const { data: server, error } = result;
 
       if (error) {
         toast.error(error);
@@ -93,6 +91,7 @@ export const CreateServerModal = ({
       router.push(`/servers/${server.id}`);
       toast.success("Server created successfully!");
     } catch (err) {
+      console.log(err);
       toast.error("Failed to create server");
     }
   };
