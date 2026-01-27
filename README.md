@@ -22,8 +22,10 @@ It features real-time server management, granular role-based permissions, and a 
 While inspired by a popular tutorial, this project represents a **significant architectural upgrade** to modern standards (Next.js 15).
 Major improvements I implemented:
 
-- **Server Actions Architecture:** Completely replaced the original API Routes (`app/api/...`) with **Server Actions**, enabling direct backend calls without Axios or HTTP overhead.
-- **Type-Safe Data Mutation:** Implemented end-to-end type safety using Zod validation on both client forms and server actions, preventing runtime errors.
+- **Hybrid Backend Architecture:**
+- **Server Actions:** Used for 90% of the app (CRUD operations, Server creation, Member management) to ensure type safety and reduced API overhead.
+- **Custom Socket Layer:** Strategically used `pages/api` for the WebSocket server to gain access to the global `res.socket` instance, enabling true bi-directional communication (which is currently limited in Server Actions).
+- **Type-Safe Data Mutation:** Implemented end-to-end type safety using **Zod** validation on both client forms (React Hook Form) and server endpoints.
 - **Next.js 15 Compatibility:** Upgraded codebase to handle Next.js 15 breaking changes, such as `Promise`-based params in Layouts and Pages (`await params`).
 - **Structured Error Handling:** Designed a custom `ActionResponse` pattern to standardize error management across the app, replacing generic HTTP status codes.
 
@@ -55,8 +57,9 @@ Current implementation status:
 - [x] **Channel Management** (Text, Audio, Video channel types)
 - [x] **Role & Permissions** (Guest, Moderator, Admin roles)
 - [x] **Member Management** (Kick, Change Role)
+- [x] **Chat Interface** (Type-safe Chat Input with Zod Validation)
 - [x] **Robust Error Handling** (Server Actions + Toast Notifications)
-- [ ] **Real-time Infrastructure** (Evaluating Socket.io / Pusher) 🚧 _In Progress_
+- [ ] **Real-time Messaging** (Socket.io Backend integrated, UI in progress) 🚧
 - [ ] **Voice & Video Architecture** (Evaluating LiveKit / WebRTC) 🔜 _Next Step_
 - [ ] **Direct Messages** (1:1 conversations)
 
@@ -103,7 +106,7 @@ npm run dev
 
 ## 🎨 Architecture Highlights
 
-- **Server Actions:** Used for all data mutations to ensure type safety and server-side validation using **Zod**.
+- **Server Actions:** I explicitly chose Server Actions for data mutation to leverage Next.js caching and revalidation features. However, for the Chat System, I implemented a custom Axios + API Route pattern to handle the persistent Socket.IO connection efficiently.
 - **Optimized Rendering:** Utilizing `router.refresh()` for server-state synchronization instead of complex client-side state management.
 - **Component Modularity:** All modals (Create Server, Edit Channel, etc.) are decoupled and managed via a global Modal Provider.
 
