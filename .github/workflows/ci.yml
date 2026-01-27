@@ -1,0 +1,41 @@
+name: CI Pipeline
+
+# Trigger the workflow on push or pull request to the main branch
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality-check:
+    name: Lint & Type Check
+    # Run on the latest available Ubuntu runner
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository code so the workflow can access it
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Install Node.js (v20) and enable npm caching for faster builds
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      # Step 3: Install dependencies strictly from package-lock.json (Clean Install)
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Run ESLint to catch code style issues and errors
+      - name: Run Linter
+        run: npm run lint
+
+      # Step 5: Run TypeScript compiler to check for type errors (without emitting files)
+      # We provide a dummy DATABASE_URL to prevent Prisma from failing validation
+      - name: Type Check
+        run: npx tsc --noEmit
+        env:
+          DATABASE_URL: "postgresql://dummy:dummy@localhost:5432/dummy"
