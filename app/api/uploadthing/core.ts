@@ -14,13 +14,15 @@ export const ourFileRouter = {
   serverImage: f({ image: { maxFileSize: "4MB", maxFileCount: 1 } })
     .middleware(() => handleAuth())
     .onUploadComplete(async ({ metadata, file }) => {
-      console.log("SUCCESS! File available at:", file.url);
-      // חובה להחזיר משהו כדי לסגור את ה-Promise
+      console.log("Server Image Uploaded:", file.url);
       return { uploadedBy: metadata.userId };
     }),
   messageFile: f(["image", "pdf"])
     .middleware(() => handleAuth())
-    .onUploadComplete(() => {}),
+    .onUploadComplete(async ({ metadata, file }) => {
+      console.log("Message File Uploaded:", file.url);
+      return { uploadedBy: metadata.userId };
+    }),
 } satisfies FileRouter;
 
 export type OurFileRouter = typeof ourFileRouter;
