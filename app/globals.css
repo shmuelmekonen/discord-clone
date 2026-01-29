@@ -68,6 +68,8 @@
 
   /* שימוש: border-menu */
   --color-menu: hsl(var(--border-menu));
+
+  --color-icon: var(--icon);
 }
 
 /* === Base Styles & Variables === */
@@ -117,6 +119,8 @@
     --text-dim: 240 5% 65%; /* Zinc-400 (טקסט חלש) */
 
     --border-menu: 240 6% 90%; /* גבולות */
+
+    --icon: hsl(240 4% 46%);
   }
 
   .dark {
@@ -163,6 +167,8 @@
     --text-dim: 215 8% 45%; /* Dark Grey */
 
     --border-menu: 217 8% 15%;
+
+    --icon: hsl(240 5% 26%);
   }
 
   /* Reset */
