@@ -8,15 +8,9 @@
 
 @custom-variant dark (&:is(.dark *));
 
-html,
-body,
-#__next {
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
-
+/* === Theme Configuration === */
 @theme inline {
+  /* Shadcn UI Defaults */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -50,6 +44,8 @@ body,
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+
+  /* Radius Utilities */
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -57,84 +53,135 @@ body,
   --radius-2xl: calc(var(--radius) + 8px);
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
+
+  /* 👇 השמות החדשים והקצרים שלנו */
+
+  /* שימוש: bg-main / bg-sidebar / bg-mobile */
+  --color-main: hsl(var(--bg-main));
+  --color-sidebar: hsl(var(--bg-sidebar));
+  --color-mobile: hsl(var(--bg-mobile));
+
+  /* שימוש: text-header / text-desc / text-dim */
+  --color-header: hsl(var(--text-header));
+  --color-desc: hsl(var(--text-desc));
+  --color-dim: hsl(var(--text-dim));
+
+  /* שימוש: border-menu */
+  --color-menu: hsl(var(--border-menu));
 }
 
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.147 0.004 49.25);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.147 0.004 49.25);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.147 0.004 49.25);
-  --primary: oklch(0.216 0.006 56.043);
-  --primary-foreground: oklch(0.985 0.001 106.423);
-  --secondary: oklch(0.97 0.001 106.424);
-  --secondary-foreground: oklch(0.216 0.006 56.043);
-  --muted: oklch(0.97 0.001 106.424);
-  --muted-foreground: oklch(0.553 0.013 58.071);
-  --accent: oklch(0.97 0.001 106.424);
-  --accent-foreground: oklch(0.216 0.006 56.043);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.923 0.003 48.717);
-  --input: oklch(0.923 0.003 48.717);
-  --ring: oklch(0.709 0.01 56.259);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0.001 106.423);
-  --sidebar-foreground: oklch(0.147 0.004 49.25);
-  --sidebar-primary: oklch(0.216 0.006 56.043);
-  --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
-  --sidebar-accent: oklch(0.97 0.001 106.424);
-  --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
-  --sidebar-border: oklch(0.923 0.003 48.717);
-  --sidebar-ring: oklch(0.709 0.01 56.259);
-}
-
-.dark {
-  --background: oklch(0.147 0.004 49.25);
-  --foreground: oklch(0.985 0.001 106.423);
-  --card: oklch(0.216 0.006 56.043);
-  --card-foreground: oklch(0.985 0.001 106.423);
-  --popover: oklch(0.216 0.006 56.043);
-  --popover-foreground: oklch(0.985 0.001 106.423);
-  --primary: oklch(0.923 0.003 48.717);
-  --primary-foreground: oklch(0.216 0.006 56.043);
-  --secondary: oklch(0.268 0.007 34.298);
-  --secondary-foreground: oklch(0.985 0.001 106.423);
-  --muted: oklch(0.268 0.007 34.298);
-  --muted-foreground: oklch(0.709 0.01 56.259);
-  --accent: oklch(0.268 0.007 34.298);
-  --accent-foreground: oklch(0.985 0.001 106.423);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.553 0.013 58.071);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.216 0.006 56.043);
-  --sidebar-foreground: oklch(0.985 0.001 106.423);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
-  --sidebar-accent: oklch(0.268 0.007 34.298);
-  --sidebar-accent-foreground: oklch(0.985 0.001 106.423);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.553 0.013 58.071);
-}
-
+/* === Base Styles & Variables === */
 @layer base {
+  :root {
+    /* Shadcn Defaults */
+    --radius: 0.625rem;
+    --background: oklch(1 0 0);
+    --foreground: oklch(0.147 0.004 49.25);
+    --card: oklch(1 0 0);
+    --card-foreground: oklch(0.147 0.004 49.25);
+    --popover: oklch(1 0 0);
+    --popover-foreground: oklch(0.147 0.004 49.25);
+    --primary: oklch(0.216 0.006 56.043);
+    --primary-foreground: oklch(0.985 0.001 106.423);
+    --secondary: oklch(0.97 0.001 106.424);
+    --secondary-foreground: oklch(0.216 0.006 56.043);
+    --muted: oklch(0.97 0.001 106.424);
+    --muted-foreground: oklch(0.553 0.013 58.071);
+    --accent: oklch(0.97 0.001 106.424);
+    --accent-foreground: oklch(0.216 0.006 56.043);
+    --destructive: oklch(0.577 0.245 27.325);
+    --border: oklch(0.923 0.003 48.717);
+    --input: oklch(0.923 0.003 48.717);
+    --ring: oklch(0.709 0.01 56.259);
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+    --sidebar: oklch(0.985 0.001 106.423);
+    --sidebar-foreground: oklch(0.147 0.004 49.25);
+    --sidebar-primary: oklch(0.216 0.006 56.043);
+    --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
+    --sidebar-accent: oklch(0.97 0.001 106.424);
+    --sidebar-accent-foreground: oklch(0.216 0.006 56.043);
+    --sidebar-border: oklch(0.923 0.003 48.717);
+    --sidebar-ring: oklch(0.709 0.01 56.259);
+
+    /* 👇 Discord Clone Light Mode */
+    --bg-main: 0 0% 100%; /* White (הרקע הראשי) */
+    --bg-sidebar: 240 5% 96%; /* Zinc-100 (רשימת ערוצים) */
+    --bg-mobile: 240 6% 90%; /* Zinc-200 (סרגל שרתים) */
+
+    --text-header: 240 10% 4%; /* Zinc-950 (כותרות) */
+    --text-desc: 240 4% 46%; /* Zinc-500 (תיאורים) */
+    --text-dim: 240 5% 65%; /* Zinc-400 (טקסט חלש) */
+
+    --border-menu: 240 6% 90%; /* גבולות */
+  }
+
+  .dark {
+    /* Shadcn Defaults */
+    --background: oklch(0.147 0.004 49.25);
+    --foreground: oklch(0.985 0.001 106.423);
+    --card: oklch(0.216 0.006 56.043);
+    --card-foreground: oklch(0.985 0.001 106.423);
+    --popover: oklch(0.216 0.006 56.043);
+    --popover-foreground: oklch(0.985 0.001 106.423);
+    --primary: oklch(0.923 0.003 48.717);
+    --primary-foreground: oklch(0.216 0.006 56.043);
+    --secondary: oklch(0.268 0.007 34.298);
+    --secondary-foreground: oklch(0.985 0.001 106.423);
+    --muted: oklch(0.268 0.007 34.298);
+    --muted-foreground: oklch(0.709 0.01 56.259);
+    --accent: oklch(0.268 0.007 34.298);
+    --accent-foreground: oklch(0.985 0.001 106.423);
+    --destructive: oklch(0.704 0.191 22.216);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.553 0.013 58.071);
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+    --sidebar: oklch(0.216 0.006 56.043);
+    --sidebar-foreground: oklch(0.985 0.001 106.423);
+    --sidebar-primary: oklch(0.488 0.243 264.376);
+    --sidebar-primary-foreground: oklch(0.985 0.001 106.423);
+    --sidebar-accent: oklch(0.268 0.007 34.298);
+    --sidebar-accent-foreground: oklch(0.985 0.001 106.423);
+    --sidebar-border: oklch(1 0 0 / 10%);
+    --sidebar-ring: oklch(0.553 0.013 58.071);
+
+    /* 👇 Discord Clone Dark Mode */
+    --bg-main: 220 7% 20%; /* #313338 */
+    --bg-sidebar: 223 7% 21%; /* #2B2D31 */
+    --bg-mobile: 225 6% 13%; /* #1E1F22 */
+
+    --text-header: 210 40% 98%; /* White */
+    --text-desc: 215 9% 70%; /* Zinc-400 */
+    --text-dim: 215 8% 45%; /* Dark Grey */
+
+    --border-menu: 217 8% 15%;
+  }
+
+  /* Reset */
+  html,
+  body,
+  #__next {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
+
   button {
     cursor: pointer;
   }
