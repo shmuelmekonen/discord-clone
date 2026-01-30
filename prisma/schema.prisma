@@ -110,6 +110,7 @@ model Message {
   content String @db.Text
 
   fileUrl String? @db.Text
+  fileType String?  @db.Text
 
   memberId String
   member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)

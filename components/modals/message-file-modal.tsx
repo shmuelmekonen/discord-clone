@@ -39,6 +39,7 @@ export const MessageFileModal = () => {
     resolver: zodResolver(messageFileSchema),
     defaultValues: {
       fileUrl: "",
+      fileType: "",
     },
   });
 
@@ -107,7 +108,12 @@ export const MessageFileModal = () => {
                         <FileUpload
                           endpoint="messageFile"
                           value={field.value}
-                          onChange={field.onChange}
+                          onChange={(url, fileType) => {
+                            field.onChange(url);
+                            if (fileType) {
+                              form.setValue("fileType", fileType);
+                            }
+                          }}
                         />
                       </FormControl>
                     </FormItem>

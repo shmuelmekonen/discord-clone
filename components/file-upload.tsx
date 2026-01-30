@@ -9,7 +9,7 @@ import { toast } from "sonner";
 import { ALLOWED_IMAGE_TYPES } from "@/lib/constants";
 
 interface FileUploadProps {
-  onChange: (url?: string) => void;
+  onChange: (url?: string, fileType?: string) => void;
   value: string;
   endpoint: "messageFile" | "serverImage";
 }
@@ -69,7 +69,8 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
     <UploadDropzone
       endpoint={endpoint}
       onClientUploadComplete={(res) => {
-        onChange(res?.[0].url);
+        const file = res?.[0];
+        onChange(file.url, file.type);
       }}
       onUploadError={(error: Error) => {
         toast.error(`Upload failed: ${error.message}`);
