@@ -12,16 +12,23 @@ interface FileUploadProps {
   onChange: (url?: string, fileType?: string) => void;
   value: string;
   endpoint: "messageFile" | "serverImage";
+  fileType?: string;
 }
 
-export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
-  const fileType = value?.split(".").pop();
+export const FileUpload = ({
+  onChange,
+  value,
+  endpoint,
+  fileType,
+}: FileUploadProps) => {
+  const fileExtension = value?.split(".").pop()?.toLowerCase();
 
+  const isPDF =
+    (fileType === "application/pdf" || fileExtension === "pdf") && value;
   const isImage =
-    fileType && ALLOWED_IMAGE_TYPES.includes(fileType.toLowerCase());
-
-  const isPdfOrFile = value && !isImage;
-
+    (fileType?.startsWith("image/") ||
+      (fileExtension && ALLOWED_IMAGE_TYPES.includes(fileExtension))) &&
+    value;
   if (value && isImage) {
     return (
       <div className="relative h-20 w-20">
@@ -42,7 +49,7 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
     );
   }
 
-  if (value && isPdfOrFile) {
+  if (value && isPDF) {
     return (
       <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10 border border-indigo-200 dark:border-indigo-800">
         <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
@@ -52,7 +59,7 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
           rel="noopener noreferrer"
           className="ml-2 text-sm text-indigo-500 dark:text-indigo-400 hover:underline break-all"
         >
-          View Attachment
+          PDF File
         </a>
         <button
           onClick={() => onChange("")}
@@ -64,7 +71,6 @@ export const FileUpload = ({ onChange, value, endpoint }: FileUploadProps) => {
       </div>
     );
   }
-
   return (
     <UploadDropzone
       endpoint={endpoint}

@@ -46,6 +46,8 @@ export const MessageFileModal = () => {
   const isLoading = form.formState.isSubmitting;
   const router = useRouter();
 
+  const fileType = form.watch("fileType");
+
   const onSubmit = async (values: MessageFileSchemaType) => {
     try {
       const url = qs.stringifyUrl({
@@ -108,11 +110,12 @@ export const MessageFileModal = () => {
                         <FileUpload
                           endpoint="messageFile"
                           value={field.value}
-                          onChange={(url, fileType) => {
-                            field.onChange(url);
-                            if (fileType) {
-                              form.setValue("fileType", fileType);
+                          fileType={fileType}
+                          onChange={(url, type) => {
+                            if (type) {
+                              form.setValue("fileType", type);
                             }
+                            field.onChange(url);
                           }}
                         />
                       </FormControl>
