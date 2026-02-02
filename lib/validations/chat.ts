@@ -13,5 +13,10 @@ export const messageFileSchema = z.object({
   fileType: z.string().optional(),
 });
 
+export const chatEditSchema = z.object({
+  content: z.string().min(1),
+});
+
 export type ChatInputSchemaType = z.infer<typeof chatInputSchema>;
 export type MessageFileSchemaType = z.infer<typeof messageFileSchema>;
+export type ChatEditSchemaType = z.infer<typeof chatEditSchema>;
