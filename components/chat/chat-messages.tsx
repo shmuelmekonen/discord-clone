@@ -40,8 +40,13 @@ const ChatMessages = ({
 }: ChatMessagesProps) => {
   const queryKey = `chat:${chatId}`;
 
-  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
-    useChatQuery({ queryKey, apiUrl, paramKey, paramValue });
+  const {
+    data,
+    // fetchNextPage,
+    // hasNextPage,
+    // isFetchingNextPage,
+    status,
+  } = useChatQuery({ queryKey, apiUrl, paramKey, paramValue });
 
   if (status === "pending") {
     return (
