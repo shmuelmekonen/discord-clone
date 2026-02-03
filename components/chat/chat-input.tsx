@@ -15,7 +15,6 @@ import { chatInputSchema, ChatInputSchemaType } from "@/lib/validations/chat";
 import { useModal } from "@/hooks/use-modal-store";
 import { MODAL_TYPES } from "@/lib/constants";
 import EmojiPicker from "@/components/chat/emoji-picker";
-import { useRouter } from "next/navigation";
 
 interface ChatInputProps {
   apiUrl: string;
@@ -27,7 +26,6 @@ interface ChatInputProps {
 
 const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
   const { onOpen } = useModal();
-  const router = useRouter();
 
   const form = useForm<ChatInputSchemaType>({
     resolver: zodResolver(chatInputSchema),
@@ -49,7 +47,6 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
 
       form.reset();
       form.setFocus("content");
-      router.refresh();
     } catch (err) {
       console.log(err);
     }

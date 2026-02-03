@@ -1,12 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+
 import Image from "next/image";
 import qs from "query-string";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Member, MemberRole, Profile } from "@prisma/client";
+
+import { useModal } from "@/hooks/use-modal-store";
+import { cn } from "@/lib/utils";
+import { chatEditSchema, ChatEditSchemaType } from "@/lib/validations/chat";
 
 import { ActionTooltip } from "@/components/action-tooltip";
 import UserAvatar from "@/components/user-avatar";
@@ -15,9 +21,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
 import { Edit, FileIcon, ShieldAlert, ShieldCheck, Trash } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { useForm } from "react-hook-form";
-import { chatEditSchema, ChatEditSchemaType } from "@/lib/validations/chat";
+import { MODAL_TYPES } from "@/lib/constants";
 
 interface ChatItemProps {
   id: string;
@@ -55,7 +59,7 @@ const ChatItem = ({
   socketQuery,
 }: ChatItemProps) => {
   const [isEditing, setIsEditing] = useState(false);
-  // const [isDeleting, setIsDeleting] = useState(false);
+  const { onOpen } = useModal();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -237,7 +241,15 @@ const ChatItem = ({
           )}
           {canDeleteMessage && (
             <ActionTooltip label="Delete">
-              <Trash className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-60 dark:hover:text-zinc-300 transition" />
+              <Trash
+                onClick={() =>
+                  onOpen(MODAL_TYPES.DELETE_MESSAGE, {
+                    apiUrl: `${socketUrl}/${id}`,
+                    query: socketQuery,
+                  })
+                }
+                className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-60 dark:hover:text-zinc-300 transition"
+              />
             </ActionTooltip>
           )}
         </div>

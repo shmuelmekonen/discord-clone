@@ -13,6 +13,7 @@ export const MODAL_TYPES = {
   DELETE_CHANNEL: "deleteChannel",
   EDIT_CHANNEL: "editChannel",
   MESSAGEFILE: "messageFile",
+  DELETE_MESSAGE: "deleteMessage",
 } as const;
 
 export const ALLOWED_IMAGE_TYPES = ["jpg", "jpeg", "png", "gif", "webp"];
