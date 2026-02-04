@@ -9,8 +9,7 @@ interface ModalData {
   channel?: Channel;
   channelType?: ChannelType;
   apiUrl?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  query?: Record<string, any>;
+  query?: Record<string, string>;
 }
 
 interface ModalStore {

@@ -36,7 +36,6 @@ import { MODAL_TYPES } from "@/lib/constants";
 
 interface ServerModalProps {
   isInitial?: boolean;
-  profileId?: string;
 }
 
 export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {

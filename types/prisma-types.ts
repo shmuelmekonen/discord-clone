@@ -15,3 +15,19 @@ const serverWithMembersAndProfiles =
 export type ServerWithMembersWithProfiles = Prisma.ServerGetPayload<
   typeof serverWithMembersAndProfiles
 >;
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const messageWithMemberWithProfile =
+  Prisma.validator<Prisma.MessageDefaultArgs>()({
+    include: {
+      member: {
+        include: {
+          profile: true,
+        },
+      },
+    },
+  });
+
+export type MessageWithMemberWithProfile = Prisma.MessageGetPayload<
+  typeof messageWithMemberWithProfile
+>;

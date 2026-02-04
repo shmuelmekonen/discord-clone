@@ -39,11 +39,15 @@ export const MessageFileModal = () => {
     resolver: zodResolver(messageFileSchema),
     defaultValues: {
       fileUrl: "",
+      fileType: "",
     },
   });
 
   const isLoading = form.formState.isSubmitting;
   const router = useRouter();
+
+  // eslint-disable-next-line react-hooks/incompatible-library
+  const fileType = form.watch("fileType");
 
   const onSubmit = async (values: MessageFileSchemaType) => {
     try {
@@ -107,7 +111,13 @@ export const MessageFileModal = () => {
                         <FileUpload
                           endpoint="messageFile"
                           value={field.value}
-                          onChange={field.onChange}
+                          fileType={fileType}
+                          onChange={(url, type) => {
+                            if (type) {
+                              form.setValue("fileType", type);
+                            }
+                            field.onChange(url);
+                          }}
                         />
                       </FormControl>
                     </FormItem>
