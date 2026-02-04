@@ -12,6 +12,12 @@ type ChatSocketProps = {
   queryKey: string;
 };
 
+type ChatQueryData = {
+  pages: {
+    items: MessageWithMemberWithProfile[];
+  }[];
+};
+
 export const useChatSocket = ({
   addKey,
   updateKey,
@@ -24,52 +30,66 @@ export const useChatSocket = ({
     if (!socket) return;
 
     socket.on(updateKey, (message: MessageWithMemberWithProfile) => {
-      queryClient.setQueryData([queryKey], (oldData: any) => {
-        if (!oldData || !oldData.pages || oldData.pages.length === 0) {
-          return oldData;
-        }
+      queryClient.setQueryData(
+        [queryKey],
+        (oldData: ChatQueryData | undefined) => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0) {
+            return oldData;
+          }
 
-        const newData = oldData.pages.map((page: any) => {
+          const newData = oldData.pages.map((page) => {
+            return {
+              ...page,
+              items: page.items.map((item: MessageWithMemberWithProfile) => {
+                if (item.id === message.id) {
+                  return message;
+                }
+                return item;
+              }),
+            };
+          });
           return {
-            ...page,
-            items: page.items.map((item: MessageWithMemberWithProfile) => {
-              if (item.id === message.id) {
-                return message;
-              }
-              return item;
-            }),
+            ...oldData,
+            pages: newData,
           };
-        });
-        return {
-          ...oldData,
-          pages: newData,
-        };
-      });
+        },
+      );
     });
 
     socket.on(addKey, (message: MessageWithMemberWithProfile) => {
-      queryClient.setQueryData([queryKey], (oldData: any) => {
-        if (!oldData || !oldData.pages || oldData.pages.length === 0) {
-          return {
-            pages: [
-              {
-                items: [message],
-              },
-            ],
+      queryClient.setQueryData(
+        [queryKey],
+        (oldData: ChatQueryData | undefined) => {
+          if (!oldData || !oldData.pages || oldData.pages.length === 0) {
+            return {
+              pages: [
+                {
+                  items: [message],
+                },
+              ],
+            };
+          }
+
+          const newData = [...oldData.pages];
+
+          const messageExists = newData[0].items.some(
+            (item: MessageWithMemberWithProfile) => item.id === message.id,
+          );
+          if (messageExists) {
+            return oldData;
+          }
+
+          newData[0] = {
+            ...newData[0],
+            items: [message, ...newData[0].items],
           };
-        }
 
-        const newData = [...oldData.pages];
-        newData[0] = {
-          ...newData[0],
-          items: [message, ...newData[0].items],
-        };
-
-        return {
-          ...oldData,
-          pages: newData,
-        };
-      });
+          return {
+            ...oldData,
+            pages: newData,
+          };
+        },
+      );
     });
 
     return () => {
