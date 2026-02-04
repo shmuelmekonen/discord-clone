@@ -46,6 +46,7 @@ export const MessageFileModal = () => {
   const isLoading = form.formState.isSubmitting;
   const router = useRouter();
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const fileType = form.watch("fileType");
 
   const onSubmit = async (values: MessageFileSchemaType) => {
