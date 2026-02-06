@@ -42,7 +42,12 @@ export const DeleteMessageModal = () => {
       onClose();
     } catch (err) {
       console.log(err);
-      toast.error("Failed to delete message");
+
+      let errorMessage = "Failed to delete message";
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.error || errorMessage;
+      }
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }

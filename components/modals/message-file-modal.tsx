@@ -4,6 +4,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import qs from "query-string";
 
+import { toast } from "sonner";
+
 import {
   Dialog,
   DialogContent,
@@ -56,7 +58,7 @@ export const MessageFileModal = () => {
         query,
       });
 
-      axios.post(url, {
+      await axios.post(url, {
         ...values,
         content: values.fileUrl,
       });
@@ -65,7 +67,11 @@ export const MessageFileModal = () => {
       router.refresh();
       onClose();
     } catch (err) {
-      console.log(err);
+      let errorMessage = "Failed to send file";
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.error || errorMessage;
+      }
+      toast.error(errorMessage);
     }
   };
 

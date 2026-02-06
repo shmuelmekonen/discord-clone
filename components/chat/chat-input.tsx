@@ -6,6 +6,8 @@ import qs from "query-string";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 
+import { toast } from "sonner";
+
 import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
@@ -48,6 +50,14 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
       form.setFocus("content");
     } catch (err) {
       console.log(err);
+
+      let errorMessage = "Could not send message";
+
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.error || errorMessage;
+      }
+
+      toast.error(errorMessage);
     }
   };
 
