@@ -1,5 +1,8 @@
+import { ACTION_ERRORS, USER_MESSAGES } from "@/lib/constants";
 import { currentProfilePages } from "@/lib/current-profile-pages";
 import { db } from "@/lib/db";
+import { handleApiError } from "@/lib/handle-api-error";
+import { SOCKET_EVENTS } from "@/lib/routes";
 import { NextApiResponseServerIo } from "@/types/socket-types";
 import { NextApiRequest } from "next";
 
@@ -8,7 +11,10 @@ export default async function handler(
   res: NextApiResponseServerIo,
 ) {
   if (req.method !== "POST") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({
+      error: USER_MESSAGES.METHOD_NOT_ALLOWED,
+      code: ACTION_ERRORS.METHOD_NOT_ALLOWED,
+    });
   }
 
   try {
@@ -17,14 +23,32 @@ export default async function handler(
     const { content, fileUrl, fileType } = req.body;
     const { serverId, channelId } = req.query;
 
-    if (!profile) return res.status(401).json({ error: "Unauthorized" });
+    if (!profile) {
+      return res.status(401).json({
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      });
+    }
+    if (!serverId) {
+      return res.status(400).json({
+        error: USER_MESSAGES.MISSING_PARAMS,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      });
+    }
 
-    if (!serverId) return res.status(400).json({ error: "Server Id Missing" });
+    if (!channelId) {
+      return res.status(400).json({
+        error: USER_MESSAGES.MISSING_PARAMS,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      });
+    }
 
-    if (!channelId)
-      return res.status(400).json({ error: "Channel Id Missing" });
-
-    if (!content) return res.status(400).json({ error: "Content Missing" });
+    if (!content) {
+      return res.status(400).json({
+        error: USER_MESSAGES.MISSING_PARAMS,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      });
+    }
 
     const server = await db.server.findFirst({
       where: {
@@ -40,7 +64,12 @@ export default async function handler(
       },
     });
 
-    if (!server) return res.status(404).json({ error: "Server not found" });
+    if (!server) {
+      return res.status(404).json({
+        error: USER_MESSAGES.NOT_FOUND,
+        code: ACTION_ERRORS.NOT_FOUND,
+      });
+    }
 
     const channel = await db.channel.findFirst({
       where: {
@@ -49,13 +78,23 @@ export default async function handler(
       },
     });
 
-    if (!channel) return res.status(404).json({ error: "Channel not found" });
+    if (!channel) {
+      return res.status(404).json({
+        error: USER_MESSAGES.NOT_FOUND,
+        code: ACTION_ERRORS.NOT_FOUND,
+      });
+    }
 
     const member = server.members.find(
       (member) => member.profileId === profile.id,
     );
 
-    if (!member) return res.status(404).json({ error: "Member not found" });
+    if (!member) {
+      return res.status(404).json({
+        error: USER_MESSAGES.NOT_FOUND,
+        code: ACTION_ERRORS.NOT_FOUND,
+      });
+    }
 
     const message = await db.message.create({
       data: {
@@ -74,12 +113,13 @@ export default async function handler(
       },
     });
 
-    const channelKey = `chat:${channelId}:messages`;
+    const channelKey = SOCKET_EVENTS.toKey(channelId as string);
+
     res?.socket?.server?.io?.emit(channelKey, message);
 
-    return res.status(200).json({ message });
+    return res.status(200).json(message);
   } catch (err) {
     console.log("[MESSAGES_POST]", err);
-    return res.status(500).json({ message: "Internal Error" });
+    return handleApiError(res, err);
   }
 }

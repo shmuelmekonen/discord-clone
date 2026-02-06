@@ -10,6 +10,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { Member, MemberRole, Profile } from "@prisma/client";
 
+import { toast } from "sonner";
+
 import { useModal } from "@/hooks/use-modal-store";
 import { cn } from "@/lib/utils";
 import { chatEditSchema, ChatEditSchemaType } from "@/lib/validations/chat";
@@ -104,6 +106,12 @@ const ChatItem = ({
       setIsEditing(false);
     } catch (err) {
       console.log(err);
+
+      let errorMessage = "Failed to update message";
+      if (axios.isAxiosError(err)) {
+        errorMessage = err.response?.data?.error || errorMessage;
+      }
+      toast.error(errorMessage);
     }
   };
 
