@@ -3,13 +3,19 @@ import { NextApiResponseServerIo } from "@/types/socket-types";
 import { currentProfilePages } from "@/lib/current-profile-pages";
 import { db } from "@/lib/db";
 import { MemberRole } from "@prisma/client";
+import { ACTION_ERRORS, USER_MESSAGES } from "@/lib/constants";
+import { handleApiError } from "@/lib/handle-api-error";
+import { SOCKET_EVENTS } from "@/lib/routes";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponseServerIo,
 ) {
   if (req.method !== "DELETE" && req.method !== "PATCH") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({
+      error: USER_MESSAGES.METHOD_NOT_ALLOWED,
+      code: ACTION_ERRORS.METHOD_NOT_ALLOWED,
+    });
   }
 
   try {
@@ -18,15 +24,24 @@ export default async function handler(
     const { content } = req.body;
 
     if (!profile) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      });
     }
 
     if (!serverId) {
-      return res.status(400).json({ error: "Server Id missing" });
+      return res.status(400).json({
+        error: USER_MESSAGES.MISSING_PARAMS,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      });
     }
 
     if (!channelId) {
-      return res.status(400).json({ error: "Channel Id missing" });
+      return res.status(400).json({
+        error: USER_MESSAGES.MISSING_PARAMS,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      });
     }
 
     const server = await db.server.findFirst({
@@ -44,7 +59,10 @@ export default async function handler(
     });
 
     if (!server) {
-      return res.status(404).json({ error: "Server not found" });
+      return res.status(404).json({
+        error: USER_MESSAGES.NOT_FOUND,
+        code: ACTION_ERRORS.NOT_FOUND,
+      });
     }
 
     const channel = await db.channel.findFirst({
@@ -55,7 +73,10 @@ export default async function handler(
     });
 
     if (!channel) {
-      return res.status(404).json({ error: "Channel not found" });
+      return res.status(404).json({
+        error: USER_MESSAGES.NOT_FOUND,
+        code: ACTION_ERRORS.NOT_FOUND,
+      });
     }
 
     const member = server.members.find(
@@ -63,7 +84,10 @@ export default async function handler(
     );
 
     if (!member) {
-      return res.status(404).json({ error: "Member not found" });
+      return res.status(404).json({
+        error: USER_MESSAGES.NOT_FOUND,
+        code: ACTION_ERRORS.NOT_FOUND,
+      });
     }
 
     let message = await db.message.findFirst({
@@ -81,7 +105,10 @@ export default async function handler(
     });
 
     if (!message || message.deleted) {
-      return res.status(404).json({ error: "Message not found" });
+      return res.status(404).json({
+        error: USER_MESSAGES.NOT_FOUND,
+        code: ACTION_ERRORS.NOT_FOUND,
+      });
     }
 
     const isMessageOwner = message.memberId === member.id;
@@ -90,7 +117,10 @@ export default async function handler(
     const canModify = isMessageOwner || isAdmin || isModerator;
 
     if (!canModify) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      });
     }
 
     if (req.method === "DELETE") {
@@ -116,7 +146,10 @@ export default async function handler(
 
     if (req.method === "PATCH") {
       if (!isMessageOwner) {
-        return res.status(401).json({ error: "Unauthorized" });
+        return res.status(401).json({
+          error: USER_MESSAGES.UNAUTHORIZED,
+          code: ACTION_ERRORS.UNAUTHORIZED,
+        });
       }
       message = await db.message.update({
         where: {
@@ -135,12 +168,12 @@ export default async function handler(
       });
     }
 
-    const updateKey = `chat:${channelId}:messages:update`;
+    const updateKey = SOCKET_EVENTS.toUpdateKey(channelId as string);
 
     res?.socket?.server?.io?.emit(updateKey, message);
     return res.status(200).json(message);
   } catch (err) {
     console.log("[MESSAGE_ID]", err);
-    return res.status(500).json({ error: "Internal Error" });
+    return handleApiError(res, err);
   }
 }

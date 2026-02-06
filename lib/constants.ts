@@ -34,6 +34,7 @@ export const ACTION_ERRORS = {
   INVALID_PARAMETERS: "INVALID_PARAMETERS",
   NOT_FOUND: "NOT_FOUND",
   CONFLICT: "CONFLICT",
+  METHOD_NOT_ALLOWED: "METHOD_NOT_ALLOWED",
 } as const;
 
 export const USER_MESSAGES = {
@@ -45,10 +46,6 @@ export const USER_MESSAGES = {
   CONFLICT: "This record already exists.",
   INVITE_NOT_FOUND: "This invite code is invalid or has expired.",
   ALREADY_MEMBER: "You are already a member of this server.",
+  MISSING_PARAMS: "Missing required parameters.",
+  METHOD_NOT_ALLOWED: "Method not allowed.",
 } as const;
-
-// export const VALIDATION_LIMITS = {
-//   NAME_MIN: 1,
-//   NAME_MAX: 32,
-//   IMAGE_MAX_SIZE: "4MB",
-// } as const;

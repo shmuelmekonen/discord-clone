@@ -3,13 +3,19 @@ import { NextApiResponseServerIo } from "@/types/socket-types";
 import { currentProfilePages } from "@/lib/current-profile-pages";
 import { db } from "@/lib/db";
 import { MemberRole } from "@prisma/client";
+import { ACTION_ERRORS, USER_MESSAGES } from "@/lib/constants";
+import { handleApiError } from "@/lib/handle-api-error";
+import { SOCKET_EVENTS } from "@/lib/routes";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponseServerIo,
 ) {
   if (req.method !== "DELETE" && req.method !== "PATCH") {
-    return res.status(405).json({ error: "Method not allowed" });
+    return res.status(405).json({
+      error: USER_MESSAGES.METHOD_NOT_ALLOWED,
+      code: ACTION_ERRORS.METHOD_NOT_ALLOWED,
+    });
   }
 
   try {
@@ -18,11 +24,17 @@ export default async function handler(
     const { content } = req.body;
 
     if (!profile) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      });
     }
 
     if (!conversationId) {
-      return res.status(400).json({ error: "Conversation Id missing" });
+      return res.status(400).json({
+        error: USER_MESSAGES.MISSING_PARAMS,
+        code: ACTION_ERRORS.INVALID_PARAMETERS,
+      });
     }
 
     const conversation = await db.conversation.findFirst({
@@ -56,7 +68,10 @@ export default async function handler(
     });
 
     if (!conversation) {
-      return res.status(404).json({ error: "conversation not found" });
+      return res.status(404).json({
+        error: USER_MESSAGES.NOT_FOUND,
+        code: ACTION_ERRORS.NOT_FOUND,
+      });
     }
 
     const member =
@@ -65,7 +80,10 @@ export default async function handler(
         : conversation.memberTwo;
 
     if (!member) {
-      return res.status(404).json({ error: "Member not found" });
+      return res.status(404).json({
+        error: USER_MESSAGES.NOT_FOUND,
+        code: ACTION_ERRORS.NOT_FOUND,
+      });
     }
 
     let directMessage = await db.directMessage.findFirst({
@@ -83,7 +101,10 @@ export default async function handler(
     });
 
     if (!directMessage || directMessage.deleted) {
-      return res.status(404).json({ error: "Message not found" });
+      return res.status(404).json({
+        error: USER_MESSAGES.NOT_FOUND,
+        code: ACTION_ERRORS.NOT_FOUND,
+      });
     }
 
     const isMessageOwner = directMessage.memberId === member.id;
@@ -92,7 +113,10 @@ export default async function handler(
     const canModify = isMessageOwner || isAdmin || isModerator;
 
     if (!canModify) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      });
     }
 
     if (req.method === "DELETE") {
@@ -118,7 +142,10 @@ export default async function handler(
 
     if (req.method === "PATCH") {
       if (!isMessageOwner) {
-        return res.status(401).json({ error: "Unauthorized" });
+        return res.status(401).json({
+          error: USER_MESSAGES.UNAUTHORIZED,
+          code: ACTION_ERRORS.UNAUTHORIZED,
+        });
       }
       directMessage = await db.directMessage.update({
         where: {
@@ -136,13 +163,12 @@ export default async function handler(
         },
       });
     }
-
-    const updateKey = `chat:${conversationId}:messages:update`;
+    const updateKey = SOCKET_EVENTS.toUpdateKey(conversationId as string);
 
     res?.socket?.server?.io?.emit(updateKey, directMessage);
     return res.status(200).json(directMessage);
   } catch (err) {
     console.log("[MESSAGE_ID]", err);
-    return res.status(500).json({ error: "Internal Error" });
+    return handleApiError(res, err);
   }
 }
