@@ -107,21 +107,20 @@ export const ManageMembersModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-main text-header overflow-hidden">
+      <DialogContent className="bg-white text-black overflow-hidden w-[95vw] max-w-[425px] md:max-w-2xl">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
             Manage Members
           </DialogTitle>
-          <DialogDescription className="text-center text-desc">
+          <DialogDescription className="text-center text-zinc-500">
             {server?.members?.length} Members
           </DialogDescription>
         </DialogHeader>
-
         <ScrollArea className="mt-8 max-h-60 pr-6">
           {server?.members?.map((member) => (
             <div key={member.id} className="flex items-center gap-x-2 mb-6">
               <UserAvatar src={member.profile.imageUrl} />
-              <div className="flex flex-col gap-y-1">
+              <div className="flex flex-col gap-y-1 min-w-0">
                 <div className="text-xs font-semibold flex items-center gap-x-1">
                   {member.profile.name}
                   {roleIconMap[member.role]}

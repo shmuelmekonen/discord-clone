@@ -106,7 +106,7 @@ export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent
-        className="bg-main text-header p-0 overflow-hidden"
+        className="bg-white text-black p-0 overflow-hidden w-[95vw] max-w-[425px]"
         onEscapeKeyDown={(e) => {
           if (isLoading) {
             e.preventDefault();
@@ -122,15 +122,18 @@ export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {
           <DialogTitle className="text-2xl text-center font-bold">
             Create your server
           </DialogTitle>
-          <DialogDescription className="text-center text-desc">
+          <DialogDescription className="text-center text-zinc-500">
             Give your server a personality with a name and an image. You can
             always change it later.
           </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="space-y-8 px-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 md:space-y-8"
+          >
+            <div className="space-y-4 md:space-y-8 px-4 md:px-6">
               <div className="flex items-center justify-center text-center">
                 <FormField
                   control={form.control}
@@ -155,13 +158,13 @@ export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="uppercase text-xs font-bold text-desc">
+                    <FormLabel className="uppercase text-xs font-bold text-zinc-500">
                       Server Name
                     </FormLabel>
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        className="bg-input border-0 focus-visible:ring-0 text-header focus-visible:ring-offset-0 placeholder:text-dim"
+                        className="bg-zinc-100/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 placeholder:text-zinc-500"
                         placeholder="Enter server name"
                         {...field}
                       />
@@ -172,7 +175,7 @@ export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {
               />
             </div>
 
-            <DialogFooter className="bg-sidebar px-6 py-4">
+            <DialogFooter className="bg-gray-100 px-6 py-4">
               <Button
                 disabled={isLoading}
                 className="w-full flex items-center justify-center"

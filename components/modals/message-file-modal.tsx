@@ -83,7 +83,7 @@ export const MessageFileModal = () => {
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
       <DialogContent
-        className="bg-white text-black p-0 overflow-hidden"
+        className="bg-white text-black p-0 overflow-hidden w-[95vw] max-w-[425px]"
         onEscapeKeyDown={(e) => {
           if (isLoading) {
             e.preventDefault();
@@ -99,7 +99,7 @@ export const MessageFileModal = () => {
           <DialogTitle className="text-2xl text-center font-bold">
             Upload Your Image
           </DialogTitle>
-          <DialogDescription className="text-center text-desc">
+          <DialogDescription className="text-center text-zinc-500">
             Send a file as a message
           </DialogDescription>
         </DialogHeader>
