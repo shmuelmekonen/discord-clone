@@ -49,7 +49,7 @@ const JoinServerModal = ({ server, inviteCode }: JoinServerModalProps) => {
   };
 
   return (
-    <div className="bg-[#313338] p-10 rounded-lg shadow-2xl text-center w-[400px] border border-zinc-700">
+    <div className="bg-main p-10 rounded-lg shadow-2xl text-center w-[400px] border border-menu">
       <div className="relative w-24 h-24 mx-auto mb-4">
         <Image
           src={server.imageUrl}
@@ -58,16 +58,16 @@ const JoinServerModal = ({ server, inviteCode }: JoinServerModalProps) => {
           className="rounded-3xl object-cover"
         />
       </div>
-      <p className="text-zinc-400 text-sm font-semibold mb-1">
+      <p className="text-desc text-sm font-semibold mb-1">
         You have been invited to
       </p>
-      <h1 className="text-white text-2xl font-bold mb-6">{server.name}</h1>
+      <h1 className="text-header text-2xl font-bold mb-6">{server.name}</h1>
       <div className="flex flex-col gap-y-3">
         <Button
           disabled={isLoading}
           onClick={onJoin}
           size="lg"
-          className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold"
+          className="bg-indigo-500 hover:bg-indigo-600 text-header font-bold"
         >
           {isLoading ? (
             <Loader2 className="animate-spin h-5 w-5" />
@@ -82,7 +82,7 @@ const JoinServerModal = ({ server, inviteCode }: JoinServerModalProps) => {
           disabled={isLoading}
           onClick={() => router.push("/")}
           variant="ghost"
-          className="text-zinc-400 hover:text-white"
+          className="text-desc hover:text-header"
         >
           Dismiss
         </Button>

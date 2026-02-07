@@ -51,7 +51,7 @@ export const FileUpload = ({
 
   if (value && isPDF) {
     return (
-      <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10 border border-indigo-200 dark:border-indigo-800">
+      <div className="relative flex items-center p-2 mt-2 rounded-md bg-input border border-indigo-200 dark:border-indigo-800">
         <FileIcon className="h-10 w-10 fill-indigo-200 stroke-indigo-400" />
         <a
           href={value}

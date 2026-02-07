@@ -2,7 +2,7 @@ import { Gamepad2 } from "lucide-react";
 
 const Loading = () => {
   return (
-    <div className="flex flex-col h-full w-full items-center justify-center bg-white dark:bg-[#313338] z-50">
+    <div className="flex flex-col h-full w-full items-center justify-center bg-main z-50">
       <div className="flex flex-col items-center gap-y-4">
         <div className="relative flex items-center justify-center">
           <div className="absolute h-14 w-14 bg-indigo-500/30 rounded-full animate-ping" />
@@ -12,7 +12,7 @@ const Loading = () => {
           </div>
         </div>
 
-        <p className="text-xs font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-widest animate-pulse">
+        <p className="text-xs font-bold text-desc uppercase tracking-widest animate-pulse">
           Starting Engine...
         </p>
       </div>
