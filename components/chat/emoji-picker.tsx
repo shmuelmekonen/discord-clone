@@ -19,7 +19,7 @@ const EmojiPicker = ({ onChange }: EmojiPickerProps) => {
   return (
     <Popover>
       <PopoverTrigger>
-        <Smile className="text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 transition" />
+        <Smile className="text-desc hover:text-heade transition" />
       </PopoverTrigger>
       <PopoverContent
         side="right"

@@ -24,11 +24,9 @@ const InviteCodePage = async ({ params }: InviteCodeProps) => {
 
   if (!server) {
     return (
-      <div className="h-full flex flex-col items-center justify-center bg-[#313338] gap-y-4">
-        <h1 className="text-2xl font-bold text-white">Invalid Invite</h1>
-        <p className="text-zinc-400">
-          The invite link is invalid or has expired.
-        </p>
+      <div className="h-full flex flex-col items-center justify-center bg-main gap-y-4">
+        <h1 className="text-2xl font-bold text-header">Invalid Invite</h1>
+        <p className="text-desc">The invite link is invalid or has expired.</p>
         <Button asChild variant="primary">
           <Link href="/">Go to Home</Link>
         </Button>
@@ -42,7 +40,7 @@ const InviteCodePage = async ({ params }: InviteCodeProps) => {
   if (isMember) return redirect(`/servers/${server.id}`);
 
   return (
-    <div className="h-full w-full flex items-center justify-center bg-[#1E1F22]">
+    <div className="h-full w-full flex items-center justify-center bg-main">
       <JoinServerModal server={server} inviteCode={inviteCode} />
     </div>
   );

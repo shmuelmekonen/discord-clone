@@ -99,7 +99,7 @@ export const MessageFileModal = () => {
           <DialogTitle className="text-2xl text-center font-bold">
             Upload Your Image
           </DialogTitle>
-          <DialogDescription className="text-center text-zinc-500">
+          <DialogDescription className="text-center text-desc">
             Send a file as a message
           </DialogDescription>
         </DialogHeader>

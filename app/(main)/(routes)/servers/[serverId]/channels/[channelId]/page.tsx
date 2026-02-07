@@ -36,7 +36,7 @@ const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
   if (!channel || !member) redirect("/");
 
   return (
-    <div className="bg-white dark:bg-[#313338] flex flex-col h-full">
+    <div className="bg-main flex flex-col h-full">
       <ChatHeader
         name={channel.name}
         serverId={channel.serverId}

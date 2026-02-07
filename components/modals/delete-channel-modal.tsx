@@ -60,12 +60,12 @@ export const DeleteChannelModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={onClose}>
-      <DialogContent className="bg-white text-black p-0 overflow-hidden">
+      <DialogContent className="bg-main text-header p-0 overflow-hidden">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
             Delete Channel
           </DialogTitle>
-          <DialogDescription className="text-center text-zinc-500">
+          <DialogDescription className="text-center text-desc">
             Are you sure you want to delete <br />
             <span className="font-semibold text-indigo-500">
               #{channel?.name}
@@ -75,7 +75,7 @@ export const DeleteChannelModal = () => {
           </DialogDescription>
         </DialogHeader>
 
-        <DialogFooter className="bg-gray-100 px-6 py-4">
+        <DialogFooter className="bg-sidebar px-6 py-4">
           <div className="flex items-center justify-between w-full">
             <Button disabled={isLoading} onClick={onClose} variant="ghost">
               Cancel

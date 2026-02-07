@@ -139,7 +139,7 @@ export const EditChannelModal = () => {
                     <FormControl>
                       <Input
                         disabled={isLoading || isGeneralChannel}
-                        className="bg-zinc-300/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0"
+                        className="bg-input border-0 focus-visible:ring-0 text-header focus-visible:ring-offset-0 placeholder:text-dim"
                         placeholder="Enter channel name"
                         {...field}
                       />
@@ -161,7 +161,7 @@ export const EditChannelModal = () => {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-full bg-zinc-300/50 border-0 focus:ring-0 text-black ring-offset-0 focus:ring-offset-0 capitalize outline-none">
+                        <SelectTrigger className="w-full bg-input border-0 focus:ring-0 text-header ring-offset-0 focus:ring-offset-0 capitalize outline-none">
                           <SelectValue placeholder="Select a channel type" />
                         </SelectTrigger>
                       </FormControl>

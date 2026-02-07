@@ -134,7 +134,7 @@ const ChatItem = ({
   const isOtherFile = fileUrl && !isImage && !isPDF;
 
   return (
-    <div className="relative group flex items-center hover:bg-black/5 p-4 transition w-full">
+    <div className="relative group flex items-center hover:bg-header/5  p-4 transition w-full">
       <div className="group flex gap-x-2 items-start w-full">
         <div
           onClick={onMemberClick}
@@ -155,9 +155,7 @@ const ChatItem = ({
                 {roleIconMap[member.role]}
               </ActionTooltip>
             </div>
-            <span className="text-xs text-zinc-500 dark:text-zinc-400">
-              {timeStamp}
-            </span>
+            <span className="text-xs text-dim">{timeStamp}</span>
           </div>
           {isImage && (
             <a
@@ -190,7 +188,7 @@ const ChatItem = ({
 
           {isOtherFile && (
             <div className="relative flex items-center p-2 mt-2 rounded-md bg-background/10">
-              <FileIcon className="h-10 w-10 text-zinc-500 dark:text-zinc-400" />
+              <FileIcon className="h-10 w-10 text-dim" />
               <a
                 href={fileUrl}
                 target="_blank"
@@ -205,16 +203,13 @@ const ChatItem = ({
           {!fileUrl && !isEditing && (
             <p
               className={cn(
-                "text-sm text-zinc-600 dark:text-zinc-300",
-                deleted &&
-                  "italic text-zinc-500 dark:text-zinc-400 text-xs mt-1",
+                "text-sm text-desc",
+                deleted && "italic text-dim text-xs mt-1",
               )}
             >
               {content}
               {isUpdated && !deleted && (
-                <span className="text-[10px] mx-2 text-zinc-500 dark:text-zinc-400">
-                  (edited)
-                </span>
+                <span className="text-[10px] mx-2 text-dim">(edited)</span>
               )}
             </p>
           )}
@@ -233,7 +228,7 @@ const ChatItem = ({
                         <div className="relative w-full">
                           <Input
                             disabled={isLoading}
-                            className="p-2 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200"
+                            className="p-2 bg-input border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-header"
                             placeholder="Edited message"
                             {...field}
                           />
@@ -246,7 +241,7 @@ const ChatItem = ({
                   Save
                 </Button>
               </form>
-              <span className="text-[10px] mt-1 text-zinc-400">
+              <span className="text-[10px] mt-1 text-dim">
                 Press ESC to cancel, Enter to save
               </span>
             </Form>
@@ -254,12 +249,12 @@ const ChatItem = ({
         </div>
       </div>
       {canDeleteMessage && (
-        <div className="hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-white dark:bg-zinc-800 border rounded-sm">
+        <div className="hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-main border border-menu shadow-sm rounded-sm">
           {canEditMessage && (
             <ActionTooltip label="Edit">
               <Edit
                 onClick={() => setIsEditing(true)}
-                className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-60 dark:hover:text-zinc-300 transition"
+                className="cursor-pointer ml-auto w-4 h-4 text-desc text-desc hover:text-header transition"
               />
             </ActionTooltip>
           )}
@@ -272,7 +267,7 @@ const ChatItem = ({
                     query: socketQuery,
                   })
                 }
-                className="cursor-pointer ml-auto w-4 h-4 text-zinc-500 hover:text-zinc-60 dark:hover:text-zinc-300 transition"
+                className="cursor-pointer ml-auto w-4 h-4 text-desc hover:text-destructive transition"
               />
             </ActionTooltip>
           )}

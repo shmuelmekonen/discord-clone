@@ -31,13 +31,7 @@ export default async function RootLayout({
   return (
     <ClerkProvider>
       <html lang="en" className="h-full" suppressHydrationWarning>
-        <body
-          className={cn(
-            font.className,
-            "antialiased",
-            "bg-white dark:bg-[#313338]",
-          )}
-        >
+        <body className={cn(font.className, "antialiased", "bg-main")}>
           {/* שינוי: הזזת ה-Plugin לכאן (מעל ה-ThemeProvider) */}
           <NextSSRPlugin routerConfig={extractRouterConfig(ourFileRouter)} />
 
