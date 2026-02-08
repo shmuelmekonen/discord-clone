@@ -49,8 +49,8 @@ const JoinServerModal = ({ server, inviteCode }: JoinServerModalProps) => {
   };
 
   return (
-    <div className="bg-main p-10 rounded-lg shadow-2xl text-center w-[400px] border border-menu">
-      <div className="relative w-24 h-24 mx-auto mb-4 rounded-3xl overflow-hidden bg-zinc-200 dark:bg-zinc-800">
+    <div className="bg-main p-10 rounded-lg shadow-2xl text-center w-[95vw] max-w-[400px] border border-menu">
+      <div className="relative w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden">
         <Image
           src={server.imageUrl}
           alt={server.name}

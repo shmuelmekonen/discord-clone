@@ -164,7 +164,7 @@ export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        className="bg-zinc-100/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 placeholder:text-zinc-500"
+                        className="bg-zinc-200 dark:bg-zinc-200 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 placeholder:text-zinc-500"
                         placeholder="Enter server name"
                         {...field}
                       />
@@ -175,7 +175,7 @@ export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {
               />
             </div>
 
-            <DialogFooter className="bg-gray-100 px-6 py-4">
+            <DialogFooter className="bg-gray-200 px-6 py-4">
               <Button
                 disabled={isLoading}
                 className="w-full flex items-center justify-center"

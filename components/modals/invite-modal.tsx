@@ -81,7 +81,7 @@ export const InviteModal = () => {
             <Input
               readOnly
               disabled={isLoading}
-              className="bg-input border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 placeholder:text-black"
+              className="bg-zinc-200 dark:bg-zinc-200 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 placeholder:text-black"
               value={inviteUrl}
               placeholder="Generating link..."
             />

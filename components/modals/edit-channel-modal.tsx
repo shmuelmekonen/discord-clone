@@ -142,7 +142,7 @@ export const EditChannelModal = () => {
                     <FormControl>
                       <Input
                         disabled={isLoading || isGeneralChannel}
-                        className="bg-zinc-100/50 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 placeholder:text-zinc-500"
+                        className="bg-zinc-200 dark:bg-zinc-200 border-0 focus-visible:ring-0 text-black focus-visible:ring-offset-0 placeholder:text-zinc-500"
                         placeholder="Enter channel name"
                         {...field}
                       />
@@ -192,7 +192,7 @@ export const EditChannelModal = () => {
               </div>
             )}
 
-            <DialogFooter className="bg-gray-100 px-6 py-4">
+            <DialogFooter className="bg-gray-200 px-6 py-4">
               <Button
                 variant="primary"
                 disabled={isLoading || isGeneralChannel}
