@@ -39,7 +39,7 @@ const ServerIdPage = async ({ params }: ServerIdPageProps) => {
       </div>
 
       <div className="bg-main flex flex-col h-full items-center justify-center space-y-4">
-        <div className="mb-2 md:mb-4 p-3 md:p-4 bg-input rounded-full shadow-inner">
+        <div className="mb-2 md:mb-4">
           {server.imageUrl ? (
             <div className="relative h-16 w-16 md:h-24 md:w-24 rounded-full overflow-hidden">
               <Image
