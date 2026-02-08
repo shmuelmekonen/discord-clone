@@ -36,7 +36,7 @@ export const ServerHeader = ({ server, role }: ServerHeaderProps) => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className=" focus:outline-none" asChild>
-        <button className="w-full text-md font-semibold px-3 flex items-center h-12 border-menu border-b-2 hover:bg-input transition">
+        <button className="w-full text-md font-semibold px-3 flex items-center h-14 border-menu border-b-2 hover:bg-input transition pr-12 md:pr-3">
           {server.name}
           <ChevronDown className="h-5 w-5 ml-auto " />
         </button>

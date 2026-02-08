@@ -120,7 +120,7 @@ export const CreateChannelModal = () => {
 
   return (
     <Dialog open={isModalOpen} onOpenChange={handleClose}>
-      <DialogContent className="bg-main text-header p-0 overflow-hidden">
+      <DialogContent className="bg-white text-black p-0 overflow-hidden w-[95vw] max-w-[425px]">
         <DialogHeader className="pt-8 px-6">
           <DialogTitle className="text-2xl text-center font-bold">
             Create Channel
@@ -128,8 +128,11 @@ export const CreateChannelModal = () => {
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-            <div className="space-y-8 px-6">
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 md:space-y-8"
+          >
+            <div className="space-y-4 md:space-y-8 px-4 md:px-6">
               <FormField
                 control={form.control}
                 name="name"
@@ -141,7 +144,7 @@ export const CreateChannelModal = () => {
                     <FormControl>
                       <Input
                         disabled={isLoading}
-                        className="bg-input border-0 focus-visible:ring-0 text-header placeholder:text-dim focus-visible:ring-offset-0"
+                        className="bg-zinc-200 dark:bg-zinc-200 border-0 focus-visible:ring-0 text-black placeholder:text-zinc-500 focus-visible:ring-offset-0"
                         placeholder="Enter channel name"
                         {...field}
                       />
@@ -164,7 +167,7 @@ export const CreateChannelModal = () => {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="w-full bg-input border-0 focus:ring-0 text-header ring-offset-0 focus:ring-offset-0 capitalize outline-none">
+                        <SelectTrigger className="w-full bg-zinc-100/50 border-0 focus:ring-0 text-black ring-offset-0 focus:ring-offset-0 capitalize outline-none">
                           <SelectValue placeholder="Select a channel type" />
                         </SelectTrigger>
                       </FormControl>
@@ -192,7 +195,7 @@ export const CreateChannelModal = () => {
               </div>
             )}
 
-            <DialogFooter className="bg-gray-100 px-6 py-4">
+            <DialogFooter className="bg-gray-200 px-6 py-4">
               <Button variant="primary" disabled={isLoading}>
                 Create
               </Button>

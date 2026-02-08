@@ -25,22 +25,22 @@ export const FileUpload = ({
 
   const isPDF =
     (fileType === "application/pdf" || fileExtension === "pdf") && value;
+
   const isImage =
     (fileType?.startsWith("image/") ||
-      (fileExtension && ALLOWED_IMAGE_TYPES.includes(fileExtension))) &&
+      (fileExtension && ALLOWED_IMAGE_TYPES.includes(fileExtension)) ||
+      endpoint === "serverImage") &&
     value;
+
   if (value && isImage) {
     return (
       <div className="relative h-20 w-20">
-        <Image
-          fill
-          src={value}
-          alt="Upload"
-          className="rounded-full object-cover"
-        />
+        <div className="relative h-20 w-20 rounded-full overflow-hidden bg-zinc-200 dark:bg-zinc-800">
+          <Image fill src={value} alt="Upload" className="object-cover" />
+        </div>
         <button
           onClick={() => onChange("")}
-          className="bg-rose-500 text-white p-1 rounded-full absolute top-0 right-0 shadow-sm"
+          className="bg-rose-500 text-white p-1 rounded-full absolute top-0 right-0 shadow-sm z-10"
           type="button"
         >
           <X className="h-4 w-4" />
@@ -84,7 +84,7 @@ export const FileUpload = ({
       }}
       appearance={{
         container:
-          "border-2 border-dashed border-gray-300 rounded-lg p-6 hover:bg-gray-50 transition cursor-pointer",
+          "border-2 border-dashed border-gray-300 rounded-lg p-4 md:p-6 hover:bg-gray-50 transition cursor-pointer",
         button:
           "bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition ut-ready:bg-blue-600 ut-uploading:bg-blue-400 ut-uploading:cursor-not-allowed",
         label: "text-gray-600 font-medium",
