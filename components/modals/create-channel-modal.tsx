@@ -112,7 +112,6 @@ export const CreateChannelModal = () => {
   };
 
   const handleClose = () => {
-    // form.reset();
     onClose();
   };
 

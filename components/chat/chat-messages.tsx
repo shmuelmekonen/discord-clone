@@ -50,6 +50,7 @@ const ChatMessages = ({
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useChatQuery({ queryKey, apiUrl, paramKey, paramValue });
 
+  // Socket updates real-time data, while Scroll hook handles pagination and auto-scroll to bottom.
   useChatSocket({ queryKey, addKey, updateKey });
   useChatScroll({
     chatRef,

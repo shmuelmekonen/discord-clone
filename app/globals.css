@@ -54,19 +54,19 @@
   --radius-3xl: calc(var(--radius) + 12px);
   --radius-4xl: calc(var(--radius) + 16px);
 
-  /* 👇 השמות החדשים והקצרים שלנו */
+  /* Custom Color Variables */
 
-  /* שימוש: bg-main / bg-sidebar / bg-mobile */
+  /* Usage: bg-main / bg-sidebar / bg-mobile */
   --color-main: hsl(var(--bg-main));
   --color-sidebar: hsl(var(--bg-sidebar));
   --color-mobile: hsl(var(--bg-mobile));
 
-  /* שימוש: text-header / text-desc / text-dim */
+  /* Usage: text-header / text-desc / text-dim */
   --color-header: hsl(var(--text-header));
   --color-desc: hsl(var(--text-desc));
   --color-dim: hsl(var(--text-dim));
 
-  /* שימוש: border-menu */
+  /* Usage: border-menu */
   --color-menu: hsl(var(--border-menu));
 
   --color-icon: var(--icon);
@@ -109,16 +109,16 @@
     --sidebar-border: oklch(0.923 0.003 48.717);
     --sidebar-ring: oklch(0.709 0.01 56.259);
 
-    /* 👇 Discord Clone Light Mode */
-    --bg-main: 0 0% 100%; /* White (הרקע הראשי) */
-    --bg-sidebar: 240 5% 96%; /* Zinc-100 (רשימת ערוצים) */
-    --bg-mobile: 240 6% 90%; /* Zinc-200 (סרגל שרתים) */
+    /* Discord Clone Light Mode */
+    --bg-main: 0 0% 100%; /* White (Main Background) */
+    --bg-sidebar: 240 5% 96%; /* Zinc-100 (Channel List) */
+    --bg-mobile: 240 6% 90%; /* Zinc-200 (Server Sidebar) */
 
-    --text-header: 240 10% 4%; /* Zinc-950 (כותרות) */
-    --text-desc: 240 4% 46%; /* Zinc-500 (תיאורים) */
-    --text-dim: 240 5% 65%; /* Zinc-400 (טקסט חלש) */
+    --text-header: 240 10% 4%; /* Zinc-950 (Headers) */
+    --text-desc: 240 4% 46%; /* Zinc-500 (Descriptions) */
+    --text-dim: 240 5% 65%; /* Zinc-400 (Dimmed Text) */
 
-    --border-menu: 240 6% 90%; /* גבולות */
+    --border-menu: 240 6% 90%; /* Light Borders */
 
     --icon: hsl(240 4% 46%);
   }
@@ -157,16 +157,16 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.553 0.013 58.071);
 
-    /* 👇 Discord Clone Dark Mode */
-    --bg-main: 220 7% 20%; /* #313338 */
-    --bg-sidebar: 223 7% 21%; /* #2B2D31 */
-    --bg-mobile: 225 6% 13%; /* #1E1F22 */
+    /* Discord Clone Dark Mode */
+    --bg-main: 220 7% 20%; /* #313338 (Main Background) */
+    --bg-sidebar: 223 7% 21%; /* #2B2D31 (Channel List) */
+    --bg-mobile: 225 6% 13%; /* #1E1F22 (Server Sidebar) */
 
-    --text-header: 210 40% 98%; /* White */
-    --text-desc: 215 9% 70%; /* Zinc-400 */
-    --text-dim: 215 8% 45%; /* Dark Grey */
+    --text-header: 210 40% 98%; /* White (Headers) */
+    --text-desc: 215 9% 70%; /* Zinc-400 (Descriptions) */
+    --text-dim: 215 8% 45%; /* Dark Grey (Dimmed Text) */
 
-    --border-menu: 217 8% 15%;
+    --border-menu: 217 8% 15%; /* Dark Borders */
 
     --icon: hsl(240 5% 26%);
   }
