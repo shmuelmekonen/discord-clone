@@ -16,7 +16,7 @@ interface ChannelIdPageProps {
 }
 const ChannelIdPage = async ({ params }: ChannelIdPageProps) => {
   const profile = await currentProfile();
-  if (!profile) redirect("/sign-in");
+  if (!profile) return redirect("/");
 
   const { serverId, channelId } = await params;
 
