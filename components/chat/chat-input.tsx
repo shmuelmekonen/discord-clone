@@ -47,7 +47,9 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
       await axios.post(url, values);
 
       form.reset();
-      form.setFocus("content");
+      setTimeout(() => {
+        form.setFocus("content");
+      }, 0);
     } catch (err) {
       console.log(err);
 
