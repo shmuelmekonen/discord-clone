@@ -21,7 +21,7 @@ interface MemberIdPageProps {
 }
 const MemberIdPage = async ({ params, searchParams }: MemberIdPageProps) => {
   const profile = await currentProfile();
-  if (!profile) return redirect("/sign-in");
+  if (!profile) return redirect("/");
 
   const { serverId, memberId } = await params;
   const { video } = await searchParams;
