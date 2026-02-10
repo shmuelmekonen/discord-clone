@@ -23,7 +23,9 @@ export const useChatScroll = ({
     const handleScroll = () => {
       const scrollTop = topDiv?.scrollTop;
 
-      if (scrollTop === 0 && shouldLoadMore) {
+      if (scrollTop === undefined || !topDiv) return;
+
+      if (scrollTop <= 500 && shouldLoadMore) {
         loadMore();
       }
     };
