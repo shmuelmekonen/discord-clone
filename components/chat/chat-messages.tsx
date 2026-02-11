@@ -2,16 +2,12 @@
 
 import { Fragment, useRef } from "react";
 import { useChatQuery } from "@/hooks/use-chat-query";
-
 import { Member } from "@prisma/client";
 import { MessageWithMemberWithProfile } from "@/types";
 import { USER_MESSAGES } from "@/lib/constants";
-
 import ChatWelcome from "./chat-welcome";
 import ChatItem from "./chat-item";
-
 import { Loader2, ServerCrash } from "lucide-react";
-
 import { format } from "date-fns";
 import { useChatSocket } from "@/hooks/use-chat-socket";
 import { useChatScroll } from "@/hooks/use-chat-scroll";
@@ -29,6 +25,7 @@ interface ChatMessagesProps {
   paramValue: string;
   type: "channel" | "conversation";
 }
+
 const ChatMessages = ({
   name,
   member,
@@ -50,14 +47,18 @@ const ChatMessages = ({
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } =
     useChatQuery({ queryKey, apiUrl, paramKey, paramValue });
 
-  // Socket updates real-time data, while Scroll hook handles pagination and auto-scroll to bottom.
   useChatSocket({ queryKey, addKey, updateKey });
+
+  // Calculate total items across all pages to trigger layout updates correctly
+  const totalMessages =
+    data?.pages?.reduce((acc, page) => acc + page.items.length, 0) ?? 0;
+
   useChatScroll({
     chatRef,
     bottomRef,
     loadMore: fetchNextPage,
     shouldLoadMore: !isFetchingNextPage && !!hasNextPage,
-    count: data?.pages?.[0]?.items?.length ?? 0,
+    count: totalMessages,
   });
 
   if (status === "pending") {
@@ -79,7 +80,12 @@ const ChatMessages = ({
   }
 
   return (
-    <div ref={chatRef} className="flex-1 flex flex-col py-4 overflow-y-auto">
+    <div
+      ref={chatRef}
+      className="flex-1 flex flex-col py-4 overflow-y-auto"
+      // overflow-anchor: none is crucial to prevent browser's native scroll adjustments during insertions
+      style={{ overflowAnchor: "none" }}
+    >
       {!hasNextPage && <div className="flex-1" />}
       {!hasNextPage && <ChatWelcome type={type} name={name} />}
 
