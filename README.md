@@ -51,7 +51,7 @@ Major improvements I implemented:
 - **ORM:** [Prisma](https://www.prisma.io/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
 
-> **Live Demo:** [Click here to view the deployed app](LINK_GOES_HERE)  
+> **Live Demo:** [Click here to view the deployed app](https://discord-clone-06so.onrender.com)  
 > _(Note: The initial load might take up to 50s due to free-tier hosting cold start)_
 
 ### Services
