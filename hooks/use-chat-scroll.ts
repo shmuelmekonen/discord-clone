@@ -19,7 +19,6 @@ export const useChatScroll = ({
   const userScrolledUpRef = useRef(false);
   const previousHeightRef = useRef(0);
 
-  // 1. Handle scroll events to trigger data fetching
   useEffect(() => {
     const topDiv = chatRef?.current;
 
@@ -28,7 +27,6 @@ export const useChatScroll = ({
 
       if (scrollTop === undefined || !topDiv) return;
 
-      // Trigger load only when reaching the absolute top (0)
       if (scrollTop === 0 && shouldLoadMore && hasInitialized) {
         userScrolledUpRef.current = true;
         previousHeightRef.current = topDiv.scrollHeight;
@@ -40,8 +38,6 @@ export const useChatScroll = ({
     return () => topDiv?.removeEventListener("scroll", handleScroll);
   }, [shouldLoadMore, loadMore, chatRef, hasInitialized]);
 
-  // 2. Scroll Retention: Maintain position after loading old messages
-  // useLayoutEffect prevents visual jitter by adjusting scroll before paint
   useLayoutEffect(() => {
     const topDiv = chatRef?.current;
 
@@ -55,13 +51,11 @@ export const useChatScroll = ({
     }
   }, [count, chatRef]);
 
-  // 3. Auto-scroll to bottom on init or new message (if near bottom)
   useEffect(() => {
     const bottomDiv = bottomRef?.current;
     const topDiv = chatRef?.current;
 
     const shouldAutoScroll = () => {
-      // Prevent auto-scroll if user manually triggered a history load
       if (userScrolledUpRef.current) return false;
 
       if (!hasInitialized && bottomDiv) {
@@ -74,7 +68,6 @@ export const useChatScroll = ({
       const distanceFromBottom =
         topDiv.scrollHeight - topDiv.scrollTop - topDiv.clientHeight;
 
-      // Threshold for auto-scrolling to new messages
       return distanceFromBottom <= 100;
     };
 
