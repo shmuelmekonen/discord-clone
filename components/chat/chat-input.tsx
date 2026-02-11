@@ -49,16 +49,13 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
       form.reset();
       setTimeout(() => {
         form.setFocus("content");
-      }, 0);
+      }, 10);
     } catch (err) {
       console.log(err);
-
       let errorMessage = "Could not send message";
-
       if (axios.isAxiosError(err)) {
         errorMessage = err.response?.data?.error || errorMessage;
       }
-
       toast.error(errorMessage);
     }
   };
