@@ -48,15 +48,16 @@ export const updateMemberRole = async (
           },
         },
       },
-      // TODO: [Optimization] This is not scalable for large servers (1k+ members).
-      // CURRENT: We fetch ALL members to update the modal UI via router.refresh().
-      // FUTURE: Implement distinct API endpoint for members list with pagination (Infinite Scroll)
-      // or use granular state updates without refetching the entire server object.      // include: {
-      //   members: {
-      //     include: { profile: true },
-      //     orderBy: { role: "asc" },
-      //   },
-      // },
+      include: {
+        members: {
+          include: {
+            profile: true,
+          },
+          orderBy: {
+            role: "asc",
+          },
+        },
+      },
     });
 
     revalidatePath(`/servers/${serverId}`);
@@ -100,16 +101,16 @@ export const kickMember = async (
           },
         },
       },
-      // TODO: [Optimization] This is not scalable for large servers (1k+ members).
-      // CURRENT: We fetch ALL members to update the modal UI via router.refresh().
-      // FUTURE: Implement distinct API endpoint for members list with pagination (Infinite Scroll)
-      // or use granular state updates without refetching the entire server object.
-      // include: {
-      //   members: {
-      //     include: { profile: true },
-      //     orderBy: { role: "asc" },
-      //   },
-      // },
+      include: {
+        members: {
+          include: {
+            profile: true,
+          },
+          orderBy: {
+            role: "asc",
+          },
+        },
+      },
     });
     revalidatePath(`/servers/${serverId}`);
     return { data: server, error: null };
