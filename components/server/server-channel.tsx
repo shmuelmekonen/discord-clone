@@ -46,7 +46,7 @@ const ServerChannel = ({ channel, server, role }: ServerChannelProps) => {
       <Icon className="shrink-0 w-5 h-5 text-desc" />
       <p
         className={cn(
-          "line-clamp-1 font-semibold text-xs text-desc group-hover:text-header transition",
+          "line-clamp-1 font-semibold text-sm text-desc group-hover:text-header transition",
           params?.channelId === channel.id && "text-primary",
         )}
       >

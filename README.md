@@ -22,12 +22,22 @@ It features real-time server management, granular role-based permissions, and a 
 While inspired by a popular tutorial, this project represents a **significant architectural upgrade** to modern standards (Next.js 15).
 Major improvements I implemented:
 
-- **Hybrid Backend Architecture:**
-- **Server Actions:** Used for 90% of the app (CRUD operations, Server creation, Member management) to ensure type safety and reduced API overhead.
-- **Custom Socket Layer:** Strategically used `pages/api` for the WebSocket server to gain access to the global `res.socket` instance, enabling true bi-directional communication (which is currently limited in Server Actions).
-- **Type-Safe Data Mutation:** Implemented end-to-end type safety using **Zod** validation on both client forms (React Hook Form) and server endpoints.
-- **Next.js 15 Compatibility:** Upgraded codebase to handle Next.js 15 breaking changes, such as `Promise`-based params in Layouts and Pages (`await params`).
-- **Structured Error Handling:** Designed a custom `ActionResponse` pattern to standardize error management across the app, replacing generic HTTP status codes.
+- **🔄 Advanced Scroll Retention (UX):**
+  - Solved the common "infinite scroll jumping" issue found in most chat apps.
+  - Implemented a custom hook using `useLayoutEffect` to mathematically calculate and adjust scroll position before browser repaint, ensuring a seamless history loading experience.
+
+- **🏗️ Hybrid Backend Architecture:**
+  - **Server Actions:** Used for 90% of the app (CRUD, Server management) to leverage Next.js caching and type safety.
+  - **Custom Socket Layer:** Strategically used `pages/api` for the WebSocket server to enable true bi-directional communication for the chat functionality.
+
+- **🛡️ Next.js 15 & Type Safety:**
+  - Full migration to Next.js 15, handling async params/searchParams patterns (`await params`).
+  - Implemented end-to-end type safety using **Zod** validation on both client forms and server endpoints.
+
+- **🎨 UI/UX Polish:**
+  - Integrated **Geist Sans** font for optimal readability and modern aesthetic.
+  - Optimized image loading strategies (`sizes` prop) for retina displays.
+  - Improved focus management and interaction flows in chat inputs.
 
 ---
 
@@ -41,10 +51,14 @@ Major improvements I implemented:
 - **ORM:** [Prisma](https://www.prisma.io/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
 
+> **Live Demo:** [Click here to view the deployed app](LINK_GOES_HERE)  
+> _(Note: The initial load might take up to 50s due to free-tier hosting cold start)_
+
 ### Services
 
 - **Auth:** [Clerk](https://clerk.com/) (User management & Middleware)
 - **Uploads:** [UploadThing](https://uploadthing.com/) (Server icons & Attachments)
+- **Live Media:** [LiveKit](https://livekit.io/) (WebRTC Audio/Video)
 
 ---
 
@@ -59,9 +73,9 @@ Current implementation status:
 - [x] **Member Management** (Kick, Change Role)
 - [x] **Chat Interface** (Type-safe Chat Input with Zod Validation)
 - [x] **Robust Error Handling** (Server Actions + Toast Notifications)
-- [ ] **Real-time Messaging** (Socket.io Backend integrated, UI in progress) 🚧
-- [ ] **Voice & Video Architecture** (Evaluating LiveKit / WebRTC) 🔜 _Next Step_
-- [ ] **Direct Messages** (1:1 conversations)
+- [x] **Real-time Messaging** (Socket.io Backend integrated, Infinite Scroll)
+- [x] **Voice & Video Architecture** (LiveKit WebRTC Integration)
+- [x] **Direct Messages** (1:1 conversations with Video support)
 
 ---
 

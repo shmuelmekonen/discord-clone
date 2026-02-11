@@ -42,7 +42,7 @@ export const NavigationItem = ({ id, imageUrl, name }: NavigationItemProps) => {
             fill
             alt="Channel"
             className="object-cover"
-            sizes="48px"
+            sizes="96px"
           />
         </div>
       </button>

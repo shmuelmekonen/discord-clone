@@ -7,6 +7,7 @@ import "@livekit/components-styles";
 
 import { useUser } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
+import { useRouter, useParams } from "next/navigation";
 
 interface MediaRoomProps {
   chatId: string;
@@ -17,6 +18,8 @@ interface MediaRoomProps {
 export const MediaRoom = ({ chatId, video, audio }: MediaRoomProps) => {
   const { user } = useUser();
   const [token, setToken] = useState("");
+  const router = useRouter();
+  const params = useParams();
 
   useEffect(() => {
     if (!user?.firstName || !user?.lastName) return;
@@ -52,6 +55,7 @@ export const MediaRoom = ({ chatId, video, audio }: MediaRoomProps) => {
       connect={true}
       video={video}
       audio={audio}
+      onDisconnected={() => router.push(`/servers/${params?.serverId}`)}
     >
       <VideoConference />
     </LiveKitRoom>
