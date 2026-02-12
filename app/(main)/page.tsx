@@ -1,7 +1,7 @@
 import { db } from "@/lib/db";
 import { initialProfile } from "@/lib/initial-profile";
-import { CreateServerModal } from "@/components/modals/create-server-modal";
 import MobileToggle from "@/components/mobile-toggle";
+import { InitialDashboard } from "@/components/initial-dashboard";
 
 const SetupPage = async () => {
   const profile = await initialProfile();
@@ -18,39 +18,42 @@ const SetupPage = async () => {
       createdAt: "asc",
     },
   });
-
-  if (!server) {
-    return (
-      <div className="h-full">
-        <div className="h-full flex items-center justify-center">
-          <CreateServerModal isInitial />
-        </div>
-      </div>
-    );
-  }
+  if (!server) return <InitialDashboard />;
 
   return (
-    <div className="h-full bg-main relative">
-      <div className="md:hidden flex items-center p-4 absolute top-0 left-0 w-full z-50">
-        <MobileToggle serverId={server.id} />
+    <div className="h-full bg-main flex flex-col">
+      <div className="md:hidden flex items-center px-3 h-14 border-b-2 border-menu bg-main shrink-0">
+        <MobileToggle />
+        <span className="ml-2 font-bold text-header text-sm">
+          Discord Clone
+        </span>
       </div>
-      <div className="h-full bg-main">
-        <div className="h-full flex flex-col items-center justify-center text-center">
-          <div className="bg-mobile p-4 md:p-6 rounded-full mb-6 md:mb-8 shadow-md">
-            <span className="text-4xl md:text-6xl">💬</span>
+
+      <div className="flex-1 flex items-center justify-center p-6 overflow-y-auto">
+        <div className="w-full max-w-lg flex flex-col items-center text-center space-y-8 animate-in fade-in zoom-in duration-500">
+          <div className="bg-zinc-200 dark:bg-[#2B2D31] p-5 md:p-6 rounded-full shadow-sm">
+            <span className="text-5xl md:text-6xl">💬</span>
           </div>
 
-          <h1 className="text-2xl md:text-4xl font-extrabold text-header mb-2 md:mb-4 px-4">
-            Welcome to Discord Clone
-          </h1>
+          <div className="space-y-2">
+            <h1 className="text-2xl md:text-4xl font-extrabold text-header tracking-tight">
+              Welcome back, {profile.name.split(" ")[0]}
+            </h1>
+            <p className="text-sm md:text-lg text-desc leading-relaxed">
+              Ready to jump back into the conversation?
+            </p>
+          </div>
 
-          <p className="text-base md:text-xl text-desc max-w-lg px-6">
-            Your place to talk, hang out, and have fun.
-          </p>
-
-          <div className="mt-6 md:mt-8 p-3 md:p-4 bg-input rounded-lg border border-menu">
-            <p className="text-desc font-medium text-sm md:text-base">
-              ⬅️ Select a server from the sidebar to start
+          <div className="w-full p-6 bg-zinc-100 dark:bg-[#1E1F22] rounded-2xl border-2 border-menu shadow-sm">
+            <p className="text-desc font-medium text-sm md:text-base leading-relaxed">
+              <span className="hidden md:inline">
+                ⬅️ Select a server from the sidebar on the left to start
+                chatting.
+              </span>
+              <span className="md:hidden">
+                Tap the <strong>Menu icon (☰)</strong> at the top left to
+                switch servers.
+              </span>
             </p>
           </div>
         </div>

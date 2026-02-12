@@ -34,18 +34,12 @@ import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { MODAL_TYPES } from "@/lib/constants";
 
-interface ServerModalProps {
-  isInitial?: boolean;
-}
-
-export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {
+export const CreateServerModal = () => {
   const [isMounted, setIsMounted] = useState(false);
 
   const { isOpen, onClose, type } = useModal();
 
-  const isModalOpen = isInitial
-    ? true
-    : isOpen && type === MODAL_TYPES.CREATE_SERVER;
+  const isModalOpen = isOpen && type === MODAL_TYPES.CREATE_SERVER;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
@@ -96,7 +90,6 @@ export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {
   };
 
   const handleClose = () => {
-    if (isInitial) return;
     form.reset();
     onClose();
   };
@@ -108,14 +101,10 @@ export const CreateServerModal = ({ isInitial = false }: ServerModalProps) => {
       <DialogContent
         className="bg-white text-black p-0 overflow-hidden w-[95vw] max-w-[425px]"
         onEscapeKeyDown={(e) => {
-          if (isLoading) {
-            e.preventDefault();
-          }
+          if (isLoading) e.preventDefault();
         }}
         onPointerDownOutside={(e) => {
-          if (isLoading) {
-            e.preventDefault();
-          }
+          if (isLoading) e.preventDefault();
         }}
       >
         <DialogHeader className="pt-8 px-6">
