@@ -1,5 +1,4 @@
 import { Menu } from "lucide-react";
-
 import { NavigationSidebar } from "@/components/navigation/navigation-sidebar";
 import {
   Sheet,
@@ -9,8 +8,9 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { ServerSidebar } from "./server/server-sidebar";
+import { cn } from "@/lib/utils";
 
-const MobileToggle = ({ serverId }: { serverId: string }) => {
+const MobileToggle = ({ serverId }: { serverId?: string }) => {
   return (
     <Sheet>
       <SheetTrigger asChild>
@@ -19,11 +19,24 @@ const MobileToggle = ({ serverId }: { serverId: string }) => {
         </Button>
       </SheetTrigger>
       <SheetTitle className="hidden">Navigation Menu</SheetTitle>
-      <SheetContent side="left" className="p-0 flex-row gap-0 w-[312px]">
-        <div className="w-[72px] shrink-0">
+
+      <SheetContent
+        side="left"
+        className={cn(
+          "p-0 flex gap-0",
+          "flex-row",
+          serverId ? "w-[312px] max-w-[100vw]" : "w-[72px] [&>button]:hidden",
+        )}
+      >
+        <div className="w-[72px] shrink-0 h-full">
           <NavigationSidebar />
         </div>
-        <ServerSidebar serverId={serverId} />
+
+        {serverId && (
+          <div className="w-60 h-full">
+            <ServerSidebar serverId={serverId} />
+          </div>
+        )}
       </SheetContent>
     </Sheet>
   );

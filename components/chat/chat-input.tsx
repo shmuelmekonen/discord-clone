@@ -88,7 +88,7 @@ const ChatInput = ({ apiUrl, query, name, type }: ChatInputProps) => {
                   </div>
                   <Input
                     disabled={isLoading}
-                    className="pl-22 pr-12 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200 placeholder:text-zinc-500 dark:placeholder:text-zinc-400"
+                    className="pl-24 pr-14 py-6 bg-zinc-200/90 dark:bg-zinc-700/75 border-none border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-zinc-600 dark:text-zinc-200 placeholder:text-zinc-500 dark:placeholder:text-zinc-400 text-base md:text-sm"
                     placeholder={`Message ${type === "conversation" ? name : "#" + name}`}
                     {...field}
                   />
