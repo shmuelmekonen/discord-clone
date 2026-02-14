@@ -7,6 +7,7 @@ import { Separator } from "@/components/ui/separator";
 import { ModeToggle } from "@/components/mode-toggle";
 import { NavigationAction } from "@/components/navigation/navigation-action";
 import { NavigationList } from "@/components/navigation/navigation-list";
+import { NavigationHome } from "./navigation-home";
 
 export const NavigationSidebar = async () => {
   const profile = await currentProfile();
@@ -27,6 +28,8 @@ export const NavigationSidebar = async () => {
 
   return (
     <div className="space-y-4 flex flex-col items-center h-full text-primary w-full bg-mobile py-3">
+      <NavigationHome />
+      <Separator className="h-0.5 bg-menu rounded-md w-10 mx-auto" />
       <NavigationAction />
       <Separator className="h-0.5 bg-menu rounded-md w-10 mx-auto" />
       <NavigationList servers={servers} />
