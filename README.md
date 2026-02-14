@@ -22,6 +22,11 @@ It features real-time server management, granular role-based permissions, and a 
 While inspired by a popular tutorial, this project represents a **significant architectural upgrade** to modern standards (Next.js 15).
 Major improvements I implemented:
 
+- **🛡️ Resilience & Error Handling (New):**
+  - **Graceful Degradation:** Implemented a tiered Error Boundary architecture.
+  - **Blast Radius Containment:** Scoped error boundaries inside server routes ensure that if a specific channel crashes, the **Navigation Sidebar remains functional**, allowing users to navigate away instead of facing a "White Screen of Death".
+  - **Global Safety Net:** A specialized `global-error.tsx` handles critical root layout failures.
+
 - **🔄 Advanced Scroll Retention (UX):**
   - Solved the common "infinite scroll jumping" issue found in most chat apps.
   - Implemented a custom hook using `useLayoutEffect` to mathematically calculate and adjust scroll position before browser repaint, ensuring a seamless history loading experience.

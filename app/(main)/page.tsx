@@ -3,6 +3,8 @@ import { initialProfile } from "@/lib/initial-profile";
 import MobileToggle from "@/components/mobile-toggle";
 import { InitialDashboard } from "@/components/initial-dashboard";
 
+export const dynamic = "force-dynamic";
+
 const SetupPage = async () => {
   const profile = await initialProfile();
 
