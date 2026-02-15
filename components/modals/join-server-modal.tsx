@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { Button } from "../ui/button";
 import { Loader2, UserPlus } from "lucide-react";
 import { useState } from "react";
+import { SOCKET_EVENTS } from "@/lib/routes";
 
 interface JoinServerModalProps {
   server: {
@@ -37,7 +38,22 @@ const JoinServerModal = ({ server, inviteCode }: JoinServerModalProps) => {
 
       if (joinedNew) {
         toast.success(`Welcome to ${joinedServer.name}'s server!`);
+
+        try {
+          fetch("/api/socket/events", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              serverId: joinedServer.id,
+              event: SOCKET_EVENTS.SERVER_UPDATE,
+            }),
+            keepalive: true,
+          });
+        } catch (error) {
+          console.error("REALTIME_SIGNAL_ERROR", error);
+        }
       }
+
       router.refresh();
       router.push(`/servers/${joinedServer.id}`);
     } catch (err) {

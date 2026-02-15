@@ -18,9 +18,11 @@ import { useRouter } from "next/navigation";
 import { leaveServer } from "@/actions/server-actions";
 import { MODAL_TYPES } from "@/lib/constants";
 import { Loader2 } from "lucide-react";
+import { SOCKET_EVENTS } from "@/lib/routes";
 
 export const LeaveServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -33,13 +35,28 @@ export const LeaveServerModal = () => {
 
     try {
       setIsLoading(true);
-
       const result = await leaveServer(serverId);
       const { data, error } = result;
 
       if (error) {
         toast.error(error);
         return;
+      }
+
+      try {
+        await fetch("/api/socket/events", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            serverId: serverId,
+            event: SOCKET_EVENTS.SERVER_UPDATE,
+          }),
+          keepalive: true,
+        });
+      } catch (error) {
+        console.error("REALTIME_SIGNAL_ERROR", error);
       }
 
       onClose();

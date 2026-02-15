@@ -40,6 +40,8 @@ import { useModal } from "@/hooks/use-modal-store";
 import { kickMember, updateMemberRole } from "@/actions/member-actions";
 import { ServerWithMembersWithProfiles } from "@/types";
 import { MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
+import { useSocket } from "@/components/providers/socket-provider";
+import { SOCKET_EVENTS } from "@/lib/routes";
 
 const roleIconMap = {
   GUEST: null,
@@ -48,6 +50,8 @@ const roleIconMap = {
 };
 
 export const ManageMembersModal = () => {
+  const { socket } = useSocket();
+
   const router = useRouter();
   const { onOpen, isOpen, onClose, type, data } = useModal();
   const [loadingId, setLoadingId] = useState<string>("");
@@ -66,6 +70,11 @@ export const ManageMembersModal = () => {
       }
 
       router.refresh();
+      socket?.emit(SOCKET_EVENTS.MEMBER_KICK, {
+        serverId: server.id,
+        memberId: memberId,
+      });
+
       if (result.data) {
         onOpen(MODAL_TYPES.MANAGE_MEMBERS, {
           server: result.data as ServerWithMembersWithProfiles,
@@ -91,6 +100,7 @@ export const ManageMembersModal = () => {
       }
 
       router.refresh();
+      socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, server.id);
       if (result.data) {
         onOpen(MODAL_TYPES.MANAGE_MEMBERS, {
           server: result.data as ServerWithMembersWithProfiles,
