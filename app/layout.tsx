@@ -15,6 +15,7 @@ import { Toaster } from "sonner";
 import "./globals.css";
 import { SocketProvider } from "@/components/providers/socket-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
+import { SocketEventProvider } from "@/components/providers/socket-event-provider";
 
 const font = Geist({
   subsets: ["latin"],
@@ -46,7 +47,9 @@ export default async function RootLayout({
           >
             <SocketProvider>
               <ModalProvider />
-              <QueryProvider>{children}</QueryProvider>
+              <QueryProvider>
+                <SocketEventProvider>{children}</SocketEventProvider>
+              </QueryProvider>
               <Toaster richColors position="bottom-right" />
             </SocketProvider>
           </ThemeProvider>
