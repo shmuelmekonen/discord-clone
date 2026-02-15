@@ -6,7 +6,6 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponseServerIo,
 ) {
-  console.log("[4] API_EVENTS: Hit! Body:", req.body);
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -22,7 +21,6 @@ export default async function handler(
   }
 
   if (event === SOCKET_EVENTS.SERVER_UPDATE) {
-    console.log(`[5] API_EVENTS: Broadcasting to SERVER: ${serverId}`);
     res?.socket?.server?.io?.emit(SOCKET_EVENTS.serverUpdated(serverId));
   } else if (event === SOCKET_EVENTS.SERVER_DELETE) {
     res?.socket?.server?.io?.emit(SOCKET_EVENTS.serverDeleted(serverId));
