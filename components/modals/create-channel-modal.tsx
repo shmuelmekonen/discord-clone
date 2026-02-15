@@ -38,8 +38,12 @@ import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { ChannelType } from "@prisma/client";
 import { ACTION_ERRORS, MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
+import { useSocket } from "@/components/providers/socket-provider";
+import { SOCKET_EVENTS } from "@/lib/routes";
 
 export const CreateChannelModal = () => {
+  const { socket } = useSocket();
+
   const [isMounted, setIsMounted] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
 
@@ -100,13 +104,14 @@ export const CreateChannelModal = () => {
       }
 
       toast.success("Channel created successfully!");
+      socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, serverId);
+
       form.reset();
       onClose();
       router.refresh();
       router.push(`/servers/${server.id}`);
     } catch (err) {
       console.log(err);
-
       setGeneralError(USER_MESSAGES.GENERIC_ERROR);
     }
   };

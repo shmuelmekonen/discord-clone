@@ -38,8 +38,12 @@ import { useRouter } from "next/navigation";
 import { ChannelType } from "@prisma/client";
 import { CHANNEL_NAMES, MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
 import { editChannel } from "@/actions/channel-actions";
+import { useSocket } from "@/components/providers/socket-provider";
+import { SOCKET_EVENTS } from "@/lib/routes";
 
 export const EditChannelModal = () => {
+  const { socket } = useSocket();
+
   const [isMounted, setIsMounted] = useState(false);
   const [generalError, setGeneralError] = useState<string | null>(null);
 
@@ -97,6 +101,8 @@ export const EditChannelModal = () => {
       toast.success("Channel updated successfully!");
       form.reset();
       onClose();
+      socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, serverId);
+
       router.refresh();
       router.push(`/servers/${result?.updatedServerId}`);
     } catch (err) {

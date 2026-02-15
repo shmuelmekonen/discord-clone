@@ -27,6 +27,10 @@ Major improvements I implemented:
   - **Blast Radius Containment:** Scoped error boundaries inside server routes ensure that if a specific channel crashes, the **Navigation Sidebar remains functional**, allowing users to navigate away instead of facing a "White Screen of Death".
   - **Global Safety Net:** A specialized `global-error.tsx` handles critical root layout failures.
 
+- **📡 Network Reliability & Safe Navigation:**
+  - **Keepalive Pattern:** Solved the browser's "request cancellation" issue during page transitions (e.g., leaving a server). Utilized `fetch` with `keepalive: true` to ensure exit signals are guaranteed to reach the server even as the component unmounts.
+  - **Event Bridge Architecture:** Decoupled the Socket emission logic into a specialized API route (`/api/socket/events`) to handle broadcasting reliability.
+
 - **🔄 Advanced Scroll Retention (UX):**
   - Solved the common "infinite scroll jumping" issue found in most chat apps.
   - Implemented a custom hook using `useLayoutEffect` to mathematically calculate and adjust scroll position before browser repaint, ensuring a seamless history loading experience.

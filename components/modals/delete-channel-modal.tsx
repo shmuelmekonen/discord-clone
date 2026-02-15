@@ -18,9 +18,13 @@ import { useRouter } from "next/navigation";
 import { MODAL_TYPES } from "@/lib/constants";
 import { deleteChannel } from "@/actions/channel-actions";
 import { Loader2 } from "lucide-react";
+import { useSocket } from "@/components/providers/socket-provider";
+import { SOCKET_EVENTS } from "@/lib/routes";
 
 export const DeleteChannelModal = () => {
   const { isOpen, onClose, type, data } = useModal();
+  const { socket } = useSocket();
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -45,6 +49,8 @@ export const DeleteChannelModal = () => {
         return;
       }
       onClose();
+      socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, serverId);
+
       router.refresh();
       router.push(
         data?.updatedServerId ? `/servers/${data.updatedServerId}` : "/",

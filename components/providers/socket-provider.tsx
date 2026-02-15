@@ -22,14 +22,13 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || window.location.origin;
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const socketInstance: Socket = new (ClientIO as any)(
-      process.env.NEXT_PUBLIC_SITE_URL!,
-      {
-        path: "/api/socket/io",
-        addTrailingSlash: false,
-      },
-    );
+    const socketInstance: Socket = new (ClientIO as any)(siteUrl, {
+      path: "/api/socket/io",
+      addTrailingSlash: false,
+    });
 
     socketInstance.on("connect", () => {
       setIsConnected(true);

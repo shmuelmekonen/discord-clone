@@ -17,9 +17,11 @@ import { deleteServer } from "@/actions/server-actions";
 import { MODAL_TYPES } from "@/lib/constants";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { SOCKET_EVENTS } from "@/lib/routes";
 
 export const DeleteServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
+
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,7 +43,21 @@ export const DeleteServerModal = () => {
         return;
       }
 
+      try {
+        await fetch("/api/socket/events", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            serverId: serverId,
+            event: SOCKET_EVENTS.SERVER_DELETE,
+          }),
+          keepalive: true,
+        });
+      } catch (error) {
+        console.error("REALTIME_SIGNAL_ERROR", error);
+      }
       onClose();
+
       router.refresh();
       router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
       toast.success("Server deleted successfully");

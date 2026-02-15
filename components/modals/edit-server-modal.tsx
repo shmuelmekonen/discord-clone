@@ -32,8 +32,12 @@ import { editServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { toast } from "sonner";
 import { MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
+import { SOCKET_EVENTS } from "@/lib/routes";
+import { useSocket } from "@/components/providers/socket-provider";
 
 export const EditServerModal = () => {
+  const { socket } = useSocket();
+
   const [isMounted, setIsMounted] = useState(false);
   const { isOpen, onClose, type, data } = useModal();
   const router = useRouter();
@@ -87,6 +91,8 @@ export const EditServerModal = () => {
       form.reset();
       router.refresh();
       onClose();
+      socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, serverId);
+
       toast.success("Server updated successfully!");
     } catch (err) {
       console.log(err);
