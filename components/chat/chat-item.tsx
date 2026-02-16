@@ -249,7 +249,7 @@ const ChatItem = ({
         </div>
       </div>
       {canDeleteMessage && (
-        <div className="hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-main border border-menu shadow-sm rounded-sm">
+        <div className="flex md:hidden group-hover:flex items-center gap-x-2 absolute p-1 -top-2 right-5 bg-main border border-menu shadow-sm rounded-sm">
           {canEditMessage && (
             <ActionTooltip label="Edit">
               <Edit
