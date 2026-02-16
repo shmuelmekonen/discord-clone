@@ -20,7 +20,7 @@ export const NavigationHome = () => {
 
   const stateClasses = isActive
     ? "bg-indigo-500 rounded-[16px]"
-    : "bg-zinc-200 dark:bg-zinc-700 rounded-[24px] group-hover:bg-indigo-500 dark:group-hover:bg-indigo-500 group-hover:rounded-[16px]"; // מצב רגיל: אפור ועיגול -> משתנה בהובר
+    : "bg-zinc-400 dark:bg-zinc-700 rounded-[24px] group-hover:bg-indigo-500 dark:group-hover:bg-indigo-500 group-hover:rounded-[16px]";
 
   const iconClasses = isActive
     ? "text-white"

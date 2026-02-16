@@ -45,3 +45,16 @@ next-env.d.ts
 /.clerk/
 
 /lib/generated/prisma
+
+# Repomix & Logs
+repomix-output.txt
+output.txt
+*.log
+
+# IDEs & Editors
+.idea
+.vscode
+
+# Local Database (Safety net)
+*.db
+*.sqlite
