@@ -57,13 +57,13 @@ const ServerChannel = ({ channel, server, role }: ServerChannelProps) => {
           <ActionTooltip label="Edit">
             <Edit
               onClick={(e) => onAction(e, MODAL_TYPES.EDIT_CHANNEL)}
-              className="hidden group-hover:block w-4 h-4 text-desc hover:text-header transition"
+              className="block md:hidden group-hover:block w-4 h-4 text-desc hover:text-header transition"
             />
           </ActionTooltip>
           <ActionTooltip label="Delete">
             <Trash
               onClick={(e) => onAction(e, MODAL_TYPES.DELETE_CHANNEL)}
-              className="hidden group-hover:block w-4 h-4 text-desc hover:text-header transition"
+              className="block md:hidden group-hover:block w-4 h-4 text-desc hover:text-header transition"
             />
           </ActionTooltip>
         </div>
