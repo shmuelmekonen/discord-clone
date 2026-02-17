@@ -39,7 +39,7 @@ import {
 import { useModal } from "@/hooks/use-modal-store";
 import { kickMember, updateMemberRole } from "@/actions/member-actions";
 import { ServerWithMembersWithProfiles } from "@/types";
-import { MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
+import { MODAL_TYPES, TOAST_MESSAGES, USER_MESSAGES } from "@/lib/constants";
 import { useSocket } from "@/components/providers/socket-provider";
 import { SOCKET_EVENTS } from "@/lib/routes";
 
@@ -65,7 +65,7 @@ export const ManageMembersModal = () => {
       const result = await kickMember(server.id, memberId);
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(result.error || TOAST_MESSAGES.MEMBER.ACTION_ERROR);
         return;
       }
 
@@ -80,7 +80,7 @@ export const ManageMembersModal = () => {
           server: result.data as ServerWithMembersWithProfiles,
         });
       }
-      toast.success("Member kicked");
+      toast.success(TOAST_MESSAGES.MEMBER.KICK_SUCCESS);
     } catch (err) {
       console.log(err);
       toast.error(USER_MESSAGES.GENERIC_ERROR);
@@ -95,7 +95,7 @@ export const ManageMembersModal = () => {
       const result = await updateMemberRole(server.id, memberId, role);
 
       if (result.error) {
-        toast.error(result.error);
+        toast.error(result.error || TOAST_MESSAGES.MEMBER.ACTION_ERROR);
         return;
       }
 
@@ -106,7 +106,7 @@ export const ManageMembersModal = () => {
           server: result.data as ServerWithMembersWithProfiles,
         });
       }
-      toast.success("Role updated");
+      toast.success(TOAST_MESSAGES.MEMBER.ROLE_UPDATE_SUCCESS);
     } catch (err) {
       console.log(err);
       toast.error(USER_MESSAGES.GENERIC_ERROR);

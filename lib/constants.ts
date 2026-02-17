@@ -49,3 +49,38 @@ export const USER_MESSAGES = {
   MISSING_PARAMS: "Missing required parameters.",
   METHOD_NOT_ALLOWED: "Method not allowed.",
 } as const;
+
+export const TOAST_MESSAGES = {
+  SERVER: {
+    CREATE_SUCCESS: "Server created successfully!",
+    CREATE_ERROR: "Failed to create server",
+    UPDATE_SUCCESS: "Server updated successfully!",
+    UPDATE_ERROR: "Failed to update server",
+    DELETE_SUCCESS: "Server deleted successfully",
+    DELETE_ERROR: "Failed to delete server",
+    LEAVE_SUCCESS: "You left the server",
+    LEAVE_ERROR: "Failed to leave server",
+    JOIN_SUCCESS: (name: string) => `Welcome to ${name}'s server!`,
+    JOIN_ERROR: "Failed to join server",
+    INVITE_GENERATE_ERROR: "Failed to generate a new link",
+  },
+  CHANNEL: {
+    CREATE_SUCCESS: "Channel created successfully!",
+    UPDATE_SUCCESS: "Channel updated successfully!",
+    UPDATE_ERROR: "Failed to update channel",
+    DELETE_SUCCESS: "Channel deleted",
+    DELETE_ERROR: "Failed to delete channel",
+    NAME_EXISTS: "Channel name already exists.",
+  },
+  MEMBER: {
+    KICK_SUCCESS: "Member kicked",
+    ROLE_UPDATE_SUCCESS: "Role updated",
+    ACTION_ERROR: "Failed to perform action",
+  },
+  MESSAGE: {
+    SEND_ERROR: "Failed to send message",
+    DELETE_ERROR: "Failed to delete message",
+    UPDATE_ERROR: "Failed to update message",
+    FILE_UPLOAD_ERROR: "Failed to upload file",
+  },
+} as const;

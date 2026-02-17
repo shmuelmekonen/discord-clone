@@ -23,7 +23,7 @@ import { FileUpload } from "@/components/file-upload";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { MODAL_TYPES } from "@/lib/constants";
+import { MODAL_TYPES, TOAST_MESSAGES } from "@/lib/constants";
 import axios from "axios";
 import {
   messageFileSchema,
@@ -67,7 +67,7 @@ export const MessageFileModal = () => {
       router.refresh();
       onClose();
     } catch (err) {
-      let errorMessage = "Failed to send file";
+      let errorMessage = TOAST_MESSAGES.MESSAGE.FILE_UPLOAD_ERROR;
       if (axios.isAxiosError(err)) {
         errorMessage = err.response?.data?.error || errorMessage;
       }

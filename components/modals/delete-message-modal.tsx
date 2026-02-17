@@ -5,7 +5,7 @@ import { useState } from "react";
 import qs from "query-string";
 import axios from "axios";
 
-import { MODAL_TYPES } from "@/lib/constants";
+import { MODAL_TYPES, TOAST_MESSAGES } from "@/lib/constants";
 import { useModal } from "@/hooks/use-modal-store";
 
 import { toast } from "sonner";
@@ -43,7 +43,7 @@ export const DeleteMessageModal = () => {
     } catch (err) {
       console.log(err);
 
-      let errorMessage = "Failed to delete message";
+      let errorMessage = TOAST_MESSAGES.MESSAGE.DELETE_ERROR;
       if (axios.isAxiosError(err)) {
         errorMessage = err.response?.data?.error || errorMessage;
       }

@@ -8,6 +8,7 @@ import { Button } from "../ui/button";
 import { Loader2, UserPlus } from "lucide-react";
 import { useState } from "react";
 import { SOCKET_EVENTS } from "@/lib/routes";
+import { TOAST_MESSAGES } from "@/lib/constants";
 
 interface JoinServerModalProps {
   server: {
@@ -30,14 +31,14 @@ const JoinServerModal = ({ server, inviteCode }: JoinServerModalProps) => {
       const { data, error } = result;
 
       if (error || !data) {
-        toast.error(error || "Failed to join");
+        toast.error(error || TOAST_MESSAGES.SERVER.JOIN_ERROR);
         return;
       }
 
       const { server: joinedServer, joinedNew } = data;
 
       if (joinedNew) {
-        toast.success(`Welcome to ${joinedServer.name}'s server!`);
+        toast.success(TOAST_MESSAGES.SERVER.JOIN_SUCCESS(joinedServer.name));
 
         try {
           fetch("/api/socket/events", {
@@ -58,7 +59,7 @@ const JoinServerModal = ({ server, inviteCode }: JoinServerModalProps) => {
       router.push(`/servers/${joinedServer.id}`);
     } catch (err) {
       console.log(err);
-      toast.error("Failed to join server");
+      toast.error(TOAST_MESSAGES.SERVER.JOIN_ERROR);
     } finally {
       setIsLoading(false);
     }
