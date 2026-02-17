@@ -13,7 +13,7 @@ import { handleServerActionError } from "@/lib/handle-server-action-error";
 export const createChannel = async (
   serverId: string,
   values: ChannelSchemaType,
-): Promise<ActionResponse<Server>> => {
+): Promise<ActionResponse<ChannelResult>> => {
   try {
     const profile = await currentProfile();
     if (!profile)
@@ -40,7 +40,7 @@ export const createChannel = async (
 
     const { name, type } = validatedData.data;
 
-    const updatedServer = await db.server.update({
+    const updatedServer = await db.server.findUnique({
       where: {
         id: serverId,
         members: {
@@ -52,20 +52,31 @@ export const createChannel = async (
           },
         },
       },
+    });
+
+    if (!updatedServer) {
+      return {
+        data: null,
+        error: USER_MESSAGES.UNAUTHORIZED,
+        code: ACTION_ERRORS.UNAUTHORIZED,
+      };
+    }
+
+    const channel = await db.channel.create({
       data: {
-        channels: {
-          create: {
-            profileId: profile.id,
-            name,
-            type,
-          },
-        },
+        profileId: profile.id,
+        serverId: serverId,
+        name,
+        type,
       },
     });
 
     revalidatePath(`/servers/${updatedServer.id}`);
 
-    return { data: updatedServer, error: null };
+    return {
+      data: { updatedServerId: updatedServer.id, channelId: channel.id },
+      error: null,
+    };
   } catch (err) {
     console.error("[CREATE_CHANNEL_ERROR]", err);
     return handleServerActionError(err);

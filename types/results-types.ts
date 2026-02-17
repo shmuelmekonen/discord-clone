@@ -11,4 +11,5 @@ export type LeaveOrDeleteServerResult = {
 
 export type ChannelResult = {
   updatedServerId: string;
+  channelId?: string;
 };

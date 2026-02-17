@@ -84,24 +84,21 @@ export const CreateChannelModal = () => {
         setGeneralError(USER_MESSAGES.GENERIC_ERROR);
         return;
       }
+
       const result = await createChannel(serverId, values);
-      const { data: updatedServer, error, code } = result;
+      const { data, error, code } = result;
 
-      if (code === ACTION_ERRORS.CONFLICT) {
-        form.setError("name", {
-          message: "Channel name already exists.",
-        });
+      if (!data) {
+        if (code === ACTION_ERRORS.CONFLICT) {
+          form.setError("name", {
+            message: "Channel name already exists.",
+          });
+          return;
+        }
+        setGeneralError(error || USER_MESSAGES.GENERIC_ERROR);
         return;
       }
-      if (error) {
-        setGeneralError(error);
-        return;
-      }
-
-      if (!updatedServer) {
-        setGeneralError(USER_MESSAGES.GENERIC_ERROR);
-        return;
-      }
+      const { updatedServerId, channelId } = data;
 
       toast.success("Channel created successfully!");
       socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, serverId);
@@ -109,7 +106,7 @@ export const CreateChannelModal = () => {
       form.reset();
       onClose();
       router.refresh();
-      router.push(`/servers/${server.id}`);
+      router.push(`/servers/${updatedServerId}/channels/${channelId}`);
     } catch (err) {
       console.log(err);
       setGeneralError(USER_MESSAGES.GENERIC_ERROR);
