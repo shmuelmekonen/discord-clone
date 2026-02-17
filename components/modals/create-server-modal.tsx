@@ -32,7 +32,7 @@ import { createServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
-import { MODAL_TYPES } from "@/lib/constants";
+import { MODAL_TYPES, TOAST_MESSAGES } from "@/lib/constants";
 
 export const CreateServerModal = () => {
   const [isMounted, setIsMounted] = useState(false);
@@ -64,28 +64,21 @@ export const CreateServerModal = () => {
       const result = await createServer(values);
       const { data: server, error } = result;
 
-      if (error) {
-        toast.error(error);
-        return;
-      }
-
-      if (!server) {
-        onClose();
-        router.refresh();
-        toast.info("Changes saved! We're updating your view...", {
-          duration: 3000,
-        });
+      if (error || !server) {
+        toast.error(error || TOAST_MESSAGES.SERVER.CREATE_ERROR);
         return;
       }
 
       form.reset();
       router.refresh();
       onClose();
+
       router.push(`/servers/${server.id}`);
-      toast.success("Server created successfully!");
+
+      toast.success(TOAST_MESSAGES.SERVER.CREATE_SUCCESS);
     } catch (err) {
       console.log(err);
-      toast.error("Failed to create server");
+      toast.error(TOAST_MESSAGES.SERVER.CREATE_ERROR);
     }
   };
 

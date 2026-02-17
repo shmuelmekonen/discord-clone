@@ -2,7 +2,7 @@
 
 import { db } from "@/lib/db";
 import { currentProfile } from "@/lib/current-profile";
-import { MemberRole, Server } from "@prisma/client";
+import { MemberRole } from "@prisma/client";
 import { channelSchema, ChannelSchemaType } from "@/lib/validations/server";
 
 import { revalidatePath } from "next/cache";

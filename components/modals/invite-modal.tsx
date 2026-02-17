@@ -16,7 +16,7 @@ import { useOrigin } from "@/hooks/use-origin";
 import { useState } from "react";
 import { renewInviteUrl } from "@/actions/server-actions";
 import { cn } from "@/lib/utils";
-import { MODAL_TYPES } from "@/lib/constants";
+import { MODAL_TYPES, TOAST_MESSAGES, USER_MESSAGES } from "@/lib/constants";
 
 export const InviteModal = () => {
   const { onOpen, isOpen, onClose, type, data } = useModal();
@@ -44,22 +44,22 @@ export const InviteModal = () => {
       setGeneralError(null);
 
       if (!server) {
-        setGeneralError("An unexpected error occurred.");
+        setGeneralError(USER_MESSAGES.GENERIC_ERROR);
         return;
       }
       setIsLoading(true);
-      const { data: updatedServer, error } = await renewInviteUrl(server.id);
+      const result = await renewInviteUrl(server.id);
+      const { data: updatedServer, error } = result;
 
-      if (error) {
-        setGeneralError(`${error}`);
+      if (error || !updatedServer) {
+        setGeneralError(error || TOAST_MESSAGES.SERVER.INVITE_GENERATE_ERROR);
         return;
       }
-      if (updatedServer) {
-        onOpen(MODAL_TYPES.INVITE, { server: updatedServer });
-      }
+
+      onOpen(MODAL_TYPES.INVITE, { server: updatedServer });
     } catch (err) {
       console.log(err);
-      setGeneralError("Failed to new generate link");
+      setGeneralError(TOAST_MESSAGES.SERVER.INVITE_GENERATE_ERROR);
     } finally {
       setIsLoading(false);
     }

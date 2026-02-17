@@ -14,7 +14,7 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { deleteServer } from "@/actions/server-actions";
-import { MODAL_TYPES } from "@/lib/constants";
+import { MODAL_TYPES, TOAST_MESSAGES } from "@/lib/constants";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { SOCKET_EVENTS } from "@/lib/routes";
@@ -38,10 +38,11 @@ export const DeleteServerModal = () => {
       const result = await deleteServer(serverId);
       const { data, error } = result;
 
-      if (error) {
-        toast.error(error);
+      if (error || !data) {
+        toast.error(error || TOAST_MESSAGES.SERVER.DELETE_ERROR);
         return;
       }
+      const { nextServerId } = data;
 
       try {
         await fetch("/api/socket/events", {
@@ -56,14 +57,16 @@ export const DeleteServerModal = () => {
       } catch (error) {
         console.error("REALTIME_SIGNAL_ERROR", error);
       }
-      onClose();
 
+      onClose();
       router.refresh();
-      router.push(data?.nextServerId ? `/servers/${data.nextServerId}` : "/");
-      toast.success("Server deleted successfully");
+
+      router.push(nextServerId ? `/servers/${nextServerId}` : "/");
+
+      toast.success(TOAST_MESSAGES.SERVER.DELETE_SUCCESS);
     } catch (err) {
       console.log(err);
-      toast.error("Failed to delete server");
+      toast.error(TOAST_MESSAGES.SERVER.DELETE_ERROR);
     } finally {
       setIsLoading(false);
     }

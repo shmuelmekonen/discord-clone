@@ -31,7 +31,7 @@ import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
 import { editServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { toast } from "sonner";
-import { MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
+import { MODAL_TYPES, TOAST_MESSAGES, USER_MESSAGES } from "@/lib/constants";
 import { SOCKET_EVENTS } from "@/lib/routes";
 import { useSocket } from "@/components/providers/socket-provider";
 
@@ -78,13 +78,8 @@ export const EditServerModal = () => {
       const result = await editServer(serverId, values);
       const { data: editedServer, error } = result;
 
-      if (error) {
-        toast.error(error);
-        return;
-      }
-
-      if (!editedServer) {
-        toast.error(USER_MESSAGES.GENERIC_ERROR);
+      if (error || !editedServer) {
+        toast.error(error || USER_MESSAGES.GENERIC_ERROR);
         return;
       }
 
@@ -93,10 +88,10 @@ export const EditServerModal = () => {
       onClose();
       socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, serverId);
 
-      toast.success("Server updated successfully!");
+      toast.success(TOAST_MESSAGES.SERVER.UPDATE_SUCCESS);
     } catch (err) {
       console.log(err);
-      toast.error("Failed to edit server");
+      toast.error(TOAST_MESSAGES.SERVER.UPDATE_ERROR);
     }
   };
 

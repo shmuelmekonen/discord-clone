@@ -37,7 +37,12 @@ import { createChannel } from "@/actions/channel-actions";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { ChannelType } from "@prisma/client";
-import { ACTION_ERRORS, MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
+import {
+  ACTION_ERRORS,
+  MODAL_TYPES,
+  TOAST_MESSAGES,
+  USER_MESSAGES,
+} from "@/lib/constants";
 import { useSocket } from "@/components/providers/socket-provider";
 import { SOCKET_EVENTS } from "@/lib/routes";
 
@@ -91,7 +96,7 @@ export const CreateChannelModal = () => {
       if (!data) {
         if (code === ACTION_ERRORS.CONFLICT) {
           form.setError("name", {
-            message: "Channel name already exists.",
+            message: TOAST_MESSAGES.CHANNEL.NAME_EXISTS,
           });
           return;
         }
@@ -100,7 +105,7 @@ export const CreateChannelModal = () => {
       }
       const { updatedServerId, channelId } = data;
 
-      toast.success("Channel created successfully!");
+      toast.success(TOAST_MESSAGES.CHANNEL.CREATE_SUCCESS);
       socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, serverId);
 
       form.reset();

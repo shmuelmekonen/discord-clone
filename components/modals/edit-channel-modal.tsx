@@ -36,7 +36,12 @@ import { channelSchema, ChannelSchemaType } from "@/lib/validations/server";
 import { useModal } from "@/hooks/use-modal-store";
 import { useRouter } from "next/navigation";
 import { ChannelType } from "@prisma/client";
-import { CHANNEL_NAMES, MODAL_TYPES, USER_MESSAGES } from "@/lib/constants";
+import {
+  CHANNEL_NAMES,
+  MODAL_TYPES,
+  TOAST_MESSAGES,
+  USER_MESSAGES,
+} from "@/lib/constants";
 import { editChannel } from "@/actions/channel-actions";
 import { useSocket } from "@/components/providers/socket-provider";
 import { SOCKET_EVENTS } from "@/lib/routes";
@@ -82,29 +87,24 @@ export const EditChannelModal = () => {
     const channelId = channel?.id;
 
     if (!serverId || !channelId) {
-      setGeneralError("An unexpected error occurred.");
+      setGeneralError(USER_MESSAGES.GENERIC_ERROR);
       return;
     }
     try {
       setGeneralError(null);
-      const { data: result, error } = await editChannel(
-        serverId,
-        channelId,
-        values,
-      );
+      const { data, error } = await editChannel(serverId, channelId, values);
 
-      if (error) {
-        setGeneralError(error || USER_MESSAGES.GENERIC_ERROR);
+      if (error || !data) {
+        toast.error(error || TOAST_MESSAGES.CHANNEL.UPDATE_ERROR);
         return;
       }
 
-      toast.success("Channel updated successfully!");
-      form.reset();
-      onClose();
+      toast.success(TOAST_MESSAGES.CHANNEL.UPDATE_SUCCESS);
       socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, serverId);
 
+      form.reset();
+      onClose();
       router.refresh();
-      router.push(`/servers/${result?.updatedServerId}`);
     } catch (err) {
       console.log(err);
       setGeneralError(USER_MESSAGES.GENERIC_ERROR);

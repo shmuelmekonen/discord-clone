@@ -15,7 +15,7 @@ import { useModal } from "@/hooks/use-modal-store";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { MODAL_TYPES } from "@/lib/constants";
+import { MODAL_TYPES, TOAST_MESSAGES } from "@/lib/constants";
 import { deleteChannel } from "@/actions/channel-actions";
 import { Loader2 } from "lucide-react";
 import { useSocket } from "@/components/providers/socket-provider";
@@ -44,21 +44,23 @@ export const DeleteChannelModal = () => {
       const result = await deleteChannel(channelId, serverId);
       const { data, error } = result;
 
-      if (error) {
-        toast.error(error);
+      if (error || !data) {
+        toast.error(error || TOAST_MESSAGES.CHANNEL.DELETE_ERROR);
         return;
       }
+
+      const { updatedServerId } = data;
+
       onClose();
       socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, serverId);
-
       router.refresh();
-      router.push(
-        data?.updatedServerId ? `/servers/${data.updatedServerId}` : "/",
-      );
-      toast.success("Channel deleted");
+
+      router.push(updatedServerId ? `/servers/${updatedServerId}` : "/");
+
+      toast.success(TOAST_MESSAGES.CHANNEL.DELETE_SUCCESS);
     } catch (err) {
       console.log(err);
-      toast.error("Failed to delete channel");
+      toast.error(TOAST_MESSAGES.CHANNEL.DELETE_ERROR);
     } finally {
       setIsLoading(false);
     }
