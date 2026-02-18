@@ -60,24 +60,29 @@ export const ManageMembersModal = () => {
   const { server } = data as { server: ServerWithMembersWithProfiles };
 
   const onKick = async (memberId: string) => {
+    if (!server) return;
+    const serverId = server.id;
+
     try {
       setLoadingId(memberId);
-      const result = await kickMember(server.id, memberId);
+      const result = await kickMember(serverId, memberId);
+      const { data: updatedServer, error } = result;
 
-      if (result.error) {
-        toast.error(result.error || TOAST_MESSAGES.MEMBER.ACTION_ERROR);
+      if (error || !updatedServer) {
+        toast.error(error || TOAST_MESSAGES.MEMBER.ACTION_ERROR);
         return;
       }
 
       router.refresh();
+
       socket?.emit(SOCKET_EVENTS.MEMBER_KICK, {
-        serverId: server.id,
+        serverId: serverId,
         memberId: memberId,
       });
 
-      if (result.data) {
+      if (updatedServer) {
         onOpen(MODAL_TYPES.MANAGE_MEMBERS, {
-          server: result.data as ServerWithMembersWithProfiles,
+          server: updatedServer as ServerWithMembersWithProfiles,
         });
       }
       toast.success(TOAST_MESSAGES.MEMBER.KICK_SUCCESS);
@@ -90,20 +95,24 @@ export const ManageMembersModal = () => {
   };
 
   const onRoleChange = async (memberId: string, role: MemberRole) => {
+    if (!server) return;
+    const serverId = server.id;
+
     try {
       setLoadingId(memberId);
-      const result = await updateMemberRole(server.id, memberId, role);
+      const result = await updateMemberRole(serverId, memberId, role);
+      const { data: updatedServer, error } = result;
 
-      if (result.error) {
-        toast.error(result.error || TOAST_MESSAGES.MEMBER.ACTION_ERROR);
+      if (error || !updatedServer) {
+        toast.error(error || TOAST_MESSAGES.MEMBER.ACTION_ERROR);
         return;
       }
 
       router.refresh();
-      socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, server.id);
-      if (result.data) {
+      socket?.emit(SOCKET_EVENTS.SERVER_UPDATE, serverId);
+      if (updatedServer) {
         onOpen(MODAL_TYPES.MANAGE_MEMBERS, {
-          server: result.data as ServerWithMembersWithProfiles,
+          server: updatedServer as ServerWithMembersWithProfiles,
         });
       }
       toast.success(TOAST_MESSAGES.MEMBER.ROLE_UPDATE_SUCCESS);

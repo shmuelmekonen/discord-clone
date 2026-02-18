@@ -14,7 +14,6 @@ import {
 import { useModal } from "@/hooks/use-modal-store";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { leaveServer } from "@/actions/server-actions";
 import { MODAL_TYPES, TOAST_MESSAGES } from "@/lib/constants";
 import { Loader2 } from "lucide-react";
@@ -23,7 +22,6 @@ import { SOCKET_EVENTS } from "@/lib/routes";
 export const LeaveServerModal = () => {
   const { isOpen, onClose, type, data } = useModal();
 
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const isModalOpen = isOpen && type === MODAL_TYPES.LEAVE_SERVER;
@@ -62,8 +60,7 @@ export const LeaveServerModal = () => {
       }
 
       onClose();
-      router.refresh();
-      router.push(nextServerId ? `/servers/${nextServerId}` : "/");
+      window.location.assign(nextServerId ? `/servers/${nextServerId}` : "/");
 
       toast.success(TOAST_MESSAGES.SERVER.LEAVE_SUCCESS);
     } catch (err) {
