@@ -26,9 +26,7 @@ const SetupPage = async () => {
     <div className="h-full bg-main flex flex-col">
       <div className="md:hidden flex items-center px-3 h-14 border-b-2 border-menu bg-main shrink-0">
         <MobileToggle />
-        <span className="ml-2 font-bold text-header text-sm">
-          Discord Clone
-        </span>
+        <span className="ml-2 font-bold text-header text-sm">Nexus</span>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-6 overflow-y-auto">
