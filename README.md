@@ -1,16 +1,14 @@
-![Nexus Banner](banner.png)
+![Nexus Banner](banner.jpg)
 
 # Nexus (Real-time Chat Application)
 
-![Status](https://img.shields.io/badge/Status-Active_Development-green)
+![Status](https://img.shields.io/badge/Status-Completed-success)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue)
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-teal)
 ![Tailwind](https://img.shields.io/badge/Tailwind-CSS-cyan)
 
-> 🚧 **Maintenance Notice:** This project is currently undergoing a major rebranding and infrastructure migration. Services may be temporarily unavailable.
-
-> I am pushing code daily. Feel free to check the [Commit History](https://github.com/shmuelmekonen/nexus-chat/commits/main) to see my latest work on Real-time architecture!
+> **Portfolio Highlight:** This project is a complete, production-ready Real-time Chat Application. It serves as a comprehensive demonstration of advanced FullStack architecture, end-to-end type safety, and modern deployment strategies.
 
 A full-stack application built with modern web technologies. This project focuses on **performance**, **type-safety**, and **scalable architecture**.
 
@@ -61,7 +59,7 @@ Major improvements I implemented:
 - **ORM:** [Prisma](https://www.prisma.io/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
 
-> **Live Demo:** [Click here to view the deployed app](https://nexus-chat.onrender.com)  
+> **Live Demo:** [Click here to view the deployed app](https://nexus-chat-app-yxhv.onrender.com)  
 > _(Note: The initial load might take up to 50s due to free-tier hosting cold start)_
 
 ### Services
