@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { useSocket } from "@/components/providers/socket-provider";
 import { SOCKET_EVENTS } from "@/lib/routes";
 import { toast } from "sonner";
+import { TOAST_MESSAGES } from "@/lib/constants";
 
 export const SocketEventProvider = ({
   children,
@@ -29,9 +30,9 @@ export const SocketEventProvider = ({
     const serverId = params.serverId as string;
 
     socket.on(SOCKET_EVENTS.serverDeleted(serverId), () => {
-      toast.error("This server has been deleted by the admin.");
-      router.refresh();
+      toast.error(TOAST_MESSAGES.SOCKET.SERVER_DELETED);
       router.push("/");
+      router.refresh();
     });
 
     socket.on(SOCKET_EVENTS.serverUpdated(serverId), () => {

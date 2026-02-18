@@ -83,4 +83,8 @@ export const TOAST_MESSAGES = {
     UPDATE_ERROR: "Failed to update message",
     FILE_UPLOAD_ERROR: "Failed to upload file",
   },
+  SOCKET: {
+    SERVER_DELETED: "This server has been deleted by the admin.",
+    CONNECTION_ERROR: "Socket connection failed. Polling enabled.",
+  },
 } as const;

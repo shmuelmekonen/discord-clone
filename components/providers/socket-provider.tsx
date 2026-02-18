@@ -36,6 +36,9 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
     socketInstance.on("disconnect", () => {
       setIsConnected(false);
     });
+    socketInstance.on("connect_error", () => {
+      setIsConnected(false);
+    });
 
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setSocket(socketInstance);
