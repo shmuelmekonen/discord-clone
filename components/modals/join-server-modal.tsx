@@ -50,13 +50,14 @@ const JoinServerModal = ({ server, inviteCode }: JoinServerModalProps) => {
             }),
             keepalive: true,
           });
+          window.location.assign(`/servers/${joinedServer.id}`);
         } catch (error) {
           console.error("REALTIME_SIGNAL_ERROR", error);
         }
+      } else {
+        router.push(`/servers/${joinedServer.id}`);
+        router.refresh();
       }
-
-      router.refresh();
-      router.push(`/servers/${joinedServer.id}`);
     } catch (err) {
       console.log(err);
       toast.error(TOAST_MESSAGES.SERVER.JOIN_ERROR);

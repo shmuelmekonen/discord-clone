@@ -30,7 +30,6 @@ import { FileUpload } from "@/components/file-upload";
 import { serverSchema, ServerSchemaType } from "@/lib/validations/server";
 import { createServer } from "@/actions/server-actions";
 import { useModal } from "@/hooks/use-modal-store";
-import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { MODAL_TYPES, TOAST_MESSAGES } from "@/lib/constants";
 
@@ -55,7 +54,6 @@ export const CreateServerModal = () => {
   });
 
   const isLoading = form.formState.isSubmitting;
-  const router = useRouter();
 
   const onSubmit = async (values: ServerSchemaType) => {
     if (isLoading) return;
@@ -70,10 +68,9 @@ export const CreateServerModal = () => {
       }
 
       form.reset();
-      router.refresh();
       onClose();
 
-      router.push(`/servers/${server.id}`);
+      window.location.assign(`/servers/${server.id}`);
 
       toast.success(TOAST_MESSAGES.SERVER.CREATE_SUCCESS);
     } catch (err) {
