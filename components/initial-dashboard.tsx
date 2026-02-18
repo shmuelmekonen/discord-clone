@@ -28,7 +28,7 @@ export const InitialDashboard = () => {
           </SheetContent>
         </Sheet>
         <span className="ml-4 font-bold text-header text-sm tracking-tight">
-          Discord Clone
+          Nexus
         </span>
       </div>
 

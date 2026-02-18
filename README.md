@@ -1,6 +1,6 @@
-![Discord Clone Banner](banner.png)
+![Nexus Banner](banner.png)
 
-# Modern Discord Clone (Next.js 15 Architecture)
+# Nexus (Real-time Chat Application)
 
 ![Status](https://img.shields.io/badge/Status-Active_Development-green)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
@@ -8,10 +8,11 @@
 ![Prisma](https://img.shields.io/badge/Prisma-ORM-teal)
 ![Tailwind](https://img.shields.io/badge/Tailwind-CSS-cyan)
 
-> 🚧 **Project Status:** This project is currently under **active development**.
-> I am pushing code daily. Feel free to check the [Commit History](https://github.com/shmuelmekonen/discord-clone/commits/main) to see my latest work on Real-time architecture!
+> 🚧 **Maintenance Notice:** This project is currently undergoing a major rebranding and infrastructure migration. Services may be temporarily unavailable.
 
-A full-stack Discord clone application built with modern web technologies. This project focuses on **performance**, **type-safety**, and **scalable architecture**.
+> I am pushing code daily. Feel free to check the [Commit History](https://github.com/shmuelmekonen/nexus-chat/commits/main) to see my latest work on Real-time architecture!
+
+A full-stack application built with modern web technologies. This project focuses on **performance**, **type-safety**, and **scalable architecture**.
 
 It features real-time server management, granular role-based permissions, and a robust database schema.
 
@@ -60,7 +61,7 @@ Major improvements I implemented:
 - **ORM:** [Prisma](https://www.prisma.io/)
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/) + [Shadcn UI](https://ui.shadcn.com/)
 
-> **Live Demo:** [Click here to view the deployed app](https://discord-clone-06so.onrender.com)  
+> **Live Demo:** [Click here to view the deployed app](https://nexus-chat.onrender.com)  
 > _(Note: The initial load might take up to 50s due to free-tier hosting cold start)_
 
 ### Services
@@ -95,8 +96,8 @@ If you want to clone and run this project locally to test the features:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/shmuelmekonen/discord-clone.git
-cd discord-clone
+git clone https://github.com/shmuelmekonen/nexus-chat.git
+cd nexus-chat
 ```
 
 ### 2. Install dependencies

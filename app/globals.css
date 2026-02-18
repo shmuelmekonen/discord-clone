@@ -109,7 +109,7 @@
     --sidebar-border: oklch(0.923 0.003 48.717);
     --sidebar-ring: oklch(0.709 0.01 56.259);
 
-    /* Discord Clone Light Mode */
+    /* Nexus Light Mode */
     --bg-main: 0 0% 100%; /* White (Main Background) */
     --bg-sidebar: 240 5% 96%; /* Zinc-100 (Channel List) */
     --bg-mobile: 240 6% 90%; /* Zinc-200 (Server Sidebar) */
@@ -157,7 +157,7 @@
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.553 0.013 58.071);
 
-    /* Discord Clone Dark Mode */
+    /* Nexus Dark Mode */
     --bg-main: 220 7% 20%; /* #313338 (Main Background) */
     --bg-sidebar: 223 7% 21%; /* #2B2D31 (Channel List) */
     --bg-mobile: 225 6% 13%; /* #1E1F22 (Server Sidebar) */
